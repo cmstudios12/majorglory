@@ -1,0 +1,374 @@
+<!-- index.html (Dashboard + protected access) -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Student Residence Registration System - register students and assign them to Khoza or Ngwenya Residence." />
+  <title>Student Residence Registration</title>
+
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root{
+      --bg:#f4f6fb; --card:#fff; --text:#0f172a; --muted:#64748b;
+      --primary:#1e5eff; --primary-dark:#1648c7; --border:#e5e7eb;
+      --header:#1e2a5a; --shadow:0 10px 25px rgba(0,0,0,0.08);
+      --radius:12px; --radius-sm:10px; --focus:0 0 0 3px rgba(30,94,255,0.25);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
+    header{background:var(--header);color:#fff;padding:22px 16px;text-align:center}
+    header h1{margin:0 0 6px;font-size:22px}
+    header p{margin:0;color:rgba(255,255,255,0.85);font-size:14px}
+    .container{max-width:1100px;margin:30px auto;padding:0 16px 24px}
+    .card{background:var(--card);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);margin-bottom:22px;border:1px solid rgba(229,231,235,0.6)}
+    .card-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+    h2{margin:0;color:var(--header);font-size:18px}
+    .hint{font-size:13px;color:var(--muted)}
+    form{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:10px}
+    label{display:grid;gap:6px;font-size:13px;color:var(--muted)}
+    input, select{
+      padding:12px 14px;border-radius:10px;border:1px solid #cbd5e1;font-size:15px;outline:none;background:#fff
+    }
+    input:focus, select:focus{border-color:rgba(30,94,255,0.7);box-shadow:var(--focus)}
+    .actions{grid-column:1 / -1;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    button{
+      padding:12px 14px;border:none;border-radius:var(--radius-sm);
+      background:var(--primary);color:#fff;font-size:15px;font-weight:650;cursor:pointer;
+      display:inline-flex;align-items:center;gap:8px
+    }
+    button:hover{background:var(--primary-dark)}
+    button:disabled{opacity:.65;cursor:not-allowed}
+    .btn-secondary{background:#0f172a}
+    .btn-secondary:hover{background:#0b1220}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px}
+    .toolbar input, .toolbar select{max-width:360px;width:100%}
+    .status{
+      margin-top:12px;padding:10px 12px;border-radius:10px;font-size:14px;border:1px solid var(--border);
+      background:#f8fafc;color:var(--text);display:none
+    }
+    .status.show{display:block}
+    .status.success{border-color:rgba(34,197,94,0.35);background:rgba(34,197,94,0.08)}
+    .status.error{border-color:rgba(239,68,68,0.35);background:rgba(239,68,68,0.08)}
+    table{width:100%;border-collapse:collapse;font-size:14px;border-radius:12px;overflow:hidden}
+    table th, table td{padding:12px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top;word-break:break-word}
+    table th{background:#f1f5f9;color:#334155;font-weight:700;font-size:13px}
+    .pill{
+      display:inline-flex;align-items:center;gap:6px;
+      padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;
+      border:1px solid rgba(148,163,184,0.6); background:#f8fafc; color:#0f172a
+    }
+    .empty{padding:16px;color:var(--muted);font-size:14px;display:none}
+    .footer{text-align:center;padding:18px 16px 26px;color:#777;font-size:13px}
+    @media (max-width:520px){header h1{font-size:18px}.card{padding:16px}}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Student Residence (Res) Registration</h1>
+    <p>Register students and assign them to Khoza or Ngwenya Residence</p>
+  </header>
+
+  <main class="container">
+    <section class="card" aria-labelledby="add-student-title">
+      <div class="card-head">
+        <h2 id="add-student-title">Add Student</h2>
+        <div class="hint">Logged in</div>
+      </div>
+
+      <form id="studentForm" autocomplete="on" novalidate>
+        <label>
+          Residence *
+          <select id="residence" name="residence" required>
+            <option value="" selected disabled>Select residence</option>
+            <option value="Khoza Residence">Khoza Residence</option>
+            <option value="Ngwenya Residence">Ngwenya Residence</option>
+          </select>
+        </label>
+
+        <label>
+          First Name(s) *
+          <input type="text" id="name" name="name" required minlength="2" />
+        </label>
+
+        <label>
+          Surname *
+          <input type="text" id="surname" name="surname" required minlength="2" />
+        </label>
+
+        <label>
+          Student Number *
+          <input type="text" id="student_number" name="student_number" required />
+        </label>
+
+        <label>
+          ID Number *
+          <input type="text" id="id_number" name="id_number" required />
+        </label>
+
+        <label>
+          Phone Number *
+          <input type="tel" id="phone" name="phone" required />
+        </label>
+
+        <div class="actions">
+          <button type="submit" id="saveBtn"><i class="fa-solid fa-plus"></i> Save Student</button>
+          <button type="button" class="btn-secondary" id="resetBtn"><i class="fa-solid fa-rotate-left"></i> Clear</button>
+          <button type="button" class="btn-secondary" id="logoutBtn"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</button>
+        </div>
+
+        <div id="status" class="status" role="status" aria-live="polite"></div>
+      </form>
+    </section>
+
+    <section class="card" aria-labelledby="students-title">
+      <div class="card-head">
+        <h2 id="students-title">Registered Students</h2>
+        <div class="hint"><span id="count">0</span> student(s)</div>
+      </div>
+
+      <div class="toolbar">
+        <input type="search" id="search" placeholder="Search..." />
+        <select id="filterResidence">
+          <option value="all" selected>All residences</option>
+          <option value="Khoza Residence">Khoza Residence</option>
+          <option value="Ngwenya Residence">Ngwenya Residence</option>
+        </select>
+        <button type="button" class="btn-secondary" id="refreshBtn"><i class="fa-solid fa-arrows-rotate"></i> Refresh</button>
+      </div>
+
+      <div style="margin-top:14px;">
+        <table>
+          <thead>
+            <tr>
+              <th>Residence</th>
+              <th>Name</th>
+              <th>Surname</th>
+              <th>Student No.</th>
+              <th>ID Number</th>
+              <th>Phone</th>
+            </tr>
+          </thead>
+          <tbody id="studentTable"></tbody>
+        </table>
+        <div id="emptyState" class="empty">No students found.</div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">© 2026 Student Residence System</footer>
+
+  <script>
+    "use strict";
+
+    const SUPABASE_URL = "https://darbcyxyhzsumlhyfcdm.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_49VIPlnlEu9Q6BGGnsOtTw_sLwa0SJI";
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const LOGIN_URL = "./login.html";
+
+    // 🔒 PROTECT PAGE: must be logged in
+    async function protectPage(){
+      const { data } = await sb.auth.getSession();
+      if (!data.session) window.location.href = LOGIN_URL;
+    }
+    protectPage();
+
+    // DOM
+    const form = document.getElementById("studentForm");
+    const residenceEl = document.getElementById("residence");
+    const nameEl = document.getElementById("name");
+    const surnameEl = document.getElementById("surname");
+    const studentNumberEl = document.getElementById("student_number");
+    const idNumberEl = document.getElementById("id_number");
+    const phoneEl = document.getElementById("phone");
+
+    const saveBtn = document.getElementById("saveBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const refreshBtn = document.getElementById("refreshBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    const tableBody = document.getElementById("studentTable");
+    const emptyState = document.getElementById("emptyState");
+    const statusEl = document.getElementById("status");
+    const countEl = document.getElementById("count");
+    const searchEl = document.getElementById("search");
+    const filterResidenceEl = document.getElementById("filterResidence");
+
+    let allStudents = [];
+
+    function setBusy(b){
+      saveBtn.disabled = b;
+      refreshBtn.disabled = b;
+      resetBtn.disabled = b;
+      logoutBtn.disabled = b;
+      saveBtn.innerHTML = b ? `<i class="fa-solid fa-spinner fa-spin"></i> Saving...` : `<i class="fa-solid fa-plus"></i> Save Student`;
+    }
+
+    function showStatus(msg, type="success"){
+      statusEl.textContent = msg;
+      statusEl.className = `status show ${type}`;
+    }
+    function clearStatus(){
+      statusEl.textContent = "";
+      statusEl.className = "status";
+    }
+
+    function sanitizeText(value){
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+    function normalize(v){ return String(v ?? "").trim(); }
+
+    function validateStudent(s){
+      if (!s.residence) return "Please select a residence.";
+      if (!s.name || s.name.length < 2) return "Name must be at least 2 characters.";
+      if (!s.surname || s.surname.length < 2) return "Surname must be at least 2 characters.";
+      if (!s.student_number) return "Student number is required.";
+      if (!s.id_number) return "ID number is required.";
+      if (!s.phone) return "Phone number is required.";
+      return null;
+    }
+
+    function residencePill(residence){
+      const text = sanitizeText(residence);
+      return `<span class="pill"><i class="fa-solid fa-house"></i> ${text}</span>`;
+    }
+
+    function renderTable(rows){
+      tableBody.innerHTML = "";
+      countEl.textContent = String(rows.length);
+
+      if (!rows.length){
+        emptyState.style.display = "block";
+        return;
+      }
+      emptyState.style.display = "none";
+
+      tableBody.innerHTML = rows.map(s => `
+        <tr>
+          <td>${residencePill(s.residence)}</td>
+          <td>${sanitizeText(s.name)}</td>
+          <td>${sanitizeText(s.surname)}</td>
+          <td>${sanitizeText(s.student_number)}</td>
+          <td>${sanitizeText(s.id_number)}</td>
+          <td>${sanitizeText(s.phone)}</td>
+        </tr>
+      `).join("");
+    }
+
+    function applyFilters(){
+      const q = normalize(searchEl.value).toLowerCase();
+      const res = filterResidenceEl.value;
+
+      let filtered = allStudents;
+
+      if (res !== "all") filtered = filtered.filter(s => s.residence === res);
+
+      if (q){
+        filtered = filtered.filter(s => {
+          const hay = `${s.residence} ${s.name} ${s.surname} ${s.student_number} ${s.id_number} ${s.phone}`.toLowerCase();
+          return hay.includes(q);
+        });
+      }
+
+      renderTable(filtered);
+    }
+
+    async function loadStudents(){
+      clearStatus();
+      const { data, error } = await sb
+        .from("students")
+        .select("id, residence, name, surname, student_number, id_number, phone, created_at")
+        .order("id", { ascending: false });
+
+      if (error){
+        console.error(error);
+        showStatus("Could not load students. Check RLS policies.", "error");
+        return;
+      }
+
+      allStudents = data || [];
+      applyFilters();
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearStatus();
+
+      const student = {
+        residence: normalize(residenceEl.value),
+        name: normalize(nameEl.value),
+        surname: normalize(surnameEl.value),
+        student_number: normalize(studentNumberEl.value),
+        id_number: normalize(idNumberEl.value),
+        phone: normalize(phoneEl.value),
+      };
+
+      const vErr = validateStudent(student);
+      if (vErr){ showStatus(vErr, "error"); return; }
+
+      setBusy(true);
+
+      const { error } = await sb.from("students").insert([student]);
+
+      setBusy(false);
+
+      if (error){
+        console.error(error);
+        showStatus("Error saving student.", "error");
+        return;
+      }
+
+      form.reset();
+      showStatus("Student saved successfully.", "success");
+      loadStudents();
+    });
+
+    resetBtn.addEventListener("click", () => {
+      form.reset();
+      clearStatus();
+      residenceEl.focus();
+    });
+
+    refreshBtn.addEventListener("click", loadStudents);
+    searchEl.addEventListener("input", applyFilters);
+    filterResidenceEl.addEventListener("change", applyFilters);
+
+    logoutBtn.addEventListener("click", async () => {
+      await sb.auth.signOut();
+      window.location.href = LOGIN_URL;
+    });
+
+    loadStudents();
+  </script>
+
+  <!--
+    SUPABASE CHECKLIST (do once):
+    1) Add residence column:
+       alter table public.students add column if not exists residence text;
+
+    2) Enable RLS:
+       alter table public.students enable row level security;
+
+    3) Policies (only logged-in users can read/write):
+       create policy "students_select_auth"
+       on public.students for select
+       to authenticated
+       using (true);
+
+       create policy "students_insert_auth"
+       on public.students for insert
+       to authenticated
+       with check (true);
+  -->
+</body>
+</html>

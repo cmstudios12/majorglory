@@ -1,0 +1,195 @@
+<!-- login.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login • Student Residence System</title>
+
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root{
+      --bg:#f4f6fb;
+      --card:#ffffff;
+      --text:#0f172a;
+      --muted:#64748b;
+      --primary:#1e5eff;
+      --primary-dark:#1648c7;
+      --border:#e5e7eb;
+      --shadow:0 10px 25px rgba(0,0,0,0.08);
+      --radius:12px;
+      --focus:0 0 0 3px rgba(30,94,255,0.2);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+    }
+    .card{
+      width:100%;
+      max-width:420px;
+      background:var(--card);
+      border:1px solid rgba(229,231,235,0.7);
+      box-shadow:var(--shadow);
+      border-radius:var(--radius);
+      padding:22px;
+    }
+    h1{
+      margin:0 0 6px;
+      font-size:20px;
+      color:#1e2a5a;
+    }
+    p{
+      margin:0 0 16px;
+      color:var(--muted);
+      font-size:13.5px;
+      line-height:1.4;
+    }
+    label{
+      display:grid;
+      gap:6px;
+      font-size:13px;
+      color:var(--muted);
+      margin-top:12px;
+    }
+    input{
+      padding:12px 12px;
+      border-radius:10px;
+      border:1px solid #cbd5e1;
+      font-size:14px;
+      outline:none;
+    }
+    input:focus{border-color:rgba(30,94,255,0.6); box-shadow:var(--focus)}
+    button{
+      width:100%;
+      margin-top:16px;
+      padding:12px 14px;
+      border:none;
+      border-radius:10px;
+      background:var(--primary);
+      color:#fff;
+      font-size:14.5px;
+      font-weight:700;
+      cursor:pointer;
+    }
+    button:hover{background:var(--primary-dark)}
+    button:disabled{opacity:.65; cursor:not-allowed}
+    .status{
+      display:none;
+      margin-top:12px;
+      padding:10px 12px;
+      border-radius:10px;
+      font-size:13px;
+      border:1px solid var(--border);
+      background:#f8fafc;
+      color:var(--text);
+    }
+    .status.show{display:block}
+    .status.error{border-color:rgba(239,68,68,0.35); background:rgba(239,68,68,0.08)}
+    .status.success{border-color:rgba(34,197,94,0.35); background:rgba(34,197,94,0.08)}
+    .tiny{
+      margin-top:14px;
+      font-size:12px;
+      color:var(--muted);
+      text-align:center;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Student Residence System</h1>
+    <p>Login with the credentials you received from the administrator.</p>
+
+    <div id="status" class="status" role="status" aria-live="polite"></div>
+
+    <form id="loginForm" autocomplete="on" novalidate>
+      <label>
+        Email
+        <input id="email" type="email" placeholder="user@email.com" required />
+      </label>
+
+      <label>
+        Password
+        <input id="password" type="password" placeholder="Enter password" required minlength="6" />
+      </label>
+
+      <button id="loginBtn" type="submit">Login</button>
+    </form>
+
+    <div class="tiny">© 2026 Student Residence System</div>
+  </div>
+
+  <script>
+    "use strict";
+
+    const SUPABASE_URL = "https://darbcyxyhzsumlhyfcdm.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_49VIPlnlEu9Q6BGGnsOtTw_sLwa0SJI";
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const DASHBOARD_URL = "./index.html";
+
+    const statusEl = document.getElementById("status");
+    const form = document.getElementById("loginForm");
+    const emailEl = document.getElementById("email");
+    const passEl = document.getElementById("password");
+    const btn = document.getElementById("loginBtn");
+
+    function showStatus(msg, type="success"){
+      statusEl.textContent = msg;
+      statusEl.className = `status show ${type}`;
+    }
+    function clearStatus(){
+      statusEl.textContent = "";
+      statusEl.className = "status";
+    }
+    function setBusy(b){
+      btn.disabled = b;
+      btn.textContent = b ? "Logging in..." : "Login";
+    }
+
+    async function redirectIfLoggedIn(){
+      const { data } = await sb.auth.getSession();
+      if (data.session) window.location.href = DASHBOARD_URL;
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearStatus();
+
+      const email = String(emailEl.value || "").trim().toLowerCase();
+      const password = String(passEl.value || "");
+
+      if (!email || !password) {
+        showStatus("Please enter email and password.", "error");
+        return;
+      }
+
+      setBusy(true);
+      const { data, error } = await sb.auth.signInWithPassword({ email, password });
+      setBusy(false);
+
+      if (error) {
+        console.error(error);
+        showStatus("Login failed. Please check your credentials.", "error");
+        return;
+      }
+
+      if (data.session) {
+        showStatus("Login successful. Redirecting...", "success");
+        window.location.href = DASHBOARD_URL;
+      }
+    });
+
+    redirectIfLoggedIn();
+  </script>
+</body>
+</html>
