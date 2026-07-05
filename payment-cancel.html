@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Cancelled | MpumaTickets</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        body {
+            font-family: Poppins, sans-serif;
+            background: linear-gradient(135deg, #08111f, #101b33);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px
+        }
+
+        .card {
+            max-width: 760px;
+            width: 100%;
+            background: #121c31;
+            border: 1px solid #263556;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, .35)
+        }
+
+        .icon {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: #dc2626;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 46px;
+            margin: 0 auto 20px
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px
+        }
+
+        p {
+            text-align: center;
+            color: #b8c2d9;
+            line-height: 1.7
+        }
+
+        .info {
+            margin: 28px 0;
+            padding: 18px;
+            background: #0c1528;
+            border-radius: 14px
+        }
+
+        .info div {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #22304d
+        }
+
+        .info div:last-child {
+            border-bottom: none
+        }
+
+        .label {
+            color: #9fb0cf
+        }
+
+        .value {
+            font-weight: 600
+        }
+
+        .actions {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 26px
+        }
+
+        a,
+        button {
+            padding: 14px 22px;
+            border-radius: 12px;
+            border: none;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer
+        }
+
+        .primary {
+            background: #2563eb;
+            color: #fff
+        }
+
+        .secondary {
+            background: #334155;
+            color: #fff
+        }
+
+        .note {
+            margin-top: 24px;
+            color: #facc15;
+            text-align: center;
+            font-size: .95rem
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <div class="icon">✕</div>
+        <h1>Payment Cancelled</h1>
+        <p>Your payment was cancelled or was not completed. No tickets have been generated and no seats have been
+            confirmed.</p>
+
+        <div class="info">
+            <div><span class="label">Booking Reference</span><span class="value" id="ref">Not available</span></div>
+            <div><span class="label">Payment Status</span><span class="value">Cancelled</span></div>
+            <div><span class="label">Reservation</span><span class="value">Not Confirmed</span></div>
+        </div>
+
+        <div class="actions">
+            <button class="primary" id="retryBtn">Try Payment Again</button>
+            <a href="/" class="secondary">Return Home</a>
+        </div>
+
+        <div class="note">
+            If money was deducted from your account but your booking was not confirmed, please contact MpumaTickets
+            Support:<br><br>
+            <strong>081 840 1398</strong><br>
+            <strong>info@mpumatickets.co.za</strong>
+        </div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const ref = params.get("ref");
+        if (ref) {
+            document.getElementById("ref").textContent = ref;
+        }
+        document.getElementById("retryBtn").addEventListener("click", () => {
+            if (ref) {
+                window.location.href = "/checkout.html?ref=" + encodeURIComponent(ref);
+            } else {
+                history.back();
+            }
+        });
+    </script>
+</body>
+
+</html>
