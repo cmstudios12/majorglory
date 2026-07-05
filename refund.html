@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Refund Policy | MpumaTickets</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Inter, Arial, sans-serif
+        }
+
+        body {
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at top left, rgba(124, 60, 255, .35), transparent 35%),
+                radial-gradient(circle at top right, rgba(255, 61, 129, .22), transparent 30%),
+                #070812;
+            color: #fff;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit
+        }
+
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            padding: 18px 20px;
+            background: rgba(7, 8, 18, .82);
+            backdrop-filter: blur(18px);
+            border-bottom: 1px solid rgba(255, 255, 255, .12);
+        }
+
+        .nav {
+            max-width: 1100px;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 20px;
+            font-weight: 900
+        }
+
+        .logo i {
+            width: 40px;
+            height: 40px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, #7c3cff, #ff3d81);
+        }
+
+        .back-btn {
+            padding: 12px 18px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, .1);
+            border: 1px solid rgba(255, 255, 255, .14);
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 85px 20px 35px
+        }
+
+        .hero span {
+            display: inline-flex;
+            padding: 8px 14px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, .08);
+            border: 1px solid rgba(255, 255, 255, .14);
+            color: #ffb7d0;
+            font-size: 13px;
+            font-weight: 900;
+            margin-bottom: 18px;
+        }
+
+        .hero h1 {
+            font-size: clamp(38px, 7vw, 70px);
+            line-height: 1;
+            letter-spacing: -3px;
+            margin-bottom: 18px;
+        }
+
+        .hero p {
+            max-width: 720px;
+            margin: auto;
+            color: #a7adbd;
+            line-height: 1.8;
+            font-size: 16px;
+        }
+
+        .policy-wrap {
+            max-width: 950px;
+            margin: auto;
+            padding: 30px 20px 90px;
+        }
+
+        .policy-card {
+            padding: 32px;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, .075);
+            border: 1px solid rgba(255, 255, 255, .14);
+            box-shadow: 0 25px 70px rgba(0, 0, 0, .35);
+            backdrop-filter: blur(18px);
+        }
+
+        .warning {
+            padding: 18px;
+            border-radius: 20px;
+            background: rgba(255, 77, 77, .12);
+            border: 1px solid rgba(255, 77, 77, .28);
+            color: #ffb4b4;
+            line-height: 1.7;
+            margin-bottom: 25px;
+            font-weight: 800;
+        }
+
+        .section {
+            padding: 24px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, .12);
+        }
+
+        .section:last-child {
+            border-bottom: none
+        }
+
+        .section h2 {
+            font-size: 24px;
+            letter-spacing: -.8px;
+            margin-bottom: 12px;
+        }
+
+        .section p,
+        .section li {
+            color: #a7adbd;
+            line-height: 1.8;
+            font-size: 15px;
+            margin-bottom: 10px;
+        }
+
+        ul {
+            padding-left: 22px
+        }
+
+        strong {
+            color: #fff
+        }
+
+        .contact-box {
+            margin-top: 25px;
+            padding: 22px;
+            border-radius: 22px;
+            background: rgba(255, 255, 255, .07);
+            border: 1px solid rgba(255, 255, 255, .12);
+        }
+
+        .contact-box a {
+            color: #ffb7d0;
+            font-weight: 900;
+        }
+
+        .footer {
+            padding: 25px 20px;
+            text-align: center;
+            color: #a7adbd;
+            border-top: 1px solid rgba(255, 255, 255, .12);
+            font-size: 13px;
+        }
+
+        @media(max-width:650px) {
+            .policy-card {
+                padding: 22px;
+                border-radius: 24px
+            }
+
+            .back-btn {
+                padding: 10px 14px;
+                font-size: 12px
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="header">
+        <nav class="nav">
+            <a href="index.html" class="logo">
+                <i class="fa-solid fa-ticket"></i>
+                MpumaTickets
+            </a>
+
+            <a href="index.html" class="back-btn">
+                <i class="fa-solid fa-arrow-left"></i>
+                Back Home
+            </a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <span>Refund Policy</span>
+        <h1>Strict Refund Policy</h1>
+        <p>
+            Please read this policy carefully before purchasing any ticket on MpumaTickets.
+            By buying a ticket, you agree to this refund policy.
+        </p>
+    </section>
+
+    <main class="policy-wrap">
+        <div class="policy-card">
+
+            <div class="warning">
+                All ticket sales are final. MpumaTickets does not guarantee refunds once a ticket has been successfully
+                purchased, generated, reserved, or issued.
+            </div>
+
+            <div class="section">
+                <h2>1. No Refunds After Purchase</h2>
+                <p>
+                    Once a ticket has been purchased, confirmed, generated, or issued through MpumaTickets, the sale is
+                    considered final.
+                    Refunds will not be granted because of personal changes, transport problems, arriving late,
+                    forgetting the event, buying the wrong ticket, or deciding not to attend.
+                </p>
+            </div>
+
+            <div class="section">
+                <h2>2. Event Organizer Responsibility</h2>
+                <p>
+                    MpumaTickets is a ticketing platform. Events are hosted and managed by independent event organizers.
+                    The event organizer is responsible for the event, venue, lineup, schedule, entry rules, and refund
+                    decisions.
+                </p>
+                <p>
+                    MpumaTickets may assist with communication, but the final decision on refunds belongs to the
+                    organizer unless stated otherwise in writing.
+                </p>
+            </div>
+
+            <div class="section">
+                <h2>3. Non-Refundable Situations</h2>
+                <ul>
+                    <li>You bought the wrong ticket type.</li>
+                    <li>You entered incorrect personal details.</li>
+                    <li>You cannot attend the event anymore.</li>
+                    <li>You arrive late or are denied entry because of your own conduct.</li>
+                    <li>You fail to bring your ticket or QR code.</li>
+                    <li>You lose access to your email, phone, or ticket screenshot.</li>
+                    <li>You are removed from the event for breaking venue or organizer rules.</li>
+                    <li>Weather changes, unless the organizer officially cancels the event.</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>4. Cancelled Events</h2>
+                <p>
+                    If an event is officially cancelled by the organizer, refund handling will depend on the organizer’s
+                    instruction.
+                    Processing fees, service fees, banking fees, and platform fees may be non-refundable.
+                </p>
+            </div>
+
+            <div class="section">
+                <h2>5. Postponed or Rescheduled Events</h2>
+                <p>
+                    If an event is postponed or rescheduled, your ticket may remain valid for the new date.
+                    A refund will not automatically be issued unless the organizer confirms that refunds are allowed.
+                </p>
+            </div>
+
+            <div class="section">
+                <h2>6. Duplicate Purchases</h2>
+                <p>
+                    Duplicate purchases are not automatically refundable. If you believe you purchased the same ticket
+                    twice by mistake,
+                    you must contact support immediately. MpumaTickets and the organizer will review the matter, but
+                    approval is not guaranteed.
+                </p>
+            </div>
+
+            <div class="section">
+                <h2>7. Refund Request Deadline</h2>
+                <p>
+                    Any refund request must be submitted within <strong>24 hours of purchase</strong> and before the
+                    event starts.
+                    Requests submitted after the event has started or ended will not be considered.
+                </p>
+            </div>
+
+            <div class="section">
+                <h2>8. Processing Time</h2>
+                <p>
+                    If a refund is approved, processing may take <strong>7 to 14 business days</strong>, depending on
+                    the payment provider, bank, and organizer approval process.
+                </p>
+            </div>
+
+            <div class="section">
+                <h2>9. Service Fees</h2>
+                <p>
+                    MpumaTickets service fees, payment gateway fees, banking charges, and administrative fees are
+                    generally non-refundable.
+                </p>
+            </div>
+
+            <div class="section">
+                <h2>10. Fraud, Abuse & Chargebacks</h2>
+                <p>
+                    MpumaTickets reserves the right to block users, cancel suspicious tickets, reject refund requests,
+                    and report fraudulent activity.
+                    Unfair chargebacks may lead to account restrictions or ticket cancellation.
+                </p>
+            </div>
+
+            <div class="section">
+                <h2>11. Contact for Refund Requests</h2>
+                <p>
+                    To request a review, contact MpumaTickets with your full name, phone number, event name, ticket
+                    code, and reason for the request.
+                </p>
+
+                <div class="contact-box">
+                    <p><strong>WhatsApp / Call:</strong> <a href="tel:0818401398">081 840 1398</a></p>
+                    <p><strong>Email:</strong> <a href="mailto:info@mpumatickets.co.za">info@mpumatickets.co.za</a></p>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>12. Acceptance of Policy</h2>
+                <p>
+                    By purchasing a ticket through MpumaTickets, you confirm that you have read, understood, and agreed
+                    to this Refund Policy.
+                </p>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="footer">
+        © 2026 MpumaTickets. All rights reserved.
+    </footer>
+
+</body>
+
+</html>

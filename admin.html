@@ -1,0 +1,2150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Admin Portal | MpumaTickets</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Inter, Arial, sans-serif;
+    }
+
+    :root {
+      --bg: #070812;
+      --panel: rgba(255, 255, 255, .075);
+      --panel2: rgba(255, 255, 255, .11);
+      --border: rgba(255, 255, 255, .14);
+      --text: #fff;
+      --muted: #a7adbd;
+      --purple: #7c3cff;
+      --pink: #ff3d81;
+      --green: #26d07c;
+      --red: #ff4d4d;
+      --yellow: #ffcf4d;
+      --shadow: 0 25px 70px rgba(0, 0, 0, .4);
+    }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(124, 60, 255, .32), transparent 35%),
+        radial-gradient(circle at top right, rgba(255, 61, 129, .22), transparent 30%),
+        var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    body.locked {
+      overflow: hidden;
+    }
+
+    button,
+    input,
+    select {
+      font-family: inherit;
+    }
+
+    button {
+      border: none;
+      cursor: pointer;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .loader {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, .78);
+      backdrop-filter: blur(14px);
+    }
+
+    .loader.active {
+      display: flex;
+    }
+
+    .loader-box {
+      width: min(100%, 330px);
+      padding: 28px;
+      border-radius: 24px;
+      text-align: center;
+      background: rgba(255, 255, 255, .1);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    .spin {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 4px solid rgba(255, 255, 255, .2);
+      border-top-color: #fff;
+      margin: 0 auto 16px;
+      animation: spin .8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .loader-box p {
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 9000;
+      display: none;
+      max-width: 420px;
+      padding: 15px 17px;
+      border-radius: 18px;
+      background: rgba(13, 16, 32, .95);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.5;
+    }
+
+    .toast.active {
+      display: block;
+    }
+
+    .toast.success {
+      color: #8affbf;
+      border-color: rgba(38, 208, 124, .35);
+    }
+
+    .toast.error {
+      color: #ffaaaa;
+      border-color: rgba(255, 77, 77, .35);
+    }
+
+    .auth-view {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .auth-card {
+      width: min(100%, 460px);
+      padding: 34px;
+      border-radius: 30px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(20px);
+    }
+
+    .admin-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 26px;
+    }
+
+    .admin-logo i {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      box-shadow: 0 16px 38px rgba(255, 61, 129, .25);
+    }
+
+    .admin-logo h1 {
+      font-size: 24px;
+      letter-spacing: -1px;
+    }
+
+    .admin-logo span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .auth-card h2 {
+      font-size: 34px;
+      letter-spacing: -1.5px;
+      margin-bottom: 10px;
+    }
+
+    .auth-card p {
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 14px;
+      margin-bottom: 22px;
+    }
+
+    .form-group {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .form-group label {
+      font-size: 13px;
+      font-weight: 850;
+      color: rgba(255, 255, 255, .82);
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      height: 52px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, .08);
+      color: #fff;
+      outline: none;
+      padding: 0 15px;
+      font-weight: 700;
+    }
+
+    .form-group input::placeholder {
+      color: rgba(255, 255, 255, .42);
+    }
+
+    .form-group select option {
+      color: #111;
+    }
+
+    .btn-primary {
+      height: 52px;
+      padding: 0 20px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      color: #fff;
+      font-weight: 950;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      box-shadow: 0 18px 40px rgba(255, 61, 129, .24);
+    }
+
+    .auth-card .btn-primary {
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    .status-msg {
+      display: none;
+      padding: 13px 15px;
+      border-radius: 16px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.5;
+    }
+
+    .status-msg.error {
+      display: block;
+      background: rgba(255, 77, 77, .12);
+      border: 1px solid rgba(255, 77, 77, .25);
+      color: #ffaaaa;
+    }
+
+    .admin-view {
+      display: none;
+      min-height: 100vh;
+    }
+
+    .admin-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: 82px;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(7, 8, 18, .8);
+      backdrop-filter: blur(22px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .admin-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .admin-brand-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+    }
+
+    .admin-brand h2 {
+      font-size: 18px;
+      letter-spacing: -.6px;
+    }
+
+    .admin-brand span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .admin-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-soft {
+      height: 44px;
+      padding: 0 15px;
+      border-radius: 999px;
+      color: #fff;
+      background: rgba(255, 255, 255, .09);
+      border: 1px solid var(--border);
+      font-weight: 900;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .admin-body {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: calc(100vh - 82px);
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 82px;
+      height: calc(100vh - 82px);
+      padding: 22px 16px;
+      border-right: 1px solid var(--border);
+      background: rgba(255, 255, 255, .035);
+      backdrop-filter: blur(18px);
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .side-link {
+      height: 48px;
+      border-radius: 16px;
+      padding: 0 14px;
+      color: rgba(255, 255, 255, .72);
+      background: transparent;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 850;
+      text-align: left;
+      transition: .25s;
+    }
+
+    .side-link:hover,
+    .side-link.active {
+      color: #fff;
+      background: rgba(255, 255, 255, .09);
+    }
+
+    .side-link i {
+      width: 18px;
+      color: #ffb7d0;
+    }
+
+    .main {
+      padding: 26px;
+      display: grid;
+      gap: 22px;
+      align-content: start;
+    }
+
+    .page {
+      display: none;
+      gap: 22px;
+    }
+
+    .page.active {
+      display: grid;
+    }
+
+    .top-card {
+      padding: 28px;
+      border-radius: 30px;
+      border: 1px solid var(--border);
+      background:
+        radial-gradient(circle at top right, rgba(255, 61, 129, .16), transparent 36%),
+        var(--panel);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(20px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .top-card span {
+      display: inline-flex;
+      padding: 8px 13px;
+      border-radius: 999px;
+      color: #ffb7d0;
+      background: rgba(255, 255, 255, .08);
+      border: 1px solid var(--border);
+      font-size: 12px;
+      font-weight: 950;
+      margin-bottom: 14px;
+    }
+
+    .top-card h1 {
+      font-size: clamp(32px, 5vw, 54px);
+      line-height: 1.05;
+      letter-spacing: -2px;
+      margin-bottom: 12px;
+    }
+
+    .top-card p {
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 14px;
+      max-width: 760px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .stat-card {
+      padding: 22px;
+      border-radius: 24px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      backdrop-filter: blur(18px);
+    }
+
+    .stat-card i {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--purple), var(--pink));
+      margin-bottom: 18px;
+      box-shadow: 0 16px 35px rgba(255, 61, 129, .2);
+    }
+
+    .stat-card h3 {
+      font-size: 30px;
+      letter-spacing: -1px;
+      margin-bottom: 4px;
+    }
+
+    .stat-card span {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .panel {
+      padding: 24px;
+      border-radius: 28px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    .panel-head h2 {
+      font-size: 26px;
+      letter-spacing: -1px;
+      margin-bottom: 7px;
+    }
+
+    .panel-head p {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .search-row {
+      display: grid;
+      grid-template-columns: 1fr 220px;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 850px;
+      background: rgba(255, 255, 255, .035);
+    }
+
+    th,
+    td {
+      padding: 15px;
+      border-bottom: 1px solid rgba(255, 255, 255, .09);
+      text-align: left;
+      font-size: 13px;
+      vertical-align: middle;
+    }
+
+    th {
+      color: rgba(255, 255, 255, .75);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      background: rgba(255, 255, 255, .05);
+    }
+
+    td {
+      color: rgba(255, 255, 255, .86);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .cell-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .mini-thumb {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      object-fit: cover;
+      background: rgba(255, 255, 255, .08);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      color: var(--muted);
+    }
+
+    .cell-title h4 {
+      font-size: 14px;
+      margin-bottom: 3px;
+    }
+
+    .cell-title p {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 950;
+      text-transform: capitalize;
+      border: 1px solid rgba(255, 255, 255, .12);
+      background: rgba(255, 255, 255, .08);
+      color: #fff;
+      white-space: nowrap;
+    }
+
+    .pill.approved,
+    .pill.published,
+    .pill.paid,
+    .pill.valid {
+      background: rgba(38, 208, 124, .12);
+      border-color: rgba(38, 208, 124, .25);
+      color: #8affbf;
+    }
+
+    .pill.pending,
+    .pill.draft {
+      background: rgba(255, 207, 77, .12);
+      border-color: rgba(255, 207, 77, .28);
+      color: #ffe19a;
+    }
+
+    .pill.rejected,
+    .pill.suspended,
+    .pill.cancelled,
+    .pill.failed,
+    .pill.used {
+      background: rgba(255, 77, 77, .12);
+      border-color: rgba(255, 77, 77, .28);
+      color: #ffaaaa;
+    }
+
+    .row-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .small-btn {
+      height: 36px;
+      padding: 0 12px;
+      border-radius: 999px;
+      color: #fff;
+      background: rgba(255, 255, 255, .09);
+      border: 1px solid var(--border);
+      font-size: 12px;
+      font-weight: 900;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .small-btn.green {
+      color: #8affbf;
+      background: rgba(38, 208, 124, .12);
+      border-color: rgba(38, 208, 124, .25);
+    }
+
+    .small-btn.red {
+      color: #ffaaaa;
+      background: rgba(255, 77, 77, .12);
+      border-color: rgba(255, 77, 77, .25);
+    }
+
+    .empty {
+      padding: 24px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, .05);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      text-align: center;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .danger-zone {
+      padding: 20px;
+      border-radius: 22px;
+      border: 1px solid rgba(255, 77, 77, .25);
+      background: rgba(255, 77, 77, .08);
+    }
+
+    .danger-zone h3 {
+      color: #ffaaaa;
+      margin-bottom: 8px;
+    }
+
+    .danger-zone p {
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 14px;
+      margin-bottom: 15px;
+    }
+
+    .confirm-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 8000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, .75);
+      backdrop-filter: blur(14px);
+    }
+
+    .confirm-modal.active {
+      display: flex;
+    }
+
+    .confirm-card {
+      width: min(100%, 430px);
+      padding: 26px;
+      border-radius: 26px;
+      background: rgba(13, 16, 32, .96);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    .confirm-card h3 {
+      font-size: 22px;
+      letter-spacing: -.7px;
+      margin-bottom: 10px;
+    }
+
+    .confirm-card p {
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 14px;
+      margin-bottom: 22px;
+    }
+
+    .confirm-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    @media(max-width: 1050px) {
+      .admin-body {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: static;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        flex-direction: row;
+        overflow-x: auto;
+      }
+
+      .side-link {
+        min-width: max-content;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .top-card {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    @media(max-width: 700px) {
+      .admin-header {
+        height: auto;
+        min-height: 78px;
+        padding: 14px;
+      }
+
+      .admin-brand h2 {
+        font-size: 15px;
+      }
+
+      .admin-brand span {
+        display: none;
+      }
+
+      .main {
+        padding: 16px;
+      }
+
+      .stats-grid,
+      .search-row {
+        grid-template-columns: 1fr;
+      }
+
+      .panel,
+      .top-card,
+      .auth-card {
+        padding: 20px;
+        border-radius: 24px;
+      }
+
+      .admin-actions .btn-soft span {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="loader" id="loader">
+    <div class="loader-box">
+      <div class="spin"></div>
+      <p id="loaderText">Please wait...</p>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <!-- AUTH VIEW -->
+  <div class="auth-view" id="authView">
+    <div class="auth-card">
+
+      <div class="admin-logo">
+        <i class="fa-solid fa-shield-halved"></i>
+        <div>
+          <h1>MpumaTickets</h1>
+          <span>Secure Admin Portal</span>
+        </div>
+      </div>
+
+      <h2>Admin Login</h2>
+      <p>
+        This area is restricted. Only approved MpumaTickets administrators can access this dashboard.
+      </p>
+
+      <div class="status-msg" id="authMessage"></div>
+
+      <form id="adminLoginForm">
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="adminEmail" placeholder="admin@email.com" required>
+        </div>
+
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="adminPassword" placeholder="Enter admin password" required>
+        </div>
+
+        <button type="submit" class="btn-primary">
+          <i class="fa-solid fa-lock"></i>
+          Login Securely
+        </button>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- ADMIN VIEW -->
+  <div class="admin-view" id="adminView">
+
+    <header class="admin-header">
+
+      <div class="admin-brand">
+        <div class="admin-brand-icon">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+
+        <div>
+          <h2>MpumaTickets Admin</h2>
+          <span id="adminName">Super Admin</span>
+        </div>
+      </div>
+
+      <div class="admin-actions">
+        <a href="index.html" class="btn-soft">
+          <i class="fa-solid fa-globe"></i>
+          <span>View Site</span>
+        </a>
+
+        <button class="btn-soft" id="refreshBtn">
+          <i class="fa-solid fa-rotate"></i>
+          <span>Refresh</span>
+        </button>
+
+        <button class="btn-soft" id="logoutBtn">
+          <i class="fa-solid fa-right-from-bracket"></i>
+          <span>Logout</span>
+        </button>
+      </div>
+
+    </header>
+
+    <div class="admin-body">
+
+      <aside class="sidebar">
+
+        <button class="side-link active" data-page="dashboard">
+          <i class="fa-solid fa-chart-pie"></i>
+          Dashboard
+        </button>
+
+        <button class="side-link" data-page="organizers">
+          <i class="fa-solid fa-store"></i>
+          Sellers
+        </button>
+
+        <button class="side-link" data-page="events">
+          <i class="fa-solid fa-calendar-days"></i>
+          Events
+        </button>
+
+        <button class="side-link" data-page="bookings">
+          <i class="fa-solid fa-receipt"></i>
+          Bookings
+        </button>
+
+        <button class="side-link" data-page="tickets">
+          <i class="fa-solid fa-ticket"></i>
+          Tickets
+        </button>
+
+        <button class="side-link" data-page="users">
+          <i class="fa-solid fa-users"></i>
+          Users
+        </button>
+
+        <button class="side-link" data-page="revenue">
+          <i class="fa-solid fa-wallet"></i>
+          Revenue
+        </button>
+
+        <button class="side-link" data-page="settings">
+          <i class="fa-solid fa-gear"></i>
+          Settings
+        </button>
+
+      </aside>
+
+      <main class="main">
+
+        <!-- DASHBOARD PAGE -->
+        <section class="page active" id="page-dashboard">
+
+          <div class="top-card">
+            <div>
+              <span>Admin Control Centre</span>
+              <h1>Platform Overview</h1>
+              <p>
+                Monitor MpumaTickets sellers, events, bookings, tickets, revenue and user activity from one secure
+                dashboard.
+              </p>
+            </div>
+
+            <button class="btn-primary" id="dashboardRefreshBtn">
+              <i class="fa-solid fa-rotate"></i>
+              Refresh Data
+            </button>
+          </div>
+
+          <div class="stats-grid">
+
+            <div class="stat-card">
+              <i class="fa-solid fa-store"></i>
+              <h3 id="statOrganizers">0</h3>
+              <span>Total Sellers</span>
+            </div>
+
+            <div class="stat-card">
+              <i class="fa-solid fa-calendar-days"></i>
+              <h3 id="statEvents">0</h3>
+              <span>Total Events</span>
+            </div>
+
+            <div class="stat-card">
+              <i class="fa-solid fa-ticket"></i>
+              <h3 id="statTickets">0</h3>
+              <span>Tickets Generated</span>
+            </div>
+
+            <div class="stat-card">
+              <i class="fa-solid fa-wallet"></i>
+              <h3 id="statRevenue">R0</h3>
+              <span>Total Revenue</span>
+            </div>
+
+          </div>
+
+          <div class="stats-grid">
+
+            <div class="stat-card">
+              <i class="fa-solid fa-circle-check"></i>
+              <h3 id="statPublished">0</h3>
+              <span>Published Events</span>
+            </div>
+
+            <div class="stat-card">
+              <i class="fa-solid fa-clock"></i>
+              <h3 id="statPendingSellers">0</h3>
+              <span>Pending Sellers</span>
+            </div>
+
+            <div class="stat-card">
+              <i class="fa-solid fa-receipt"></i>
+              <h3 id="statBookings">0</h3>
+              <span>Total Bookings</span>
+            </div>
+
+            <div class="stat-card">
+              <i class="fa-solid fa-user-shield"></i>
+              <h3 id="statUsers">0</h3>
+              <span>Platform Users</span>
+            </div>
+
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>Latest Bookings</h2>
+                <p>Recent ticket purchases across the platform.</p>
+              </div>
+
+              <button class="btn-soft" data-go="bookings">
+                View All
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Buyer</th>
+                    <th>Event</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Reference</th>
+                  </tr>
+                </thead>
+                <tbody id="latestBookingsTable">
+                  <tr>
+                    <td colspan="5">Loading...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </section> <!-- ORGANIZERS / SELLERS PAGE -->
+        <section class="page" id="page-organizers">
+
+          <div class="top-card">
+            <div>
+              <span>Seller Management</span>
+              <h1>Manage Sellers</h1>
+              <p>
+                View all event organizers, approve sellers, suspend accounts and monitor seller activity.
+              </p>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>All Sellers</h2>
+                <p>Every organizer account registered on MpumaTickets.</p>
+              </div>
+            </div>
+
+            <div class="search-row">
+              <input type="text" id="organizerSearch" placeholder="Search seller, email, phone or location...">
+
+              <select id="organizerStatusFilter">
+                <option value="all">All Statuses</option>
+                <option value="approved">Approved</option>
+                <option value="pending">Pending</option>
+                <option value="suspended">Suspended</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Seller</th>
+                    <th>Contact</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+
+                <tbody id="organizersTable">
+                  <tr>
+                    <td colspan="6">Loading...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- EVENTS PAGE -->
+        <section class="page" id="page-events">
+
+          <div class="top-card">
+            <div>
+              <span>Event Control</span>
+              <h1>Manage Events</h1>
+              <p>
+                View, publish, unpublish, cancel or delete events created by sellers.
+              </p>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>All Events</h2>
+                <p>All events published or drafted by sellers.</p>
+              </div>
+            </div>
+
+            <div class="search-row">
+              <input type="text" id="eventSearch" placeholder="Search event, venue, city or category...">
+
+              <select id="eventStatusFilter">
+                <option value="all">All Statuses</option>
+                <option value="published">Published</option>
+                <option value="draft">Draft</option>
+                <option value="cancelled">Cancelled</option>
+                <option value="completed">Completed</option>
+              </select>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Event</th>
+                    <th>Seller</th>
+                    <th>Date</th>
+                    <th>Venue</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+
+                <tbody id="eventsTable">
+                  <tr>
+                    <td colspan="6">Loading...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </section> <!-- BOOKINGS PAGE -->
+        <section class="page" id="page-bookings">
+
+          <div class="top-card">
+            <div>
+              <span>Booking Management</span>
+              <h1>Customer Bookings</h1>
+              <p>
+                View every booking made on MpumaTickets, payment status,
+                booking reference and ticket quantities.
+              </p>
+            </div>
+          </div>
+
+          <div class="panel">
+
+            <div class="panel-head">
+              <div>
+                <h2>Bookings</h2>
+                <p>Every booking completed through MpumaTickets.</p>
+              </div>
+
+              <button class="btn-soft" id="exportBookingsBtn">
+                <i class="fa-solid fa-file-arrow-down"></i>
+                Export CSV
+              </button>
+            </div>
+
+            <div class="search-row">
+
+              <input type="text" id="bookingSearch" placeholder="Search buyer, email, booking reference...">
+
+              <select id="bookingStatusFilter">
+                <option value="all">All Payments</option>
+                <option value="paid">Paid</option>
+                <option value="pending">Pending</option>
+                <option value="failed">Failed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+
+            </div>
+
+            <div class="table-wrap">
+
+              <table>
+
+                <thead>
+                  <tr>
+                    <th>Buyer</th>
+                    <th>Reference</th>
+                    <th>Event</th>
+                    <th>Tickets</th>
+                    <th>Amount</th>
+                    <th>Payment</th>
+                    <th>Booked</th>
+                  </tr>
+                </thead>
+
+                <tbody id="bookingsTable">
+
+                  <tr>
+                    <td colspan="7">
+                      Loading bookings...
+                    </td>
+                  </tr>
+
+                </tbody>
+
+              </table>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+
+        <!-- TICKETS PAGE -->
+
+        <section class="page" id="page-tickets">
+
+          <div class="top-card">
+
+            <div>
+              <span>Ticket Management</span>
+
+              <h1>Issued Tickets</h1>
+
+              <p>
+                Monitor every ticket issued by the platform.
+                Scan status, ticket holder information,
+                ticket code and event information are displayed here.
+              </p>
+            </div>
+
+          </div>
+
+
+          <div class="panel">
+
+            <div class="panel-head">
+
+              <div>
+                <h2>All Tickets</h2>
+                <p>Every generated ticket on the platform.</p>
+              </div>
+
+              <button class="btn-soft" id="refreshTicketsBtn">
+                <i class="fa-solid fa-rotate"></i>
+                Refresh
+              </button>
+
+            </div>
+
+            <div class="search-row">
+
+              <input type="text" id="ticketSearch" placeholder="Search ticket code, holder or email...">
+
+              <select id="ticketStatusFilter">
+                <option value="all">All Tickets</option>
+                <option value="valid">Valid</option>
+                <option value="used">Used</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+
+            </div>
+
+            <div class="table-wrap">
+
+              <table>
+
+                <thead>
+
+                  <tr>
+
+                    <th>Ticket Code</th>
+
+                    <th>Holder</th>
+
+                    <th>Email</th>
+
+                    <th>Event</th>
+
+                    <th>Status</th>
+
+                    <th>Issued</th>
+
+                    <th>Actions</th>
+
+                  </tr>
+
+                </thead>
+
+                <tbody id="ticketsTable">
+
+                  <tr>
+
+                    <td colspan="7">
+                      Loading tickets...
+                    </td>
+
+                  </tr>
+
+                </tbody>
+
+              </table>
+
+            </div>
+
+          </div>
+
+        </section> <!-- USERS PAGE -->
+        <section class="page" id="page-users">
+
+          <div class="top-card">
+            <div>
+              <span>User Control</span>
+              <h1>Platform Users</h1>
+              <p>
+                View registered users, sellers and admins on MpumaTickets.
+              </p>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>Users</h2>
+                <p>Profiles created through Supabase Auth and MpumaTickets.</p>
+              </div>
+            </div>
+
+            <div class="search-row">
+              <input type="text" id="userSearch" placeholder="Search name, email, phone or role...">
+
+              <select id="userRoleFilter">
+                <option value="all">All Roles</option>
+                <option value="customer">Customers</option>
+                <option value="organizer">Organizers</option>
+                <option value="admin">Admins</option>
+              </select>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Role</th>
+                    <th>Created</th>
+                  </tr>
+                </thead>
+
+                <tbody id="usersTable">
+                  <tr>
+                    <td colspan="5">Loading users...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </section>
+
+
+        <!-- REVENUE PAGE -->
+        <section class="page" id="page-revenue">
+
+          <div class="top-card">
+            <div>
+              <span>Revenue Overview</span>
+              <h1>Platform Revenue</h1>
+              <p>
+                Track bookings, paid orders, total ticket sales and platform service fees.
+              </p>
+            </div>
+          </div>
+
+          <div class="stats-grid">
+
+            <div class="stat-card">
+              <i class="fa-solid fa-wallet"></i>
+              <h3 id="revenueTotal">R0</h3>
+              <span>Total Revenue</span>
+            </div>
+
+            <div class="stat-card">
+              <i class="fa-solid fa-coins"></i>
+              <h3 id="revenueFees">R0</h3>
+              <span>Service Fees</span>
+            </div>
+
+            <div class="stat-card">
+              <i class="fa-solid fa-receipt"></i>
+              <h3 id="revenuePaidBookings">0</h3>
+              <span>Paid Bookings</span>
+            </div>
+
+            <div class="stat-card">
+              <i class="fa-solid fa-ticket"></i>
+              <h3 id="revenueTickets">0</h3>
+              <span>Tickets Sold</span>
+            </div>
+
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>Revenue by Event</h2>
+                <p>Breakdown of sales performance per event.</p>
+              </div>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Event</th>
+                    <th>Seller</th>
+                    <th>Bookings</th>
+                    <th>Tickets</th>
+                    <th>Revenue</th>
+                  </tr>
+                </thead>
+
+                <tbody id="revenueTable">
+                  <tr>
+                    <td colspan="5">Loading revenue...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </section>
+
+
+        <!-- SETTINGS PAGE -->
+        <section class="page" id="page-settings">
+
+          <div class="top-card">
+            <div>
+              <span>Admin Settings</span>
+              <h1>System Settings</h1>
+              <p>
+                Manage platform contact information, admin notes and high-level controls.
+              </p>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>Platform Information</h2>
+                <p>These values are for admin reference and future integrations.</p>
+              </div>
+            </div>
+
+            <div class="search-row">
+              <div class="form-group">
+                <label>Support Phone</label>
+                <input type="text" value="081 840 1398">
+              </div>
+
+              <div class="form-group">
+                <label>Support Email</label>
+                <input type="text" value="info@mpumatickets.co.za">
+              </div>
+            </div>
+
+            <div class="danger-zone">
+              <h3>Security Reminder</h3>
+              <p>
+                Never place Supabase service role keys inside HTML files.
+                Admin access must always be controlled with Supabase Auth, profiles.role = admin and RLS policies.
+              </p>
+
+              <button class="small-btn red" id="forceRefreshBtn">
+                <i class="fa-solid fa-shield-halved"></i>
+                Force Refresh Admin Data
+              </button>
+            </div>
+          </div>
+
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+
+  <!-- CONFIRM MODAL -->
+  <div class="confirm-modal" id="confirmModal">
+    <div class="confirm-card">
+      <h3>Confirm Action</h3>
+      <p id="confirmText">Are you sure?</p>
+
+      <div class="confirm-actions">
+        <button class="small-btn" id="cancelConfirm">Cancel</button>
+        <button class="small-btn red" id="yesConfirm">Yes, Continue</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    const SUPABASE_URL = "https://hrkjflwhbcrcewdmkrta.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_cWkHNJQ2timI4nHLyXaTNw_AOjAj5XR";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+      auth: {
+        storageKey: "mpumatickets-admin-session"
+      }
+    });
+
+    let currentAdmin = null;
+    let profiles = [];
+    let organizers = [];
+    let events = [];
+    let bookings = [];
+    let bookingItems = [];
+    let tickets = [];
+    let confirmCallback = null;
+
+    const $ = id => document.getElementById(id);
+
+    function showLoader(text = "Please wait...") {
+      $("loaderText").textContent = text;
+      $("loader").classList.add("active");
+      document.body.classList.add("locked");
+    }
+
+    function hideLoader() {
+      $("loader").classList.remove("active");
+      document.body.classList.remove("locked");
+    }
+
+    function toast(message, type = "success") {
+      const el = $("toast");
+      el.className = "toast active " + type;
+      el.textContent = message;
+      setTimeout(() => el.classList.remove("active"), 3500);
+    }
+
+    function showAuthError(message) {
+      const el = $("authMessage");
+      el.className = "status-msg error";
+      el.textContent = message;
+    }
+
+    function clearAuthError() {
+      const el = $("authMessage");
+      el.className = "status-msg";
+      el.textContent = "";
+    }
+
+    function money(value) {
+      return "R" + Number(value || 0).toLocaleString("en-ZA");
+    }
+
+    function safe(value, fallback = "-") {
+      return value ? String(value) : fallback;
+    }
+
+    function formatDate(value) {
+      if (!value) return "-";
+      try {
+        return new Date(value).toLocaleDateString("en-ZA", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric"
+        });
+      } catch {
+        return value;
+      }
+    }
+
+    function findOrganizer(id) {
+      return organizers.find(item => item.id === id);
+    }
+
+    function findEvent(id) {
+      return events.find(item => item.id === id);
+    }
+
+    function sellerNameByOrganizerId(id) {
+      return findOrganizer(id)?.business_name || "Unknown Seller";
+    }
+
+    function eventTitle(id) {
+      return findEvent(id)?.title || "Unknown Event";
+    }
+
+    function showPage(page) {
+      document.querySelectorAll(".page").forEach(section => section.classList.remove("active"));
+      $("page-" + page)?.classList.add("active");
+
+      document.querySelectorAll(".side-link").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.page === page);
+      });
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    document.querySelectorAll(".side-link").forEach(btn => {
+      btn.addEventListener("click", () => showPage(btn.dataset.page));
+    });
+
+    document.querySelectorAll("[data-go]").forEach(btn => {
+      btn.addEventListener("click", () => showPage(btn.dataset.go));
+    });
+
+    function openConfirm(text, callback) {
+      confirmCallback = callback;
+      $("confirmText").textContent = text;
+      $("confirmModal").classList.add("active");
+      document.body.classList.add("locked");
+    }
+
+    function closeConfirm() {
+      confirmCallback = null;
+      $("confirmModal").classList.remove("active");
+      document.body.classList.remove("locked");
+    }
+
+    $("cancelConfirm").addEventListener("click", closeConfirm);
+
+    $("yesConfirm").addEventListener("click", async () => {
+      if (confirmCallback) await confirmCallback();
+      closeConfirm();
+    });
+
+    $("confirmModal").addEventListener("click", e => {
+      if (e.target === $("confirmModal")) closeConfirm();
+    });
+
+    $("adminLoginForm").addEventListener("submit", async e => {
+      e.preventDefault();
+      clearAuthError();
+      showLoader("Checking admin access...");
+
+      try {
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+          email: $("adminEmail").value.trim(),
+          password: $("adminPassword").value.trim()
+        });
+
+        if (error) throw error;
+
+        await verifyAdmin(data.user);
+        toast("Admin login successful");
+      } catch (error) {
+        showAuthError(error.message || "Admin login failed.");
+        await supabaseClient.auth.signOut();
+      } finally {
+        hideLoader();
+      }
+    });
+
+    async function verifyAdmin(user) {
+      const { data: profile, error } = await supabaseClient
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+
+      if (error) throw error;
+
+      if (profile.role !== "admin") {
+        throw new Error("Access denied. This account is not an admin.");
+      }
+
+      currentAdmin = profile;
+
+      $("authView").style.display = "none";
+      $("adminView").style.display = "block";
+      $("adminName").textContent = profile.full_name || profile.email || "Admin";
+
+      await loadAdminData();
+    }
+
+    async function loadAdminData() {
+      showLoader("Loading admin data...");
+
+      try {
+        const [profileRes, organizerRes, eventRes, bookingRes, bookingItemRes, ticketRes] = await Promise.all([
+          supabaseClient.from("profiles").select("*").order("created_at", { ascending: false }),
+          supabaseClient.from("organizers").select("*").order("created_at", { ascending: false }),
+          supabaseClient.from("events").select("*").order("created_at", { ascending: false }),
+          supabaseClient.from("bookings").select("*").order("created_at", { ascending: false }),
+          supabaseClient.from("booking_items").select("*").order("created_at", { ascending: false }),
+          supabaseClient.from("tickets").select("*").order("created_at", { ascending: false })
+        ]);
+
+        if (profileRes.error) throw profileRes.error;
+        if (organizerRes.error) throw organizerRes.error;
+        if (eventRes.error) throw eventRes.error;
+        if (bookingRes.error) throw bookingRes.error;
+        if (bookingItemRes.error) throw bookingItemRes.error;
+        if (ticketRes.error) throw ticketRes.error;
+
+        profiles = profileRes.data || [];
+        organizers = organizerRes.data || [];
+        events = eventRes.data || [];
+        bookings = bookingRes.data || [];
+        bookingItems = bookingItemRes.data || [];
+        tickets = ticketRes.data || [];
+
+        renderAll();
+      } catch (error) {
+        console.error(error);
+        toast(error.message || "Could not load admin data.", "error");
+      } finally {
+        hideLoader();
+      }
+    }
+
+    function renderAll() {
+      renderStats();
+      renderLatestBookings();
+      renderOrganizers();
+      renderEvents();
+      renderBookings();
+      renderTickets();
+      renderUsers();
+      renderRevenue();
+    }
+
+    function renderStats() {
+      const paidBookings = bookings.filter(item => item.payment_status === "paid");
+      const totalRevenue = paidBookings.reduce((sum, item) => sum + Number(item.total_amount || 0), 0);
+
+      $("statOrganizers").textContent = organizers.length;
+      $("statEvents").textContent = events.length;
+      $("statTickets").textContent = tickets.length;
+      $("statRevenue").textContent = money(totalRevenue);
+      $("statPublished").textContent = events.filter(item => item.status === "published").length;
+      $("statPendingSellers").textContent = organizers.filter(item => item.status === "pending").length;
+      $("statBookings").textContent = bookings.length;
+      $("statUsers").textContent = profiles.length;
+
+      $("revenueTotal").textContent = money(totalRevenue);
+      $("revenueFees").textContent = money(paidBookings.reduce((sum, item) => sum + Number(item.service_fee || 0), 0));
+      $("revenuePaidBookings").textContent = paidBookings.length;
+      $("revenueTickets").textContent = tickets.length;
+    }
+
+    function renderLatestBookings() {
+      const latest = bookings.slice(0, 6);
+
+      if (!latest.length) {
+        $("latestBookingsTable").innerHTML = `<tr><td colspan="5">No bookings yet.</td></tr>`;
+        return;
+      }
+
+      $("latestBookingsTable").innerHTML = latest.map(item => `
+    <tr>
+      <td>
+        <strong>${safe(item.first_name)} ${safe(item.last_name, "")}</strong>
+        <p style="color:var(--muted);font-size:12px;">${safe(item.email)}</p>
+      </td>
+      <td>${eventTitle(item.event_id)}</td>
+      <td>${money(item.total_amount)}</td>
+      <td><span class="pill ${item.payment_status}">${safe(item.payment_status)}</span></td>
+      <td>${safe(item.booking_reference)}</td>
+    </tr>
+  `).join("");
+    }
+
+    function renderOrganizers() {
+      const query = $("organizerSearch")?.value?.toLowerCase() || "";
+      const status = $("organizerStatusFilter")?.value || "all";
+
+      const filtered = organizers.filter(org => {
+        const text = `${org.business_name} ${org.contact_email} ${org.contact_phone} ${org.location}`.toLowerCase();
+        return text.includes(query) && (status === "all" || org.status === status);
+      });
+
+      if (!filtered.length) {
+        $("organizersTable").innerHTML = `<tr><td colspan="6">No sellers found.</td></tr>`;
+        return;
+      }
+
+      $("organizersTable").innerHTML = filtered.map(org => `
+    <tr>
+      <td>
+        <div class="cell-title">
+          <div class="mini-thumb"><i class="fa-solid fa-store"></i></div>
+          <div>
+            <h4>${safe(org.business_name)}</h4>
+            <p>ID: ${org.id.slice(0, 8)}</p>
+          </div>
+        </div>
+      </td>
+      <td>${safe(org.contact_email)}<br><span style="color:var(--muted);">${safe(org.contact_phone)}</span></td>
+      <td>${safe(org.location)}</td>
+      <td><span class="pill ${org.status}">${safe(org.status)}</span></td>
+      <td>${formatDate(org.created_at)}</td>
+      <td>
+        <div class="row-actions">
+          <button class="small-btn green" onclick="updateOrganizerStatus('${org.id}', 'approved')">Approve</button>
+          <button class="small-btn" onclick="updateOrganizerStatus('${org.id}', 'pending')">Pending</button>
+          <button class="small-btn red" onclick="updateOrganizerStatus('${org.id}', 'suspended')">Suspend</button>
+        </div>
+      </td>
+    </tr>
+  `).join("");
+    }
+
+    function renderEvents() {
+      const query = $("eventSearch")?.value?.toLowerCase() || "";
+      const status = $("eventStatusFilter")?.value || "all";
+
+      const filtered = events.filter(ev => {
+        const text = `${ev.title} ${ev.venue} ${ev.city} ${ev.category}`.toLowerCase();
+        return text.includes(query) && (status === "all" || ev.status === status);
+      });
+
+      if (!filtered.length) {
+        $("eventsTable").innerHTML = `<tr><td colspan="6">No events found.</td></tr>`;
+        return;
+      }
+
+      $("eventsTable").innerHTML = filtered.map(ev => `
+    <tr>
+      <td>
+        <div class="cell-title">
+          ${ev.cover_image_url ? `<img src="${ev.cover_image_url}" class="mini-thumb" alt="">` : `<div class="mini-thumb"><i class="fa-solid fa-image"></i></div>`}
+          <div>
+            <h4>${safe(ev.title)}</h4>
+            <p>${safe(ev.category)}</p>
+          </div>
+        </div>
+      </td>
+      <td>${sellerNameByOrganizerId(ev.organizer_id)}</td>
+      <td>${formatDate(ev.event_date)}</td>
+      <td>${safe(ev.venue)}, ${safe(ev.city)}</td>
+      <td><span class="pill ${ev.status}">${safe(ev.status)}</span></td>
+      <td>
+        <div class="row-actions">
+          <button class="small-btn green" onclick="updateEventStatus('${ev.id}', 'published')">Publish</button>
+          <button class="small-btn" onclick="updateEventStatus('${ev.id}', 'draft')">Draft</button>
+          <button class="small-btn red" onclick="updateEventStatus('${ev.id}', 'cancelled')">Cancel</button>
+          <button class="small-btn red" onclick="deleteEvent('${ev.id}')">Delete</button>
+        </div>
+      </td>
+    </tr>
+  `).join("");
+    }
+
+    function renderBookings() {
+      const query = $("bookingSearch")?.value?.toLowerCase() || "";
+      const status = $("bookingStatusFilter")?.value || "all";
+
+      const filtered = bookings.filter(item => {
+        const text = `${item.first_name} ${item.last_name} ${item.email} ${item.phone} ${item.booking_reference}`.toLowerCase();
+        return text.includes(query) && (status === "all" || item.payment_status === status);
+      });
+
+      if (!filtered.length) {
+        $("bookingsTable").innerHTML = `<tr><td colspan="7">No bookings found.</td></tr>`;
+        return;
+      }
+
+      $("bookingsTable").innerHTML = filtered.map(item => {
+        const count = tickets.filter(ticket => ticket.booking_id === item.id).length;
+        return `
+      <tr>
+        <td><strong>${safe(item.first_name)} ${safe(item.last_name, "")}</strong><br><span style="color:var(--muted);">${safe(item.email)}</span></td>
+        <td>${safe(item.booking_reference)}</td>
+        <td>${eventTitle(item.event_id)}</td>
+        <td>${count}</td>
+        <td>${money(item.total_amount)}</td>
+        <td><span class="pill ${item.payment_status}">${safe(item.payment_status)}</span></td>
+        <td>${formatDate(item.created_at)}</td>
+      </tr>
+    `;
+      }).join("");
+    }
+
+    function renderTickets() {
+      const query = $("ticketSearch")?.value?.toLowerCase() || "";
+      const status = $("ticketStatusFilter")?.value || "all";
+
+      const filtered = tickets.filter(ticket => {
+        const text = `${ticket.ticket_code} ${ticket.holder_name} ${ticket.holder_email}`.toLowerCase();
+        return text.includes(query) && (status === "all" || ticket.scan_status === status);
+      });
+
+      if (!filtered.length) {
+        $("ticketsTable").innerHTML = `<tr><td colspan="7">No tickets found.</td></tr>`;
+        return;
+      }
+
+      $("ticketsTable").innerHTML = filtered.map(ticket => `
+    <tr>
+      <td>${safe(ticket.ticket_code)}</td>
+      <td>${safe(ticket.holder_name)}</td>
+      <td>${safe(ticket.holder_email)}</td>
+      <td>${eventTitle(ticket.event_id)}</td>
+      <td><span class="pill ${ticket.scan_status}">${safe(ticket.scan_status)}</span></td>
+      <td>${formatDate(ticket.created_at)}</td>
+      <td>
+        <div class="row-actions">
+          <button class="small-btn green" onclick="updateTicketStatus('${ticket.id}', 'valid')">Valid</button>
+          <button class="small-btn" onclick="updateTicketStatus('${ticket.id}', 'used')">Used</button>
+          <button class="small-btn red" onclick="updateTicketStatus('${ticket.id}', 'cancelled')">Cancel</button>
+        </div>
+      </td>
+    </tr>
+  `).join("");
+    }
+
+    function renderUsers() {
+      const query = $("userSearch")?.value?.toLowerCase() || "";
+      const role = $("userRoleFilter")?.value || "all";
+
+      const filtered = profiles.filter(profile => {
+        const text = `${profile.full_name} ${profile.email} ${profile.phone} ${profile.role}`.toLowerCase();
+        return text.includes(query) && (role === "all" || profile.role === role);
+      });
+
+      if (!filtered.length) {
+        $("usersTable").innerHTML = `<tr><td colspan="5">No users found.</td></tr>`;
+        return;
+      }
+
+      $("usersTable").innerHTML = filtered.map(profile => `
+    <tr>
+      <td>
+        <div class="cell-title">
+          <div class="mini-thumb"><i class="fa-solid fa-user"></i></div>
+          <div>
+            <h4>${safe(profile.full_name, "No name")}</h4>
+            <p>ID: ${profile.id.slice(0, 8)}</p>
+          </div>
+        </div>
+      </td>
+      <td>${safe(profile.email)}</td>
+      <td>${safe(profile.phone)}</td>
+      <td><span class="pill ${profile.role}">${safe(profile.role)}</span></td>
+      <td>${formatDate(profile.created_at)}</td>
+    </tr>
+  `).join("");
+    }
+
+    function renderRevenue() {
+      if (!events.length) {
+        $("revenueTable").innerHTML = `<tr><td colspan="5">No revenue data yet.</td></tr>`;
+        return;
+      }
+
+      $("revenueTable").innerHTML = events.map(ev => {
+        const eventBookings = bookings.filter(b => b.event_id === ev.id && b.payment_status === "paid");
+        const eventTickets = tickets.filter(t => t.event_id === ev.id);
+        const revenue = eventBookings.reduce((sum, b) => sum + Number(b.total_amount || 0), 0);
+
+        return `
+      <tr>
+        <td>${safe(ev.title)}</td>
+        <td>${sellerNameByOrganizerId(ev.organizer_id)}</td>
+        <td>${eventBookings.length}</td>
+        <td>${eventTickets.length}</td>
+        <td>${money(revenue)}</td>
+      </tr>
+    `;
+      }).join("");
+    }
+
+    window.updateOrganizerStatus = async function (id, status) {
+      showLoader("Updating seller status...");
+      try {
+        const { error } = await supabaseClient.from("organizers").update({ status }).eq("id", id);
+        if (error) throw error;
+        await loadAdminData();
+        toast("Seller status updated");
+      } catch (error) {
+        toast(error.message || "Could not update seller.", "error");
+      } finally {
+        hideLoader();
+      }
+    };
+
+    window.updateEventStatus = async function (id, status) {
+      showLoader("Updating event status...");
+      try {
+        const { error } = await supabaseClient.from("events").update({ status }).eq("id", id);
+        if (error) throw error;
+        await loadAdminData();
+        toast("Event status updated");
+      } catch (error) {
+        toast(error.message || "Could not update event.", "error");
+      } finally {
+        hideLoader();
+      }
+    };
+
+    window.updateTicketStatus = async function (id, status) {
+      showLoader("Updating ticket status...");
+      try {
+        const { error } = await supabaseClient.from("tickets").update({ scan_status: status }).eq("id", id);
+        if (error) throw error;
+        await loadAdminData();
+        toast("Ticket status updated");
+      } catch (error) {
+        toast(error.message || "Could not update ticket.", "error");
+      } finally {
+        hideLoader();
+      }
+    };
+
+    window.deleteEvent = function (id) {
+      openConfirm("Delete this event permanently? This removes it from the main website too.", async () => {
+        showLoader("Deleting event...");
+
+        try {
+          const relatedBookings = bookings.filter(b => b.event_id === id);
+          const bookingIds = relatedBookings.map(b => b.id);
+
+          const ticketDelete = await supabaseClient.from("tickets").delete().eq("event_id", id);
+          if (ticketDelete.error) throw ticketDelete.error;
+
+          if (bookingIds.length > 0) {
+            const itemDelete = await supabaseClient.from("booking_items").delete().in("booking_id", bookingIds);
+            if (itemDelete.error) throw itemDelete.error;
+          }
+
+          const bookingDelete = await supabaseClient.from("bookings").delete().eq("event_id", id);
+          if (bookingDelete.error) throw bookingDelete.error;
+
+          const typeDelete = await supabaseClient.from("ticket_types").delete().eq("event_id", id);
+          if (typeDelete.error) throw typeDelete.error;
+
+          const eventDelete = await supabaseClient.from("events").delete().eq("id", id).select("id");
+          if (eventDelete.error) throw eventDelete.error;
+
+          if (!eventDelete.data || eventDelete.data.length === 0) {
+            throw new Error("Event was not deleted. Check admin delete policy in Supabase.");
+          }
+
+          await loadAdminData();
+          toast("Event deleted permanently");
+        } catch (error) {
+          console.error(error);
+          toast(error.message || "Could not delete event.", "error");
+        } finally {
+          hideLoader();
+        }
+      });
+    };
+
+    function exportBookingsCSV() {
+      if (!bookings.length) {
+        toast("No bookings to export.", "error");
+        return;
+      }
+
+      const header = ["Reference", "First Name", "Last Name", "Email", "Phone", "Event", "Amount", "Payment Status", "Created"];
+      const rows = bookings.map(b => [
+        b.booking_reference,
+        b.first_name,
+        b.last_name,
+        b.email,
+        b.phone,
+        eventTitle(b.event_id),
+        b.total_amount,
+        b.payment_status,
+        b.created_at
+      ]);
+
+      const csv = [header, ...rows]
+        .map(row => row.map(value => `"${String(value || "").replace(/"/g, '""')}"`).join(","))
+        .join("\n");
+
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.download = "mpumatickets-bookings.csv";
+      link.click();
+
+      URL.revokeObjectURL(url);
+    }
+
+    $("exportBookingsBtn").addEventListener("click", exportBookingsCSV);
+
+    [
+      "organizerSearch",
+      "organizerStatusFilter",
+      "eventSearch",
+      "eventStatusFilter",
+      "bookingSearch",
+      "bookingStatusFilter",
+      "ticketSearch",
+      "ticketStatusFilter",
+      "userSearch",
+      "userRoleFilter"
+    ].forEach(id => {
+      const el = $(id);
+      if (!el) return;
+      el.addEventListener("input", renderAll);
+      el.addEventListener("change", renderAll);
+    });
+
+    $("refreshBtn").addEventListener("click", loadAdminData);
+    $("dashboardRefreshBtn").addEventListener("click", loadAdminData);
+    $("refreshTicketsBtn").addEventListener("click", loadAdminData);
+    $("forceRefreshBtn").addEventListener("click", loadAdminData);
+
+    $("logoutBtn").addEventListener("click", async () => {
+      showLoader("Logging out...");
+      try {
+        await supabaseClient.auth.signOut();
+        currentAdmin = null;
+        $("adminView").style.display = "none";
+        $("authView").style.display = "grid";
+        toast("Logged out");
+      } finally {
+        hideLoader();
+      }
+    });
+
+    async function checkSession() {
+      showLoader("Checking admin session...");
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session?.user) await verifyAdmin(session.user);
+      } catch (error) {
+        console.error(error);
+        await supabaseClient.auth.signOut();
+      } finally {
+        hideLoader();
+      }
+    }
+
+    checkSession();
+  </script>
+
+</body>
+
+</html>

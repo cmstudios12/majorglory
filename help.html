@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Help Centre | MpumaTickets</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Inter, Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(124,60,255,.35), transparent 35%),
+        radial-gradient(circle at top right, rgba(255,61,129,.22), transparent 30%),
+        #070812;
+      color: #fff;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .header {
+      padding: 18px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(7,8,18,.8);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(255,255,255,.12);
+    }
+
+    .nav {
+      max-width: 1150px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 900;
+      font-size: 20px;
+    }
+
+    .logo i {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: linear-gradient(135deg,#7c3cff,#ff3d81);
+    }
+
+    .back-btn {
+      padding: 12px 18px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.1);
+      border: 1px solid rgba(255,255,255,.14);
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .hero {
+      padding: 90px 20px 50px;
+      text-align: center;
+    }
+
+    .hero span {
+      display: inline-flex;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.14);
+      color: #ffb7d0;
+      font-size: 13px;
+      font-weight: 900;
+      margin-bottom: 18px;
+    }
+
+    .hero h1 {
+      font-size: clamp(38px, 7vw, 72px);
+      line-height: 1;
+      letter-spacing: -3px;
+      margin-bottom: 18px;
+    }
+
+    .hero p {
+      max-width: 680px;
+      margin: auto;
+      color: #a7adbd;
+      line-height: 1.8;
+      font-size: 16px;
+    }
+
+    .help-wrap {
+      max-width: 1150px;
+      margin: auto;
+      padding: 30px 20px 80px;
+      display: grid;
+      grid-template-columns: 1fr .75fr;
+      gap: 24px;
+    }
+
+    .card {
+      border-radius: 28px;
+      background: rgba(255,255,255,.075);
+      border: 1px solid rgba(255,255,255,.14);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 25px 70px rgba(0,0,0,.35);
+      padding: 26px;
+    }
+
+    .card h2 {
+      font-size: 28px;
+      letter-spacing: -1px;
+      margin-bottom: 12px;
+    }
+
+    .card > p {
+      color: #a7adbd;
+      line-height: 1.7;
+      margin-bottom: 22px;
+      font-size: 14px;
+    }
+
+    .faq-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .faq-item {
+      border-radius: 18px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+      overflow: hidden;
+    }
+
+    .faq-question {
+      width: 100%;
+      padding: 18px;
+      color: #fff;
+      background: transparent;
+      border: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      text-align: left;
+      font-weight: 900;
+      cursor: pointer;
+      gap: 15px;
+    }
+
+    .faq-answer {
+      display: none;
+      padding: 0 18px 18px;
+      color: #a7adbd;
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    .faq-item.active .faq-answer {
+      display: block;
+    }
+
+    .faq-item.active i {
+      transform: rotate(180deg);
+    }
+
+    .quick-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .quick-card {
+      padding: 18px;
+      border-radius: 20px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+    }
+
+    .quick-card i {
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border-radius: 16px;
+      background: linear-gradient(135deg,#7c3cff,#ff3d81);
+      margin-bottom: 14px;
+    }
+
+    .quick-card h3 {
+      margin-bottom: 7px;
+      font-size: 18px;
+    }
+
+    .quick-card p,
+    .quick-card a {
+      color: #a7adbd;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .contact-actions {
+      display: grid;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .contact-btn {
+      height: 54px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-weight: 950;
+      background: linear-gradient(135deg,#7c3cff,#ff3d81);
+    }
+
+    .contact-btn.secondary {
+      background: rgba(255,255,255,.09);
+      border: 1px solid rgba(255,255,255,.14);
+    }
+
+    .footer {
+      padding: 25px 20px;
+      text-align: center;
+      color: #a7adbd;
+      border-top: 1px solid rgba(255,255,255,.12);
+      font-size: 13px;
+    }
+
+    @media (max-width: 850px) {
+      .help-wrap {
+        grid-template-columns: 1fr;
+      }
+
+      .nav {
+        gap: 15px;
+      }
+
+      .back-btn {
+        padding: 10px 14px;
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="header">
+    <nav class="nav">
+      <a href="index.html" class="logo">
+        <i class="fa-solid fa-ticket"></i>
+        MpumaTickets
+      </a>
+
+      <a href="index.html" class="back-btn">
+        <i class="fa-solid fa-arrow-left"></i>
+        Back Home
+      </a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <span>Support Centre</span>
+    <h1>How can we help?</h1>
+    <p>
+      Get help with buying tickets, receiving your QR ticket, refunds, seller accounts,
+      event publishing and general MpumaTickets support.
+    </p>
+  </section>
+
+  <main class="help-wrap">
+
+    <section class="card">
+      <h2>Frequently Asked Questions</h2>
+      <p>Quick answers for ticket buyers and event sellers.</p>
+
+      <div class="faq-list">
+
+        <div class="faq-item active">
+          <button class="faq-question">
+            How do I receive my ticket?
+            <i class="fa-solid fa-chevron-down"></i>
+          </button>
+          <div class="faq-answer">
+            After booking, your digital ticket is generated with event details and a QR code. Later, tickets can also be sent by email once email delivery is connected.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            What must I do at the event entrance?
+            <i class="fa-solid fa-chevron-down"></i>
+          </button>
+          <div class="faq-answer">
+            Show your digital ticket or printed ticket. The event team will scan your QR code to confirm if the ticket is valid.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            Can I sell tickets on MpumaTickets?
+            <i class="fa-solid fa-chevron-down"></i>
+          </button>
+          <div class="faq-answer">
+            Yes. Organizers can create a seller account, publish events, upload posters, set ticket prices and manage their events from the seller dashboard.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            Can I get a refund?
+            <i class="fa-solid fa-chevron-down"></i>
+          </button>
+          <div class="faq-answer">
+            Refunds depend on the event organizer’s refund policy. Contact MpumaTickets support with your ticket reference and event name.
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-question">
+            I did not receive my ticket, what must I do?
+            <i class="fa-solid fa-chevron-down"></i>
+          </button>
+          <div class="faq-answer">
+            Contact support using WhatsApp or email. Send your full name, phone number, event name and booking reference if you have it.
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <aside class="card">
+      <h2>Contact Support</h2>
+      <p>Need direct help? Use the details below.</p>
+
+      <div class="quick-grid">
+
+        <div class="quick-card">
+          <i class="fa-solid fa-phone"></i>
+          <h3>Call / WhatsApp</h3>
+          <a href="tel:0818401398">081 840 1398</a>
+        </div>
+
+        <div class="quick-card">
+          <i class="fa-solid fa-envelope"></i>
+          <h3>Email</h3>
+          <a href="mailto:info@mpumatickets.co.za">info@mpumatickets.co.za</a>
+        </div>
+
+        <div class="quick-card">
+          <i class="fa-solid fa-location-dot"></i>
+          <h3>Location</h3>
+          <p>Mpumalanga, South Africa</p>
+        </div>
+
+      </div>
+
+      <div class="contact-actions">
+        <a class="contact-btn" href="https://wa.me/27818401398?text=Hi%20MpumaTickets%2C%20I%20need%20help%20with%20tickets.">
+          <i class="fa-brands fa-whatsapp"></i>
+          WhatsApp Support
+        </a>
+
+        <a class="contact-btn secondary" href="mailto:info@mpumatickets.co.za">
+          <i class="fa-solid fa-envelope"></i>
+          Email Support
+        </a>
+      </div>
+    </aside>
+
+  </main>
+
+  <footer class="footer">
+    © 2026 MpumaTickets. All rights reserved.
+  </footer>
+
+  <script>
+    document.querySelectorAll(".faq-question").forEach(button => {
+      button.addEventListener("click", () => {
+        const item = button.parentElement;
+
+        document.querySelectorAll(".faq-item").forEach(faq => {
+          if (faq !== item) faq.classList.remove("active");
+        });
+
+        item.classList.toggle("active");
+      });
+    });
+  </script>
+
+</body>
+</html>

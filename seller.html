@@ -1,0 +1,1687 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seller Portal | MpumaTickets</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --bg: #070812;
+            --soft: #0d1020;
+            --panel: rgba(255, 255, 255, .07);
+            --panel2: rgba(255, 255, 255, .11);
+            --text: #f7f7fb;
+            --muted: #a7adbd;
+            --purple: #7c3cff;
+            --pink: #ff3d81;
+            --green: #26d07c;
+            --red: #ff4d4d;
+            --yellow: #ffcf4d;
+            --border: rgba(255, 255, 255, .14);
+            --shadow: 0 25px 70px rgba(0, 0, 0, .45)
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            font-family: Inter, sans-serif;
+            min-height: 100vh;
+            background: radial-gradient(circle at top left, rgba(124, 60, 255, .35), transparent 34%), radial-gradient(circle at top right, rgba(255, 61, 129, .22), transparent 30%), var(--bg);
+            color: var(--text);
+            overflow-x: hidden
+        }
+
+        body.locked {
+            overflow: hidden
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit
+        }
+
+        button,
+        input,
+        textarea,
+        select {
+            font-family: inherit
+        }
+
+        button {
+            border: 0;
+            cursor: pointer
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            outline: none;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, .08);
+            color: #fff;
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 700
+        }
+
+        input,
+        select {
+            height: 52px;
+            padding: 0 15px
+        }
+
+        textarea {
+            min-height: 120px;
+            padding: 15px;
+            resize: vertical
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: rgba(255, 255, 255, .42)
+        }
+
+        select option {
+            color: #111
+        }
+
+        .hidden {
+            display: none !important
+        }
+
+        .full-loader {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, .78);
+            backdrop-filter: blur(14px);
+            padding: 20px
+        }
+
+        .full-loader.active {
+            display: flex
+        }
+
+        .loader-card {
+            width: min(100%, 340px);
+            padding: 28px;
+            border-radius: 26px;
+            text-align: center;
+            background: rgba(255, 255, 255, .1);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow)
+        }
+
+        .loader-spin {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            margin: 0 auto 16px;
+            border: 4px solid rgba(255, 255, 255, .18);
+            border-top-color: #fff;
+            animation: spin .8s linear infinite
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        .loader-card p {
+            color: var(--muted);
+            font-weight: 800;
+            font-size: 14px
+        }
+
+        .toast {
+            position: fixed;
+            right: 18px;
+            bottom: 18px;
+            z-index: 9000;
+            min-width: 260px;
+            max-width: 420px;
+            padding: 15px 17px;
+            border-radius: 18px;
+            border: 1px solid var(--border);
+            background: rgba(13, 16, 32, .94);
+            backdrop-filter: blur(18px);
+            box-shadow: var(--shadow);
+            display: none;
+            font-size: 13px;
+            font-weight: 800;
+            line-height: 1.5
+        }
+
+        .toast.active {
+            display: block
+        }
+
+        .toast.success {
+            border-color: rgba(38, 208, 124, .35);
+            color: #8affbf
+        }
+
+        .toast.error {
+            border-color: rgba(255, 77, 77, .35);
+            color: #ffaaaa
+        }
+
+        .status-msg {
+            display: none;
+            padding: 13px 15px;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 800;
+            line-height: 1.5;
+            margin-bottom: 16px
+        }
+
+        .status-msg.success {
+            display: block;
+            background: rgba(38, 208, 124, .12);
+            border: 1px solid rgba(38, 208, 124, .25);
+            color: #8affbf
+        }
+
+        .status-msg.error {
+            display: block;
+            background: rgba(255, 77, 77, .12);
+            border: 1px solid rgba(255, 77, 77, .25);
+            color: #ffaaaa
+        }
+
+        .btn-primary,
+        .auth-btn {
+            height: 52px;
+            padding: 0 20px;
+            border-radius: 999px;
+            color: #fff;
+            background: linear-gradient(135deg, var(--purple), var(--pink));
+            font-weight: 950;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            box-shadow: 0 18px 40px rgba(255, 61, 129, .24)
+        }
+
+        .btn-soft {
+            height: 44px;
+            padding: 0 15px;
+            border-radius: 999px;
+            color: #fff;
+            background: rgba(255, 255, 255, .09);
+            border: 1px solid var(--border);
+            font-weight: 900;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px
+        }
+
+        .btn-danger {
+            height: 40px;
+            padding: 0 13px;
+            border-radius: 999px;
+            background: rgba(255, 77, 77, .13);
+            border: 1px solid rgba(255, 77, 77, .25);
+            color: #ffaaaa;
+            font-weight: 900
+        }
+
+        .btn-edit {
+            height: 40px;
+            padding: 0 13px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, .09);
+            border: 1px solid var(--border);
+            color: #fff;
+            font-weight: 900
+        }
+
+        .auth-view {
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 24px
+        }
+
+        .auth-shell {
+            width: min(100%, 1100px);
+            min-height: 690px;
+            display: grid;
+            grid-template-columns: .95fr 1fr;
+            border-radius: 36px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, .07);
+            backdrop-filter: blur(24px);
+            box-shadow: var(--shadow)
+        }
+
+        .auth-brand {
+            padding: 42px;
+            background: linear-gradient(to top, rgba(0, 0, 0, .78), rgba(0, 0, 0, .25)), url("https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1200&q=80");
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between
+        }
+
+        .brand-logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 11px;
+            font-size: 22px;
+            font-weight: 950;
+            letter-spacing: -.8px
+        }
+
+        .brand-logo span {
+            width: 43px;
+            height: 43px;
+            border-radius: 15px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, var(--purple), var(--pink));
+            box-shadow: 0 16px 38px rgba(255, 61, 129, .3)
+        }
+
+        .auth-brand-content h1 {
+            font-size: clamp(38px, 5vw, 64px);
+            line-height: .98;
+            letter-spacing: -2.8px;
+            margin-bottom: 18px
+        }
+
+        .auth-brand-content p {
+            color: rgba(255, 255, 255, .78);
+            font-size: 15px;
+            line-height: 1.8;
+            max-width: 440px
+        }
+
+        .brand-points {
+            display: grid;
+            gap: 12px;
+            margin-top: 25px
+        }
+
+        .brand-points p {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: rgba(255, 255, 255, .86);
+            font-size: 14px;
+            font-weight: 700
+        }
+
+        .brand-points i {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: rgba(38, 208, 124, .18);
+            color: #8affbf;
+            font-size: 12px
+        }
+
+        .auth-panel {
+            padding: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 480px
+        }
+
+        .auth-tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            padding: 6px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, .08);
+            border: 1px solid var(--border);
+            margin-bottom: 28px
+        }
+
+        .auth-tab {
+            height: 46px;
+            border-radius: 999px;
+            color: rgba(255, 255, 255, .75);
+            background: transparent;
+            font-weight: 900;
+            transition: .25s
+        }
+
+        .auth-tab.active {
+            color: #fff;
+            background: linear-gradient(135deg, var(--purple), var(--pink))
+        }
+
+        .auth-title {
+            margin-bottom: 24px
+        }
+
+        .auth-title h2 {
+            font-size: 34px;
+            letter-spacing: -1.4px;
+            margin-bottom: 8px
+        }
+
+        .auth-title p {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.7
+        }
+
+        .auth-form {
+            display: none
+        }
+
+        .auth-form.active {
+            display: grid;
+            gap: 14px
+        }
+
+        .form-group {
+            display: grid;
+            gap: 8px
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 850;
+            color: rgba(255, 255, 255, .82)
+        }
+
+        .auth-btn {
+            width: 100%;
+            height: 56px;
+            margin-top: 8px;
+            font-size: 15px
+        }
+
+        .auth-note {
+            margin-top: 18px;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.7;
+            text-align: center
+        }
+
+        .dashboard-view {
+            display: none;
+            min-height: 100vh
+        }
+
+        .dashboard-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            height: 82px;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            background: rgba(7, 8, 18, .78);
+            backdrop-filter: blur(22px)
+        }
+
+        .dashboard-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+
+        .dashboard-logo-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 16px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, var(--purple), var(--pink));
+            box-shadow: 0 16px 38px rgba(255, 61, 129, .25)
+        }
+
+        .dashboard-logo h2 {
+            font-size: 18px;
+            letter-spacing: -.6px
+        }
+
+        .dashboard-logo span {
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 700
+        }
+
+        .dashboard-right {
+            display: flex;
+            align-items: center;
+            gap: 10px
+        }
+
+        .dashboard-body {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: calc(100vh - 82px)
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 82px;
+            height: calc(100vh - 82px);
+            padding: 22px 16px;
+            border-right: 1px solid var(--border);
+            background: rgba(255, 255, 255, .035);
+            backdrop-filter: blur(18px);
+            display: flex;
+            flex-direction: column;
+            gap: 9px
+        }
+
+        .side-link {
+            height: 48px;
+            border-radius: 16px;
+            padding: 0 14px;
+            color: rgba(255, 255, 255, .72);
+            background: transparent;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 850;
+            text-align: left;
+            transition: .25s
+        }
+
+        .side-link:hover,
+        .side-link.active {
+            color: #fff;
+            background: rgba(255, 255, 255, .09)
+        }
+
+        .side-link i {
+            width: 18px;
+            color: #ffb7d0
+        }
+
+        .dashboard-main {
+            padding: 26px;
+            display: grid;
+            gap: 22px;
+            align-content: start
+        }
+
+        .dashboard-page {
+            display: none;
+            gap: 22px
+        }
+
+        .dashboard-page.active {
+            display: grid
+        }
+
+        .page-head,
+        .welcome-card,
+        .card {
+            padding: 26px;
+            border-radius: 30px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, .07);
+            backdrop-filter: blur(20px);
+            box-shadow: var(--shadow)
+        }
+
+        .welcome-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            background: radial-gradient(circle at top right, rgba(255, 61, 129, .16), transparent 36%), rgba(255, 255, 255, .075)
+        }
+
+        .badge {
+            display: inline-flex;
+            padding: 8px 13px;
+            border-radius: 999px;
+            color: #ffb7d0;
+            background: rgba(255, 255, 255, .08);
+            border: 1px solid var(--border);
+            font-size: 12px;
+            font-weight: 950;
+            margin-bottom: 14px
+        }
+
+        .welcome-card h1,
+        .page-head h1 {
+            font-size: clamp(30px, 5vw, 52px);
+            letter-spacing: -2px;
+            line-height: 1.05;
+            margin-bottom: 10px
+        }
+
+        .welcome-card p,
+        .page-head p,
+        .section-title p {
+            color: var(--muted);
+            line-height: 1.7;
+            font-size: 14px
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px
+        }
+
+        .stat-card {
+            padding: 22px;
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, .07);
+            backdrop-filter: blur(18px)
+        }
+
+        .stat-card i {
+            width: 48px;
+            height: 48px;
+            border-radius: 16px;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, var(--purple), var(--pink));
+            margin-bottom: 18px;
+            box-shadow: 0 16px 35px rgba(255, 61, 129, .2)
+        }
+
+        .stat-card h3 {
+            font-size: 30px;
+            letter-spacing: -1px;
+            margin-bottom: 4px
+        }
+
+        .stat-card span {
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 750
+        }
+
+        .section-title {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 18px;
+            margin-bottom: 22px
+        }
+
+        .section-title h2 {
+            font-size: 26px;
+            letter-spacing: -1px;
+            margin-bottom: 7px
+        }
+
+        .event-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px
+        }
+
+        .event-grid .full {
+            grid-column: span 2
+        }
+
+        .file-input {
+            height: auto;
+            padding: 14px
+        }
+
+        .poster-preview {
+            width: 100%;
+            max-height: 240px;
+            object-fit: cover;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            display: none;
+            margin-top: 10px
+        }
+
+        .poster-preview.active {
+            display: block
+        }
+
+        .publish-btn {
+            width: 100%;
+            height: 58px;
+            border-radius: 999px;
+            margin-top: 20px;
+            color: #fff;
+            background: linear-gradient(135deg, var(--purple), var(--pink));
+            font-size: 15px;
+            font-weight: 950;
+            box-shadow: 0 18px 40px rgba(255, 61, 129, .22)
+        }
+
+        .events-table {
+            display: grid;
+            gap: 12px
+        }
+
+        .event-row {
+            padding: 15px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, .06);
+            border: 1px solid var(--border);
+            display: grid;
+            grid-template-columns: 78px 1fr auto;
+            gap: 15px;
+            align-items: center
+        }
+
+        .event-thumb {
+            width: 78px;
+            height: 78px;
+            border-radius: 17px;
+            object-fit: cover;
+            background: linear-gradient(135deg, var(--purple), var(--pink));
+            display: grid;
+            place-items: center;
+            color: #fff
+        }
+
+        .event-row h4 {
+            font-size: 16px;
+            margin-bottom: 6px
+        }
+
+        .event-row p {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.5
+        }
+
+        .row-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: flex-end
+        }
+
+        .pill {
+            display: inline-flex;
+            padding: 7px 10px;
+            border-radius: 999px;
+            background: rgba(38, 208, 124, .12);
+            color: #8affbf;
+            border: 1px solid rgba(38, 208, 124, .25);
+            font-size: 11px;
+            font-weight: 900;
+            text-transform: capitalize
+        }
+
+        .pill.draft {
+            background: rgba(255, 207, 77, .12);
+            border-color: rgba(255, 207, 77, .25);
+            color: #ffe39a
+        }
+
+        .pill.cancelled {
+            background: rgba(255, 77, 77, .12);
+            border-color: rgba(255, 77, 77, .25);
+            color: #ffaaaa
+        }
+
+        .empty {
+            padding: 22px;
+            border-radius: 22px;
+            background: rgba(255, 255, 255, .05);
+            border: 1px solid var(--border);
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.7
+        }
+
+        .ticket-list {
+            display: grid;
+            gap: 14px
+        }
+
+        .ticket-row {
+            padding: 16px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, .06);
+            border: 1px solid var(--border);
+            display: grid;
+            grid-template-columns: 1fr repeat(3, 120px);
+            gap: 14px;
+            align-items: center
+        }
+
+        .ticket-row strong {
+            font-size: 15px
+        }
+
+        .ticket-row span {
+            color: var(--muted);
+            font-size: 12px
+        }
+
+        .progress {
+            height: 8px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, .1);
+            overflow: hidden;
+            margin-top: 8px
+        }
+
+        .progress span {
+            display: block;
+            height: 100%;
+            background: linear-gradient(135deg, var(--purple), var(--pink))
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px
+        }
+
+        .modal {
+            position: fixed;
+            inset: 0;
+            z-index: 8000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, .78);
+            backdrop-filter: blur(14px);
+            padding: 18px
+        }
+
+        .modal.active {
+            display: flex
+        }
+
+        .modal-card {
+            width: min(100%, 920px);
+            max-height: 92vh;
+            overflow-y: auto;
+            border-radius: 30px;
+            border: 1px solid var(--border);
+            background: rgba(13, 16, 32, .97);
+            box-shadow: var(--shadow)
+        }
+
+        .modal-head {
+            position: sticky;
+            top: 0;
+            padding: 18px 22px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(13, 16, 32, .9);
+            backdrop-filter: blur(18px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between
+        }
+
+        .modal-head h3 {
+            font-size: 20px;
+            letter-spacing: -.6px
+        }
+
+        .modal-body {
+            padding: 22px
+        }
+
+        .close-modal {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .09);
+            border: 1px solid var(--border);
+            color: #fff
+        }
+
+        @media(max-width:1000px) {
+            .dashboard-body {
+                grid-template-columns: 1fr
+            }
+
+            .sidebar {
+                position: static;
+                height: auto;
+                border-right: 0;
+                border-bottom: 1px solid var(--border);
+                flex-direction: row;
+                overflow-x: auto
+            }
+
+            .side-link {
+                min-width: max-content
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr)
+            }
+
+            .welcome-card {
+                flex-direction: column;
+                align-items: flex-start
+            }
+
+            .auth-shell {
+                grid-template-columns: 1fr
+            }
+
+            .auth-brand {
+                min-height: 360px
+            }
+
+            .event-row {
+                grid-template-columns: 65px 1fr
+            }
+
+            .row-actions {
+                grid-column: 1/-1;
+                justify-content: flex-start
+            }
+
+            .ticket-row {
+                grid-template-columns: 1fr 1fr
+            }
+
+            .dashboard-right .btn-soft span {
+                display: none
+            }
+        }
+
+        @media(max-width:650px) {
+            .auth-view {
+                padding: 12px
+            }
+
+            .auth-brand,
+            .auth-panel {
+                padding: 24px
+            }
+
+            .dashboard-header {
+                height: auto;
+                min-height: 78px;
+                padding: 14px
+            }
+
+            .dashboard-logo h2 {
+                font-size: 15px
+            }
+
+            .dashboard-logo span {
+                display: none
+            }
+
+            .dashboard-main {
+                padding: 16px
+            }
+
+            .stats-grid,
+            .event-grid,
+            .settings-grid {
+                grid-template-columns: 1fr
+            }
+
+            .event-grid .full {
+                grid-column: auto
+            }
+
+            .card,
+            .welcome-card,
+            .page-head {
+                padding: 20px;
+                border-radius: 24px
+            }
+
+            .section-title {
+                flex-direction: column
+            }
+
+            .event-row {
+                grid-template-columns: 1fr
+            }
+
+            .event-thumb {
+                width: 100%;
+                height: 170px
+            }
+
+            .ticket-row {
+                grid-template-columns: 1fr
+            }
+
+            .auth-brand-content h1 {
+                letter-spacing: -1.8px
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="full-loader" id="fullLoader">
+        <div class="loader-card">
+            <div class="loader-spin"></div>
+            <p id="loaderText">Please wait...</p>
+        </div>
+    </div>
+    <div class="toast" id="toast"></div>
+
+    <section class="auth-view" id="authView">
+        <div class="auth-shell">
+            <div class="auth-brand">
+                <a href="index.html" class="brand-logo"><span><i
+                            class="fa-solid fa-ticket"></i></span><strong>MpumaTickets</strong></a>
+                <div class="auth-brand-content">
+                    <h1>Sell your event tickets online.</h1>
+                    <p>Create your seller account, publish events, upload posters and manage ticket limits from one
+                        professional portal.</p>
+                    <div class="brand-points">
+                        <p><i class="fa-solid fa-check"></i> Events appear on the public website</p>
+                        <p><i class="fa-solid fa-check"></i> Add poster, venue, date and ticket prices</p>
+                        <p><i class="fa-solid fa-check"></i> Edit, publish, cancel or delete events</p>
+                        <p><i class="fa-solid fa-check"></i> Track ticket limits and availability</p>
+                    </div>
+                </div>
+            </div>
+            <div class="auth-panel">
+                <div class="auth-card">
+                    <div class="auth-tabs"><button class="auth-tab active" id="loginTab">Login</button><button
+                            class="auth-tab" id="signupTab">Create Account</button></div>
+                    <div class="status-msg" id="authMessage"></div>
+                    <form class="auth-form active" id="loginForm">
+                        <div class="auth-title">
+                            <h2>Welcome back</h2>
+                            <p>Login to manage your events and tickets.</p>
+                        </div>
+                        <div class="form-group"><label>Email Address</label><input type="email" id="loginEmail"
+                                placeholder="seller@email.com" required></div>
+                        <div class="form-group"><label>Password</label><input type="password" id="loginPassword"
+                                placeholder="Enter your password" required></div>
+                        <button class="auth-btn" type="submit">Login to Seller Portal</button>
+                        <p class="auth-note">Seller portal is only for organizers who want to sell tickets on
+                            MpumaTickets.</p>
+                    </form>
+                    <form class="auth-form" id="signupForm">
+                        <div class="auth-title">
+                            <h2>Create seller account</h2>
+                            <p>Register your organizer profile and start selling tickets.</p>
+                        </div>
+                        <div class="form-group"><label>Full Name</label><input type="text" id="signupName"
+                                placeholder="Your full name" required></div>
+                        <div class="form-group"><label>Business / Organizer Name</label><input type="text"
+                                id="businessName" placeholder="Example: JD Events" required></div>
+                        <div class="form-group"><label>Email Address</label><input type="email" id="signupEmail"
+                                placeholder="seller@email.com" required></div>
+                        <div class="form-group"><label>Phone Number</label><input type="tel" id="signupPhone"
+                                placeholder="081 000 0000" required></div>
+                        <div class="form-group"><label>Password</label><input type="password" id="signupPassword"
+                                placeholder="Create password" required></div>
+                        <button class="auth-btn" type="submit">Create Seller Account</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="dashboard-view" id="dashboardView">
+        <header class="dashboard-header">
+            <div class="dashboard-logo">
+                <div class="dashboard-logo-icon"><i class="fa-solid fa-ticket"></i></div>
+                <div>
+                    <h2>MpumaTickets Seller</h2><span id="organizerName">Organizer Dashboard</span>
+                </div>
+            </div>
+            <div class="dashboard-right"><a class="btn-soft" href="index.html"><i class="fa-solid fa-eye"></i><span>View
+                        Site</span></a><button class="btn-soft" id="logoutBtn"><i
+                        class="fa-solid fa-right-from-bracket"></i><span>Logout</span></button></div>
+        </header>
+        <div class="dashboard-body">
+            <aside class="sidebar">
+                <button class="side-link active" data-page="dashboard"><i class="fa-solid fa-house"></i>
+                    Dashboard</button>
+                <button class="side-link" data-page="events"><i class="fa-solid fa-calendar-days"></i> My
+                    Events</button>
+                <button class="side-link" data-page="create"><i class="fa-solid fa-plus"></i> Create Event</button>
+                <button class="side-link" data-page="tickets"><i class="fa-solid fa-ticket"></i> Ticket Types</button>
+                <button class="side-link" data-page="bookings"><i class="fa-solid fa-users"></i> Bookings</button>
+                <button class="side-link" data-page="analytics"><i class="fa-solid fa-chart-line"></i>
+                    Analytics</button>
+                <button class="side-link" data-page="settings"><i class="fa-solid fa-gear"></i> Settings</button>
+            </aside>
+            <main class="dashboard-main">
+                <div class="dashboard-page active" id="page-dashboard">
+                    <div class="welcome-card">
+                        <div><span class="badge">Seller Portal</span>
+                            <h1>Welcome, <span id="sellerName">Organizer</span></h1>
+                            <p>Manage events, ticket limits, poster uploads, bookings and publishing status from one
+                                clean dashboard.</p>
+                        </div><button class="btn-primary" data-go="create"><i class="fa-solid fa-plus"></i> Create
+                            Event</button>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card"><i class="fa-solid fa-calendar-days"></i>
+                            <h3 id="eventsCount">0</h3><span>Total Events</span>
+                        </div>
+                        <div class="stat-card"><i class="fa-solid fa-ticket"></i>
+                            <h3 id="ticketsSold">0</h3><span>Tickets Sold</span>
+                        </div>
+                        <div class="stat-card"><i class="fa-solid fa-wallet"></i>
+                            <h3 id="totalRevenue">R0</h3><span>Revenue</span>
+                        </div>
+                        <div class="stat-card"><i class="fa-solid fa-bullhorn"></i>
+                            <h3 id="publishedCount">0</h3><span>Published</span>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="section-title">
+                            <div>
+                                <h2>Latest Events</h2>
+                                <p>Quick view of your newest events.</p>
+                            </div><button class="btn-soft" data-go="events">View All</button>
+                        </div>
+                        <div class="events-table" id="latestEventsList"></div>
+                    </div>
+                </div>
+
+                <div class="dashboard-page" id="page-events">
+                    <div class="page-head">
+                        <h1>My Events</h1>
+                        <p>Edit, cancel, publish or delete your events.</p>
+                    </div>
+                    <div class="card">
+                        <div class="section-title">
+                            <div>
+                                <h2>Event Management</h2>
+                                <p>Events published here can appear on the public MpumaTickets website.</p>
+                            </div><button class="btn-primary" data-go="create"><i class="fa-solid fa-plus"></i> New
+                                Event</button>
+                        </div>
+                        <div class="events-table" id="eventsList"></div>
+                    </div>
+                </div>
+
+                <div class="dashboard-page" id="page-create">
+                    <div class="page-head">
+                        <h1 id="formTitle">Create Event</h1>
+                        <p>Add event details, poster and ticket limits.</p>
+                    </div>
+                    <div class="card">
+                        <form id="eventForm">
+                            <input type="hidden" id="editingEventId">
+                            <div class="event-grid">
+                                <div class="form-group"><label>Event Title</label><input id="eventTitle" type="text"
+                                        placeholder="Summer Music Festival" required></div>
+                                <div class="form-group"><label>Category</label><select id="eventCategory">
+                                        <option>Music</option>
+                                        <option>Comedy</option>
+                                        <option>Business</option>
+                                        <option>Gospel</option>
+                                        <option>Sport</option>
+                                        <option>Party</option>
+                                    </select></div>
+                                <div class="form-group"><label>Venue</label><input id="eventVenue" type="text"
+                                        placeholder="Mbombela Stadium" required></div>
+                                <div class="form-group"><label>City</label><input id="eventCity" type="text"
+                                        placeholder="Mbombela" required></div>
+                                <div class="form-group"><label>Event Date</label><input id="eventDate" type="date"
+                                        required></div>
+                                <div class="form-group"><label>Start Time</label><input id="eventTime" type="time"
+                                        required></div>
+                                <div class="form-group"><label>Status</label><select id="eventStatus">
+                                        <option value="published">Published</option>
+                                        <option value="draft">Draft</option>
+                                        <option value="cancelled">Cancelled</option>
+                                    </select></div>
+                                <div class="form-group"><label>Poster / Artwork</label><input class="file-input"
+                                        id="posterFile" type="file" accept="image/*"><img id="posterPreview"
+                                        class="poster-preview" alt="Poster Preview"></div>
+                                <div class="form-group"><label>General Price</label><input id="generalPriceInput"
+                                        type="number" min="0" placeholder="150" required></div>
+                                <div class="form-group"><label>General Quantity</label><input id="generalQtyInput"
+                                        type="number" min="1" placeholder="500" required></div>
+                                <div class="form-group"><label>VIP Price</label><input id="vipPriceInput" type="number"
+                                        min="0" placeholder="300"></div>
+                                <div class="form-group"><label>VIP Quantity</label><input id="vipQtyInput" type="number"
+                                        min="0" placeholder="150"></div>
+                                <div class="form-group"><label>VVIP Price</label><input id="vvipPriceInput"
+                                        type="number" min="0" placeholder="800"></div>
+                                <div class="form-group"><label>VVIP Quantity</label><input id="vvipQtyInput"
+                                        type="number" min="0" placeholder="50"></div>
+                                <div class="form-group full"><label>Description</label><textarea id="eventDescription"
+                                        placeholder="Tell people about your event..."></textarea></div>
+                            </div>
+                            <button class="publish-btn" type="submit" id="saveEventBtn">Submit for Approval</button>
+                            <button class="btn-soft" type="button" id="clearFormBtn"
+                                style="margin-top:12px;width:100%;height:52px;">Clear Form</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="dashboard-page" id="page-tickets">
+                    <div class="page-head">
+                        <h1>Ticket Types</h1>
+                        <p>Monitor ticket limits, sold quantity and remaining tickets.</p>
+                    </div>
+                    <div class="card">
+                        <div class="ticket-list" id="ticketTypesList"></div>
+                    </div>
+                </div>
+                <div class="dashboard-page" id="page-bookings">
+                    <div class="page-head">
+                        <h1>Bookings</h1>
+                        <p>Bookings from public checkout will appear here automatically.</p>
+                    </div>
+                    <div class="card">
+                        <div id="bookingsList" class="empty">No bookings yet. When someone buys a ticket, it will show
+                            here.</div>
+                    </div>
+                </div>
+                <div class="dashboard-page" id="page-analytics">
+                    <div class="page-head">
+                        <h1>Analytics</h1>
+                        <p>Simple analytics from your events and ticket inventory.</p>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card"><i class="fa-solid fa-calendar"></i>
+                            <h3 id="analyticsEvents">0</h3><span>Events</span>
+                        </div>
+                        <div class="stat-card"><i class="fa-solid fa-bullhorn"></i>
+                            <h3 id="analyticsPublished">0</h3><span>Published</span>
+                        </div>
+                        <div class="stat-card"><i class="fa-solid fa-ticket"></i>
+                            <h3 id="analyticsCapacity">0</h3><span>Ticket Capacity</span>
+                        </div>
+                        <div class="stat-card"><i class="fa-solid fa-coins"></i>
+                            <h3 id="analyticsPotential">R0</h3><span>Potential Revenue</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="dashboard-page" id="page-settings">
+                    <div class="page-head">
+                        <h1>Settings</h1>
+                        <p>Manage organizer details.</p>
+                    </div>
+                    <div class="card">
+                        <form id="settingsForm">
+                            <div class="settings-grid">
+                                <div class="form-group"><label>Organizer Name</label><input id="settingsBusiness"
+                                        type="text"></div>
+                                <div class="form-group"><label>Contact Phone</label><input id="settingsPhone"
+                                        type="tel"></div>
+                                <div class="form-group"><label>Location</label><input id="settingsLocation" type="text"
+                                        placeholder="Mbombela"></div>
+                                <div class="form-group"><label>Contact Email</label><input id="settingsEmail"
+                                        type="email"></div>
+                                <div class="form-group full"><label>Description</label><textarea
+                                        id="settingsDescription" placeholder="About your organization"></textarea></div>
+                            </div><button class="publish-btn" type="submit">Save Settings</button>
+                        </form>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </section>
+
+    <div class="modal" id="confirmModal">
+        <div class="modal-card" style="max-width:480px">
+            <div class="modal-head">
+                <h3>Confirm Action</h3><button class="close-modal" id="closeConfirm"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmText" style="color:var(--muted);line-height:1.7;margin-bottom:18px">Are you sure?</p>
+                <div style="display:flex;gap:10px;justify-content:flex-end"><button class="btn-soft"
+                        id="cancelConfirm">Cancel</button><button class="btn-danger" id="yesConfirm">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://hrkjflwhbcrcewdmkrta.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_cWkHNJQ2timI4nHLyXaTNw_AOjAj5XR";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+            auth: {
+                storageKey: "mpumatickets-seller-session"
+            }
+        });
+
+        let currentUser = null, currentOrganizer = null, allEvents = [], allTicketTypes = [], allBookings = [], allTickets = [], confirmCallback = null;
+        const $ = id => document.getElementById(id);
+
+        function showLoader(t = "Please wait...") { $("loaderText").textContent = t; $("fullLoader").classList.add("active"); document.body.classList.add("locked") }
+        function hideLoader() { $("fullLoader").classList.remove("active"); document.body.classList.remove("locked") }
+        function toast(m, type = "success") { const el = $("toast"); el.className = "toast active " + type; el.textContent = m; setTimeout(() => el.classList.remove("active"), 3500) }
+        function authMsg(type, m) { const el = $("authMessage"); el.className = "status-msg " + type; el.textContent = m }
+        function clearAuth() { const el = $("authMessage"); el.className = "status-msg"; el.textContent = "" }
+        function money(v) { return "R" + Number(v || 0).toLocaleString("en-ZA") }
+        function formatDate(v) { if (!v) return "No date"; return new Date(v).toLocaleDateString("en-ZA", { day: "2-digit", month: "short", year: "numeric" }) }
+
+        function showPage(page) {
+            document.querySelectorAll(".dashboard-page").forEach(p => p.classList.remove("active"));
+            $("page-" + page)?.classList.add("active");
+            document.querySelectorAll(".side-link").forEach(b => b.classList.toggle("active", b.dataset.page === page));
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+        document.querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", () => showPage(b.dataset.go)));
+        document.querySelectorAll(".side-link").forEach(b => b.addEventListener("click", () => showPage(b.dataset.page)));
+
+        $("loginTab").onclick = () => { clearAuth(); $("loginTab").classList.add("active"); $("signupTab").classList.remove("active"); $("loginForm").classList.add("active"); $("signupForm").classList.remove("active") };
+        $("signupTab").onclick = () => { clearAuth(); $("signupTab").classList.add("active"); $("loginTab").classList.remove("active"); $("signupForm").classList.add("active"); $("loginForm").classList.remove("active") };
+
+        async function getOrganizer(userId) {
+            const { data, error } = await supabaseClient.from("organizers").select("*").eq("owner_id", userId).maybeSingle();
+            if (error) throw error; return data;
+        }
+
+        async function updateProfile(user, extra = {}) {
+            const meta = user.user_metadata || {};
+            const { error } = await supabaseClient.from("profiles").update({
+                full_name: extra.fullName || meta.full_name || user.email,
+                email: user.email,
+                phone: extra.phone || meta.phone || null,
+                role: meta.role || "customer"
+            }).eq("id", user.id);
+            if (error) throw error;
+        }
+
+        async function ensureOrganizer(user, extra = {}) {
+            let organizer = await getOrganizer(user.id);
+            if (organizer) return organizer;
+            const meta = user.user_metadata || {};
+            const { data, error } = await supabaseClient.from("organizers").insert({
+                owner_id: user.id,
+                business_name: extra.businessName || meta.business_name || "My Organizer Account",
+                contact_email: user.email,
+                contact_phone: extra.phone || meta.phone || null,
+                status: "approved"
+            }).select("*").single();
+            if (error) throw error;
+            const { error: memberError } = await supabaseClient.from("organizer_members").upsert({
+                organizer_id: data.id, user_id: user.id, member_role: "owner"
+            }, { onConflict: "organizer_id,user_id" });
+            if (memberError) throw memberError;
+            return data;
+        }
+
+        async function showDashboard(user, extra = {}) {
+            currentUser = user;
+            await updateProfile(user, extra);
+            currentOrganizer = await ensureOrganizer(user, extra);
+            $("authView").style.display = "none";
+            $("dashboardView").style.display = "block";
+
+            const { data: profile } = await supabaseClient.from("profiles").select("full_name").eq("id", user.id).maybeSingle();
+            $("sellerName").textContent = profile?.full_name || currentOrganizer.business_name || "Organizer";
+            $("organizerName").textContent = currentOrganizer.business_name || "Organizer Dashboard";
+            fillSettings();
+            await refreshData();
+        }
+
+        function fillSettings() {
+            if (!currentOrganizer) return;
+            $("settingsBusiness").value = currentOrganizer.business_name || "";
+            $("settingsPhone").value = currentOrganizer.contact_phone || "";
+            $("settingsEmail").value = currentOrganizer.contact_email || "";
+            $("settingsLocation").value = currentOrganizer.location || "";
+            $("settingsDescription").value = currentOrganizer.description || "";
+        }
+
+        $("loginForm").addEventListener("submit", async e => {
+            e.preventDefault(); clearAuth(); showLoader("Logging you in...");
+            try {
+                const { data, error } = await supabaseClient.auth.signInWithPassword({
+                    email: $("loginEmail").value.trim(),
+                    password: $("loginPassword").value.trim()
+                });
+                if (error) throw error;
+                await showDashboard(data.user);
+                toast("Login successful");
+            } catch (err) { authMsg("error", err.message || "Login failed") }
+            finally { hideLoader() }
+        });
+
+        $("signupForm").addEventListener("submit", async e => {
+            e.preventDefault(); clearAuth(); showLoader("Creating seller account...");
+            try {
+                const fullName = $("signupName").value.trim(), businessName = $("businessName").value.trim(), email = $("signupEmail").value.trim(), phone = $("signupPhone").value.trim(), password = $("signupPassword").value.trim();
+                if (!fullName || !businessName || !email || !phone || !password) throw new Error("Please fill in all fields.");
+                const { data, error } = await supabaseClient.auth.signUp({ email, password, options: { data: { full_name: fullName, business_name: businessName, phone } } });
+                if (error) throw error;
+                let user = data.user;
+                if (!data.session) {
+                    const { data: loginData, error: loginError } = await supabaseClient.auth.signInWithPassword({ email, password });
+                    if (loginError) throw new Error("Email confirmation is still ON in Supabase. Turn Confirm email OFF in Authentication > Providers > Email.");
+                    user = loginData.user;
+                }
+                if (!user) throw new Error("Account created but no session returned.");
+                await showDashboard(user, { fullName, businessName, phone });
+                $("signupForm").reset();
+                toast("Seller account created");
+            } catch (err) { authMsg("error", err.message || "Signup failed") }
+            finally { hideLoader() }
+        });
+
+        async function uploadPoster(file) {
+            if (!file) return null;
+            const ext = file.name.split(".").pop();
+            const path = `${currentOrganizer.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+            const { error } = await supabaseClient.storage.from("event-posters").upload(path, file, { cacheControl: "3600", upsert: false });
+            if (error) throw error;
+            const { data } = supabaseClient.storage.from("event-posters").getPublicUrl(path);
+            return data.publicUrl;
+        }
+
+        $("posterFile").addEventListener("change", e => {
+            const file = e.target.files[0];
+            if (!file) return;
+            $("posterPreview").src = URL.createObjectURL(file);
+            $("posterPreview").classList.add("active");
+        });
+
+        function formData() {
+            const gp = Number($("generalPriceInput").value || 0), gq = Number($("generalQtyInput").value || 0), vp = Number($("vipPriceInput").value || 0), vq = Number($("vipQtyInput").value || 0), xp = Number($("vvipPriceInput").value || 0), xq = Number($("vvipQtyInput").value || 0);
+            if (!$("eventTitle").value.trim() || !$("eventVenue").value.trim() || !$("eventCity").value.trim() || !$("eventDate").value || !$("eventTime").value || gp <= 0 || gq <= 0) {
+                throw new Error("Please fill required event details, General price and General quantity.");
+            }
+
+            return {
+                event: {
+                    organizer_id: currentOrganizer.id,
+                    title: $("eventTitle").value.trim(),
+                    category: $("eventCategory").value,
+                    description: $("eventDescription").value.trim(),
+                    venue: $("eventVenue").value.trim(),
+                    city: $("eventCity").value.trim(),
+                    province: "Mpumalanga",
+                    event_date: $("eventDate").value,
+                    start_time: $("eventTime").value,
+                    status: "pending",
+                    is_featured: false
+                },
+                tickets: [
+                    { name: "General", description: "Standard access", price: gp, quantity_available: gq, status: "active" },
+                    ...(vp > 0 && vq > 0 ? [{ name: "VIP", description: "VIP access", price: vp, quantity_available: vq, status: "active" }] : []),
+                    ...(xp > 0 && xq > 0 ? [{ name: "VVIP", description: "Premium/VVIP access", price: xp, quantity_available: xq, status: "active" }] : [])
+                ]
+            };
+        }
+
+        $("eventForm").addEventListener("submit", async e => {
+            e.preventDefault(); showLoader("Submitting event for approval...");
+            try {
+                const editId = $("editingEventId").value;
+                const payload = formData();
+                const file = $("posterFile").files[0];
+                const posterUrl = await uploadPoster(file);
+                if (posterUrl) payload.event.cover_image_url = posterUrl;
+
+                let eventId = editId;
+
+                if (editId) {
+                    const { error } = await supabaseClient.from("events").update(payload.event).eq("id", editId).eq("organizer_id", currentOrganizer.id);
+                    if (error) throw error;
+                    await supabaseClient.from("ticket_types").delete().eq("event_id", editId);
+                } else {
+                    const { data, error } = await supabaseClient.from("events").insert(payload.event).select("id").single();
+                    if (error) throw error;
+                    eventId = data.id;
+                }
+
+                const tickets = payload.tickets.map(t => ({ ...t, event_id: eventId, quantity_sold: 0 }));
+                const { error: ticketError } = await supabaseClient.from("ticket_types").insert(tickets);
+                if (ticketError) throw ticketError;
+
+                resetForm();
+                await refreshData();
+                showPage("events");
+                toast(editId ? "Event changes submitted for admin approval" : "Event submitted for admin approval");
+            } catch (err) { toast(err.message || "Could not submit event", "error") }
+            finally { hideLoader() }
+        });
+
+        function resetForm() {
+            $("eventForm").reset();
+            $("editingEventId").value = "";
+            $("formTitle").textContent = "Create Event";
+            $("saveEventBtn").textContent = "Submit for Approval";
+            $("posterPreview").classList.remove("active");
+            $("posterPreview").src = "";
+        }
+        $("clearFormBtn").onclick = resetForm;
+
+        async function refreshData() {
+            if (!currentOrganizer) return;
+            const { data: events, error } = await supabaseClient.from("events").select("*, ticket_types(*)").eq("organizer_id", currentOrganizer.id).order("created_at", { ascending: false });
+            if (error) throw error;
+            allEvents = events || [];
+            allTicketTypes = allEvents.flatMap(event => (event.ticket_types || []).map(ticketType => ({ ...ticketType, event })));
+
+            const eventIds = allEvents.map(event => event.id);
+            if (!eventIds.length) { allBookings = []; allTickets = []; renderAll(); return }
+
+            const { data: bookings, error: bookingError } = await supabaseClient.from("bookings").select("*, booking_items(*), tickets(*)").in("event_id", eventIds).order("created_at", { ascending: false });
+            if (bookingError) throw bookingError;
+            allBookings = bookings || [];
+            allTickets = allBookings.flatMap(booking => booking.tickets || []);
+            renderAll();
+        }
+
+        function paidBookings() { return allBookings.filter(b => ["paid", "confirmed"].includes(String(b.payment_status || "").toLowerCase())) }
+        function soldCountForTicketType(id) { return allTickets.filter(t => t.ticket_type_id === id).length }
+        function soldCountForEvent(id) { return allTickets.filter(t => t.event_id === id).length }
+        function revenueForEvent(id) { return paidBookings().filter(b => b.event_id === id).reduce((s, b) => s + Number(b.total_amount || 0), 0) }
+
+        function renderAll() {
+            const events = allEvents, paid = paidBookings(), totalSold = allTickets.length, totalRevenue = paid.reduce((s, b) => s + Number(b.total_amount || 0), 0);
+            $("eventsCount").textContent = events.length;
+            $("publishedCount").textContent = events.filter(e => e.status === "published").length;
+            $("ticketsSold").textContent = totalSold;
+            $("totalRevenue").textContent = money(totalRevenue);
+            $("analyticsEvents").textContent = events.length;
+            $("analyticsPublished").textContent = events.filter(e => e.status === "published").length;
+            $("analyticsCapacity").textContent = allTicketTypes.reduce((s, t) => s + Number(t.quantity_available || 0), 0);
+            $("analyticsPotential").textContent = money(allTicketTypes.reduce((s, t) => s + (Number(t.quantity_available || 0) * Number(t.price || 0)), 0));
+            renderEvents("eventsList", events);
+            renderEvents("latestEventsList", events.slice(0, 4));
+            renderTickets();
+            renderBookings();
+        }
+
+        function renderEvents(target, events) {
+            const el = $(target);
+            if (!events.length) { el.innerHTML = '<div class="empty">No events yet. Create your first event.</div>'; return }
+            el.innerHTML = events.map(event => {
+                const sold = soldCountForEvent(event.id), revenue = revenueForEvent(event.id);
+                const actionBtn = event.status === "pending"
+                    ? `<button class="btn-soft" disabled>Awaiting Approval</button>`
+                    : `<button class="btn-soft" onclick="toggleStatus('${event.id}','pending')">Resubmit</button>`;
+
+                return `
+      <div class="event-row">
+        <div>${event.cover_image_url ? `<img class="event-thumb" src="${event.cover_image_url}" alt="${event.title}">` : `<div class="event-thumb"><i class="fa-solid fa-image"></i></div>`}</div>
+        <div>
+          <h4>${event.title}</h4>
+          <p>${event.event_date || "No date"} • ${event.start_time || "No time"}<br>${event.venue || "Venue"}, ${event.city || "City"}</p>
+          <p><strong>${sold}</strong> ticket(s) sold • <strong>${money(revenue)}</strong> revenue</p>
+          <span class="pill ${event.status}">${event.status}</span>
+        </div>
+        <div class="row-actions">
+          <button class="btn-edit" onclick="editEvent('${event.id}')">Edit</button>
+          ${actionBtn}
+          <button class="btn-danger" onclick="confirmDelete('${event.id}')">Delete</button>
+        </div>
+      </div>`;
+            }).join("");
+        }
+
+        function renderTickets() {
+            if (!allTicketTypes.length) { $("ticketTypesList").innerHTML = '<div class="empty">No ticket types yet.</div>'; return }
+            $("ticketTypesList").innerHTML = allTicketTypes.map(ticketType => {
+                const limit = Number(ticketType.quantity_available || 0), sold = soldCountForTicketType(ticketType.id), remaining = Math.max(0, limit - sold), percent = limit ? Math.min(100, (sold / limit) * 100) : 0;
+                return `
+      <div class="ticket-row">
+        <div><strong>${ticketType.event.title} — ${ticketType.name}</strong><div class="progress"><span style="width:${percent}%"></span></div></div>
+        <div><span>Price</span><strong>${money(ticketType.price)}</strong></div>
+        <div><span>Sold</span><strong>${sold}</strong></div>
+        <div><span>Left</span><strong>${remaining}</strong></div>
+        <div><span>Limit</span><strong>${limit}</strong></div>
+      </div>`;
+            }).join("");
+        }
+
+        function renderBookings() {
+            const el = $("bookingsList"); if (!el) return;
+            if (!allBookings.length) { el.className = "empty"; el.innerHTML = "No bookings yet. When someone buys a ticket, it will show here."; return }
+            el.className = "event-list";
+            el.innerHTML = allBookings.map(booking => {
+                const event = allEvents.find(ev => ev.id === booking.event_id);
+                const ticketCount = (booking.tickets || []).length;
+                const itemsText = (booking.booking_items || []).map(item => `${item.quantity}x ${item.ticket_name}`).join(" • ") || `${ticketCount} ticket(s)`;
+                return `
+      <div class="event-row">
+        <div>${event?.cover_image_url ? `<img class="event-thumb" src="${event.cover_image_url}" alt="${event.title}">` : `<div class="event-thumb"><i class="fa-solid fa-ticket"></i></div>`}</div>
+        <div>
+          <h4>${booking.first_name || ""} ${booking.last_name || ""}</h4>
+          <p>${event?.title || "Event"}<br>${itemsText}</p>
+          <p>${booking.email || "No email"} • ${booking.phone || "No phone"}</p>
+          <p>Reference: <strong>${booking.booking_reference || booking.id}</strong></p>
+        </div>
+        <div class="row-actions">
+          <span class="pill ${booking.payment_status || "pending"}">${booking.payment_status || "pending"}</span>
+          <span class="pill confirmed">${money(booking.total_amount || 0)}</span>
+        </div>
+      </div>`;
+            }).join("");
+        }
+
+        window.editEvent = function (id) {
+            const event = allEvents.find(ev => ev.id === id); if (!event) return;
+            $("editingEventId").value = event.id;
+            $("formTitle").textContent = "Edit Event";
+            $("saveEventBtn").textContent = "Submit Changes for Approval";
+            $("eventTitle").value = event.title || "";
+            $("eventCategory").value = event.category || "Music";
+            $("eventVenue").value = event.venue || "";
+            $("eventCity").value = event.city || "";
+            $("eventDate").value = event.event_date || "";
+            $("eventTime").value = (event.start_time || "").slice(0, 5);
+            if ($("eventStatus")) $("eventStatus").value = "pending";
+            $("eventDescription").value = event.description || "";
+            if (event.cover_image_url) { $("posterPreview").src = event.cover_image_url; $("posterPreview").classList.add("active") } else { $("posterPreview").classList.remove("active") }
+            const getTicket = name => (event.ticket_types || []).find(t => t.name === name);
+            const g = getTicket("General"), v = getTicket("VIP"), x = getTicket("VVIP");
+            $("generalPriceInput").value = g?.price || "";
+            $("generalQtyInput").value = g?.quantity_available || "";
+            $("vipPriceInput").value = v?.price || "";
+            $("vipQtyInput").value = v?.quantity_available || "";
+            $("vvipPriceInput").value = x?.price || "";
+            $("vvipQtyInput").value = x?.quantity_available || "";
+            showPage("create");
+        };
+
+        window.toggleStatus = async function (id, status) {
+            showLoader("Submitting for approval...");
+            try {
+                const { error } = await supabaseClient.from("events").update({ status: "pending", is_featured: false }).eq("id", id).eq("organizer_id", currentOrganizer.id);
+                if (error) throw error;
+                await refreshData();
+                toast("Event submitted for admin approval");
+            } catch (err) { toast(err.message, "error") }
+            finally { hideLoader() }
+        };
+
+        function openConfirm(text, callback) { confirmCallback = callback; $("confirmText").textContent = text; $("confirmModal").classList.add("active"); document.body.classList.add("locked") }
+        function closeConfirm() { confirmCallback = null; $("confirmModal").classList.remove("active"); document.body.classList.remove("locked") }
+        $("closeConfirm").onclick = closeConfirm; $("cancelConfirm").onclick = closeConfirm; $("yesConfirm").onclick = async () => { if (confirmCallback) await confirmCallback(); closeConfirm() };
+
+        window.confirmDelete = function (id) {
+            openConfirm("Delete this event and its ticket types? This cannot be undone.", async () => {
+                showLoader("Deleting event...");
+                try {
+                    const { error } = await supabaseClient.from("events").delete().eq("id", id).eq("organizer_id", currentOrganizer.id);
+                    if (error) throw error;
+                    await refreshData();
+                    toast("Event deleted");
+                } catch (err) { toast(err.message, "error") }
+                finally { hideLoader() }
+            });
+        };
+
+        $("settingsForm").addEventListener("submit", async e => {
+            e.preventDefault(); showLoader("Saving settings...");
+            try {
+                const payload = { business_name: $("settingsBusiness").value.trim(), contact_phone: $("settingsPhone").value.trim(), contact_email: $("settingsEmail").value.trim(), location: $("settingsLocation").value.trim(), description: $("settingsDescription").value.trim() };
+                const { data, error } = await supabaseClient.from("organizers").update(payload).eq("id", currentOrganizer.id).select("*").single();
+                if (error) throw error;
+                currentOrganizer = data; $("organizerName").textContent = data.business_name; toast("Settings saved");
+            } catch (err) { toast(err.message, "error") }
+            finally { hideLoader() }
+        });
+
+        $("logoutBtn").onclick = async () => {
+            showLoader("Logging out...");
+            try {
+                await supabaseClient.auth.signOut();
+                currentUser = null; currentOrganizer = null; allEvents = []; allTicketTypes = []; allBookings = []; allTickets = [];
+                $("dashboardView").style.display = "none"; $("authView").style.display = "grid"; toast("Logged out");
+            } finally { hideLoader() }
+        };
+
+        async function checkSession() {
+            showLoader("Checking session...");
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (session?.user) await showDashboard(session.user);
+            } catch (err) { console.error(err) }
+            finally { hideLoader() }
+        }
+
+        function subscribeToSellerUpdates() {
+            supabaseClient.channel("seller-dashboard-live")
+                .on("postgres_changes", { event: "*", schema: "public", table: "bookings" }, () => refreshData())
+                .on("postgres_changes", { event: "*", schema: "public", table: "booking_items" }, () => refreshData())
+                .on("postgres_changes", { event: "*", schema: "public", table: "tickets" }, () => refreshData())
+                .on("postgres_changes", { event: "*", schema: "public", table: "events" }, () => refreshData())
+                .subscribe();
+        }
+
+        subscribeToSellerUpdates();
+        checkSession();
+    </script>
+</body>
+
+</html>
