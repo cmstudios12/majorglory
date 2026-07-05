@@ -3818,6 +3818,77 @@
             successTicket.classList.add("active");
         }
 
+        async function createPayFastPayment({
+            firstName,
+            lastName,
+            emailAddress,
+            phoneNumber,
+            bookingReference
+        }) {
+            const totalAmount = moneyToNumber(checkoutTotal.textContent);
+            const serviceFee = moneyToNumber(checkoutFee.textContent);
+
+            const generalType = currentTicketTypes.find(t => String(t.name).toLowerCase() === "general");
+            const vipType = currentTicketTypes.find(t => String(t.name).toLowerCase() === "vip");
+
+            const bookingItems = [];
+
+            if (general > 0 && generalType) {
+                bookingItems.push({
+                    ticket_type_id: generalType.id,
+                    ticket_name: "General",
+                    quantity: general,
+                    unit_price: Number(generalType.price),
+                    line_total: general * Number(generalType.price)
+                });
+            }
+
+            if (vip > 0 && vipType) {
+                bookingItems.push({
+                    ticket_type_id: vipType.id,
+                    ticket_name: "VIP",
+                    quantity: vip,
+                    unit_price: Number(vipType.price),
+                    line_total: vip * Number(vipType.price)
+                });
+            }
+
+            if (!bookingItems.length) {
+                throw new Error("No valid ticket type selected. Please close and book again.");
+            }
+
+            const functionUrl = `${SUPABASE_URL}/functions/v1/create-payfast-payment`;
+
+            const response = await fetch(functionUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "apikey": SUPABASE_KEY,
+                    "Authorization": `Bearer ${SUPABASE_KEY}`
+                },
+                body: JSON.stringify({
+                    event_id: currentEventId,
+                    first_name: firstName,
+                    last_name: lastName,
+                    email: emailAddress,
+                    phone: phoneNumber,
+                    payment_method: paymentMethod.value || "payfast",
+                    service_fee: serviceFee,
+                    total_amount: totalAmount,
+                    booking_reference: bookingReference,
+                    booking_items: bookingItems
+                })
+            });
+
+            const result = await response.json();
+
+            if (!response.ok || !result.success) {
+                throw new Error(result.error || "Could not start PayFast payment.");
+            }
+
+            return result;
+        }
+
         payBtn?.addEventListener("click", async () => {
             const firstName = document.getElementById("firstName").value.trim();
             const lastName = document.getElementById("lastName").value.trim();
@@ -3825,7 +3896,7 @@
             const phoneNumber = document.getElementById("phoneNumber").value.trim();
 
             if (!firstName || !lastName || !emailAddress || !phoneNumber) {
-                alert("Please fill in all customer details before confirming booking.");
+                alert("Please fill in all customer details before continuing to payment.");
                 return;
             }
 
@@ -3835,14 +3906,12 @@
             }
 
             const bookingReference = "MPUMA-" + Date.now().toString().slice(-6) + "-" + Math.floor(100 + Math.random() * 900);
-            const fullName = `${firstName} ${lastName}`;
-            const totalAmount = moneyToNumber(checkoutTotal.textContent);
 
-            payBtn.textContent = "Generating Ticket...";
+            payBtn.textContent = "Redirecting to PayFast...";
             payBtn.disabled = true;
 
             try {
-                await saveBookingAndTickets({
+                const result = await createPayFastPayment({
                     firstName,
                     lastName,
                     emailAddress,
@@ -3852,28 +3921,19 @@
 
                 ticketCode.textContent = bookingReference;
 
-                buildPremiumTicket({
-                    fullName,
-                    emailAddress,
-                    phoneNumber,
-                    bookingReference,
-                    totalAmount
-                });
+                successTicket.classList.add("active");
+                successTicket.innerHTML = `
+                    <h4>Redirecting to secure payment</h4>
+                    <p>Your booking reference is <strong>${bookingReference}</strong>.</p>
+                    <p>Please complete payment on PayFast. Your ticket will only be generated after successful payment.</p>
+                `;
 
-                await loadPublicEvents();
-                await loadHeroFeaturedEvent();
-
-                payBtn.textContent = "Booking Confirmed";
+                window.location.href = result.payment_url;
             } catch (error) {
-                alert(error.message || "Could not generate ticket.");
+                alert(error.message || "Could not start payment.");
                 payBtn.textContent = "Confirm Booking";
                 payBtn.disabled = false;
             }
-
-            setTimeout(() => {
-                payBtn.textContent = "Confirm Booking";
-                payBtn.disabled = false;
-            }, 2500);
         });
 
         document.addEventListener("keydown", e => {
