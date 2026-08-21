@@ -1,0 +1,1218 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>CV Builder — CM Career Studio</title>
+    <style>
+        :root {
+            --ink: #101827;
+            --muted: #6b7687;
+            --line: #dfe5ec;
+            --bg: #eef2f5;
+            --panel: #fff;
+            --blue: #2563eb;
+            --green: #15803d;
+            --red: #b91c1c;
+            --brand: #101827
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: var(--bg);
+            color: var(--ink)
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit
+        }
+
+        button,
+        input,
+        textarea,
+        select {
+            font: inherit
+        }
+
+        .hidden {
+            display: none !important
+        }
+
+        .top {
+            height: 68px;
+            background: #fff;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            align-items: center;
+            padding: 0 18px;
+            gap: 14px;
+            position: sticky;
+            top: 0;
+            z-index: 30
+        }
+
+        .brand {
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            white-space: nowrap
+        }
+
+        .mark {
+            width: 36px;
+            height: 36px;
+            background: #101827;
+            color: #fff;
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            margin-right: 9px
+        }
+
+        .back {
+            font-size: 13px;
+            color: #647184;
+            font-weight: 750;
+            padding: 9px 10px;
+            border-radius: 8px
+        }
+
+        .back:hover {
+            background: #f0f3f6
+        }
+
+        .titlewrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: 8px
+        }
+
+        .titlewrap input {
+            border: 1px solid transparent;
+            background: #f5f7f9;
+            border-radius: 8px;
+            padding: 9px 11px;
+            width: 250px;
+            font-weight: 800;
+            outline: none
+        }
+
+        .titlewrap input:focus {
+            background: #fff;
+            border-color: #b9c5d3
+        }
+
+        .save {
+            font-size: 11px;
+            color: #7a8697;
+            min-width: 48px
+        }
+
+        .topactions {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .btn {
+            border: 1px solid var(--line);
+            background: #fff;
+            color: #172033;
+            border-radius: 8px;
+            padding: 9px 12px;
+            font-weight: 800;
+            cursor: pointer
+        }
+
+        .btn:hover {
+            border-color: #bcc6d1
+        }
+
+        .btn.primary {
+            background: #101827;
+            color: #fff;
+            border-color: #101827
+        }
+
+        .btn.blue {
+            background: #2563eb;
+            color: #fff;
+            border-color: #2563eb
+        }
+
+        .btn.small {
+            font-size: 11px;
+            padding: 7px 9px
+        }
+
+        .btn.danger {
+            color: var(--red)
+        }
+
+        .workspace {
+            display: grid;
+            grid-template-columns: 210px minmax(400px, 560px) minmax(520px, 1fr);
+            min-height: calc(100vh - 68px)
+        }
+
+        .sidebar {
+            background: #fff;
+            border-right: 1px solid var(--line);
+            padding: 17px 12px;
+            position: sticky;
+            top: 68px;
+            height: calc(100vh - 68px);
+            overflow: auto
+        }
+
+        .side-title {
+            font-size: 10px;
+            color: #8a95a5;
+            text-transform: uppercase;
+            letter-spacing: .13em;
+            font-weight: 900;
+            padding: 7px 10px
+        }
+
+        .navbtn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 0;
+            background: transparent;
+            padding: 10px 11px;
+            border-radius: 8px;
+            color: #4f5c6c;
+            font-weight: 750;
+            font-size: 12px;
+            text-align: left;
+            cursor: pointer
+        }
+
+        .navbtn:hover,
+        .navbtn.active {
+            background: #edf1f5;
+            color: #101827
+        }
+
+        .navbtn span {
+            font-size: 9px;
+            color: #9aa4b1
+        }
+
+        .scorebox {
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 13px;
+            margin: 14px 3px
+        }
+
+        .scoretop {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            font-weight: 800
+        }
+
+        .scorebar {
+            height: 6px;
+            background: #edf0f4;
+            border-radius: 99px;
+            margin-top: 9px;
+            overflow: hidden
+        }
+
+        .scorebar i {
+            display: block;
+            height: 100%;
+            background: #23364a
+        }
+
+        .tipbox {
+            font-size: 10px;
+            line-height: 1.5;
+            color: #6f7b8b;
+            padding: 0 7px
+        }
+
+        .editor {
+            background: #f8f9fb;
+            border-right: 1px solid var(--line);
+            padding: 22px;
+            overflow: auto
+        }
+
+        .intro {
+            background: #101827;
+            color: #fff;
+            border-radius: 11px;
+            padding: 16px 17px;
+            margin-bottom: 16px
+        }
+
+        .intro h3 {
+            font-size: 15px;
+            margin: 0 0 5px
+        }
+
+        .intro p {
+            font-size: 11px;
+            line-height: 1.5;
+            color: #cbd4df;
+            margin: 0
+        }
+
+        .section {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 11px;
+            padding: 18px;
+            margin-bottom: 14px;
+            scroll-margin-top: 86px
+        }
+
+        .section-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            gap: 10px;
+            margin-bottom: 14px
+        }
+
+        .section h2 {
+            font-size: 16px;
+            margin: 0
+        }
+
+        .section-head p {
+            font-size: 11px;
+            color: var(--muted);
+            line-height: 1.5;
+            margin: 4px 0 0
+        }
+
+        .grid2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 11px
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 11px
+        }
+
+        .field label {
+            font-size: 11px;
+            font-weight: 800;
+            color: #536071
+        }
+
+        .field input,
+        .field textarea,
+        .field select {
+            width: 100%;
+            border: 1px solid #d6dde6;
+            background: #fff;
+            border-radius: 8px;
+            padding: 10px 11px;
+            outline: none;
+            font-size: 12px
+        }
+
+        .field input:focus,
+        .field textarea:focus,
+        .field select:focus {
+            border-color: #8fa9c9;
+            box-shadow: 0 0 0 3px #eef4fa
+        }
+
+        .field textarea {
+            min-height: 100px;
+            resize: vertical
+        }
+
+        .help {
+            font-size: 10px;
+            color: #8b96a5;
+            line-height: 1.45
+        }
+
+        .note {
+            background: #f4f7fa;
+            border-left: 3px solid #24374a;
+            border-radius: 6px;
+            padding: 9px 10px;
+            font-size: 10px;
+            line-height: 1.5;
+            color: #607083;
+            margin-bottom: 12px
+        }
+
+        .repeat {
+            border: 1px solid #dde3ea;
+            border-radius: 9px;
+            padding: 13px;
+            margin-bottom: 10px;
+            background: #fbfcfd
+        }
+
+        .repeat-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            font-weight: 900;
+            margin-bottom: 10px
+        }
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px
+        }
+
+        .previewzone {
+            padding: 20px;
+            background: #dfe4e9;
+            overflow: auto;
+            position: relative
+        }
+
+        .previewtop {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin: 0 auto 12px;
+            max-width: 850px
+        }
+
+        .previewtop strong {
+            font-size: 12px
+        }
+
+        .zoom {
+            display: flex;
+            gap: 5px
+        }
+
+        .paperframe {
+            max-width: 850px;
+            margin: 0 auto;
+            transform-origin: top center
+        }
+
+        .paper {
+            width: 794px;
+            min-height: 1123px;
+            background: #fff;
+            margin: 0 auto;
+            padding: 44px 48px;
+            box-shadow: 0 8px 28px rgba(15, 23, 42, .12);
+            color: #1c2430;
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            line-height: 1.45
+        }
+
+        .cv-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 30px;
+            border-bottom: 2px solid #1e3043;
+            padding-bottom: 17px;
+            margin-bottom: 20px
+        }
+
+        .cv-head h1 {
+            font-size: 29px;
+            margin: 0;
+            letter-spacing: -.03em
+        }
+
+        .headline {
+            font-size: 13px;
+            font-weight: 800;
+            margin-top: 4px;
+            color: #36556f
+        }
+
+        .contact {
+            text-align: right;
+            color: #687487;
+            font-size: 10px;
+            line-height: 1.65
+        }
+
+        .cv-section {
+            margin-top: 20px
+        }
+
+        .cv-section h3 {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: .12em;
+            border-bottom: 1px solid #cfd6df;
+            padding-bottom: 5px;
+            margin: 0 0 10px
+        }
+
+        .cv-section p {
+            margin: 0
+        }
+
+        .cv-entry {
+            margin-bottom: 12px
+        }
+
+        .cv-entry-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px
+        }
+
+        .cv-entry-top strong {
+            font-size: 12px
+        }
+
+        .cv-entry-top span {
+            font-size: 10px;
+            color: #6d7785
+        }
+
+        .sub {
+            font-size: 10px;
+            color: #667382;
+            margin-top: 2px
+        }
+
+        .skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px
+        }
+
+        .skill {
+            background: #eef2f5;
+            border-radius: 4px;
+            padding: 4px 7px;
+            font-size: 10px
+        }
+
+        .templates {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 7px
+        }
+
+        .templatebtn {
+            border: 1px solid var(--line);
+            background: #fff;
+            border-radius: 7px;
+            padding: 8px 5px;
+            font-size: 9px;
+            font-weight: 800;
+            cursor: pointer
+        }
+
+        .templatebtn.active {
+            background: #101827;
+            color: #fff;
+            border-color: #101827
+        }
+
+        .mobiletabs {
+            display: none
+        }
+
+        .toast {
+            position: fixed;
+            right: 22px;
+            bottom: 22px;
+            background: #101827;
+            color: #fff;
+            padding: 11px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            z-index: 100
+        }
+
+        /* 20 template designs */
+        .paper.classic {
+            font-family: Georgia, serif
+        }
+
+        .paper.classic .cv-head {
+            text-align: center;
+            display: block;
+            border-bottom: 1px solid #222
+        }
+
+        .paper.classic .contact {
+            text-align: center;
+            margin-top: 8px
+        }
+
+        .paper.minimal {
+            padding: 54px
+        }
+
+        .paper.minimal .cv-head {
+            border: 0
+        }
+
+        .paper.minimal .cv-section h3 {
+            border: 0;
+            padding: 0;
+            color: #5f6b79
+        }
+
+        .paper.executive .cv-head {
+            background: #101827;
+            color: #fff;
+            margin: -44px -48px 26px;
+            padding: 34px 48px;
+            border: 0
+        }
+
+        .paper.executive .headline {
+            color: #dbe5ef
+        }
+
+        .paper.executive .contact {
+            color: #d7e0ea
+        }
+
+        .paper.executive .cv-section h3 {
+            border-bottom: 2px solid #101827
+        }
+
+        .paper.ats,
+        .paper.monochrome {
+            font-family: Arial, sans-serif
+        }
+
+        .paper.ats .cv-head,
+        .paper.monochrome .cv-head {
+            display: block;
+            border-bottom: 1px solid #111
+        }
+
+        .paper.ats .contact,
+        .paper.monochrome .contact {
+            text-align: left;
+            margin-top: 7px
+        }
+
+        .paper.ats .skill,
+        .paper.monochrome .skill {
+            background: none;
+            padding: 0
+        }
+
+        .paper.ats .skill:after,
+        .paper.monochrome .skill:after {
+            content: " • "
+        }
+
+        .paper.graduate .cv-section h3 {
+            color: #315b8d;
+            border-color: #315b8d
+        }
+
+        .paper.graduate .cv-head {
+            border-color: #315b8d
+        }
+
+        .paper.academic {
+            font-family: Georgia, serif
+        }
+
+        .paper.academic .cv-head {
+            text-align: center;
+            display: block
+        }
+
+        .paper.academic .contact {
+            text-align: center;
+            margin-top: 8px
+        }
+
+        .paper.academic .cv-section h3 {
+            font-family: Arial, sans-serif
+        }
+
+        .paper.compact {
+            font-size: 10.5px;
+            line-height: 1.32;
+            padding: 34px 40px
+        }
+
+        .paper.compact .cv-section {
+            margin-top: 13px
+        }
+
+        .paper.compact .cv-entry {
+            margin-bottom: 8px
+        }
+
+        .paper.compact .cv-head h1 {
+            font-size: 25px
+        }
+
+        .paper.professional .cv-head {
+            border-bottom: 3px solid #2d4054
+        }
+
+        .paper.professional .cv-section h3 {
+            color: #2d4054
+        }
+
+        .paper.tech .cv-head {
+            border-color: #274f78
+        }
+
+        .paper.tech .headline,
+        .paper.tech .cv-section h3 {
+            color: #274f78
+        }
+
+        .paper.tech .skill {
+            border: 1px solid #b6c8da;
+            background: #f5f9fc
+        }
+
+        .paper.creative {
+            border-left: 10px solid #303b4c
+        }
+
+        .paper.creative .cv-head {
+            border: 0
+        }
+
+        .paper.creative .cv-section h3 {
+            background: #303b4c;
+            color: #fff;
+            border: 0;
+            padding: 6px 8px;
+            width: max-content
+        }
+
+        .paper.sidebar-template {
+            padding: 0;
+            display: grid;
+            grid-template-columns: 220px 1fr
+        }
+
+        .paper.sidebar-template .cv-head {
+            grid-column: 1;
+            background: #172334;
+            color: #fff;
+            display: block;
+            margin: 0;
+            padding: 42px 26px;
+            min-height: 1123px;
+            border: 0
+        }
+
+        .paper.sidebar-template .headline {
+            color: #dbe2ea
+        }
+
+        .paper.sidebar-template .contact {
+            text-align: left;
+            color: #dbe2ea;
+            margin-top: 16px
+        }
+
+        .paper.sidebar-template .cv-body {
+            padding: 42px 38px
+        }
+
+        .paper.navy .cv-head {
+            background: #17283e;
+            color: #fff;
+            margin: -44px -48px 25px;
+            padding: 32px 48px;
+            border: 0
+        }
+
+        .paper.navy .headline,
+        .paper.navy .contact {
+            color: #d8e3ef
+        }
+
+        .paper.navy .cv-section h3 {
+            color: #17283e
+        }
+
+        .paper.emerald .cv-head {
+            border-color: #2f695a
+        }
+
+        .paper.emerald .headline,
+        .paper.emerald .cv-section h3 {
+            color: #2f695a;
+            border-color: #2f695a
+        }
+
+        .paper.burgundy {
+            font-family: Georgia, serif
+        }
+
+        .paper.burgundy .cv-head {
+            border-color: #7d4050
+        }
+
+        .paper.burgundy .headline,
+        .paper.burgundy .cv-section h3 {
+            color: #7d4050;
+            border-color: #7d4050
+        }
+
+        .paper.timeline .cv-entry {
+            border-left: 2px solid #94a2b2;
+            padding-left: 11px;
+            position: relative
+        }
+
+        .paper.timeline .cv-entry:before {
+            content: "";
+            position: absolute;
+            left: -5px;
+            top: 4px;
+            width: 8px;
+            height: 8px;
+            background: #536b83;
+            border-radius: 50%
+        }
+
+        .paper.skills-first .skills {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px
+        }
+
+        .paper.skills-first .skill {
+            border: 1px solid #d4dbe3;
+            background: #fff
+        }
+
+        .paper.skills-first .cv-section.skills-section {
+            border: 1px solid #dce2e8;
+            padding: 12px
+        }
+
+        .paper.project-focus .cv-section.project-section .cv-entry {
+            border: 1px solid #d8dfe6;
+            padding: 10px;
+            border-radius: 5px
+        }
+
+        .paper.project-focus .cv-head {
+            border-color: #465d73
+        }
+
+        .paper.clean-corporate .cv-head {
+            border-top: 5px solid #283a4d;
+            padding-top: 14px
+        }
+
+        .paper.clean-corporate .cv-section h3 {
+            background: #f0f3f6;
+            border: 0;
+            padding: 6px 8px
+        }
+
+        @media(max-width:1180px) {
+            .workspace {
+                grid-template-columns: 180px 500px minmax(500px, 1fr)
+            }
+        }
+
+        @media(max-width:980px) {
+            .workspace {
+                grid-template-columns: 180px 1fr
+            }
+
+            .previewzone {
+                display: none
+            }
+
+            .workspace.show-preview .editor {
+                display: none
+            }
+
+            .workspace.show-preview .previewzone {
+                display: block;
+                grid-column: 2
+            }
+
+            .mobiletabs {
+                display: flex;
+                gap: 6px
+            }
+
+            .titlewrap input {
+                width: 180px
+            }
+        }
+
+        @media(max-width:680px) {
+            .top {
+                padding: 0 9px
+            }
+
+            .brand span:not(.mark) {
+                display: none
+            }
+
+            .back {
+                display: none
+            }
+
+            .titlewrap {
+                margin-left: 0
+            }
+
+            .titlewrap input {
+                width: 150px
+            }
+
+            .workspace {
+                display: block
+            }
+
+            .sidebar {
+                display: none
+            }
+
+            .editor {
+                padding: 12px
+            }
+
+            .previewzone {
+                padding: 10px;
+                min-height: calc(100vh - 68px)
+            }
+
+            .workspace.show-preview .previewzone {
+                display: block
+            }
+
+            .grid2 {
+                grid-template-columns: 1fr
+            }
+
+            .templates {
+                grid-template-columns: repeat(3, 1fr)
+            }
+
+            .paperframe {
+                width: 794px;
+                transform-origin: top left
+            }
+
+            .topactions .hide-sm {
+                display: none
+            }
+        }
+
+        @media print {
+            body {
+                background: #fff
+            }
+
+            .top,
+            .sidebar,
+            .editor,
+            .previewtop,
+            .mobiletabs {
+                display: none !important
+            }
+
+            .workspace {
+                display: block
+            }
+
+            .previewzone {
+                display: block;
+                padding: 0;
+                background: #fff
+            }
+
+            .paperframe {
+                transform: none !important
+            }
+
+            .paper {
+                box-shadow: none;
+                margin: 0;
+                width: 210mm;
+                min-height: 297mm;
+                page-break-after: auto
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="top">
+        <a class="brand" href="dashboard.html"><span class="mark">CM</span><span>Career Studio</span></a>
+        <a class="back" href="dashboard.html">← Dashboard</a>
+        <div class="titlewrap"><input id="cvTitle" value="My Professional CV"><span class="save"
+                id="saveState">Saved</span></div>
+        <div class="topactions">
+            <div class="mobiletabs"><button class="btn small primary" data-tab="edit">Edit</button><button
+                    class="btn small" data-tab="preview">Preview</button></div>
+            <button class="btn hide-sm" id="templatesToggle">Templates</button>
+            <button class="btn primary" id="downloadBtn">Download PDF</button>
+        </div>
+    </header>
+
+    <div class="workspace" id="workspace">
+        <aside class="sidebar">
+            <div class="side-title">CV sections</div>
+            <button class="navbtn active" data-go="personal">Personal <span>01</span></button>
+            <button class="navbtn" data-go="profile">Profile <span>02</span></button>
+            <button class="navbtn" data-go="experience">Experience <span>03</span></button>
+            <button class="navbtn" data-go="education">Education <span>04</span></button>
+            <button class="navbtn" data-go="skills">Skills <span>05</span></button>
+            <button class="navbtn" data-go="projects">Projects <span>06</span></button>
+            <button class="navbtn" data-go="extras">Extras <span>07</span></button>
+            <button class="navbtn" data-go="references">References <span>08</span></button>
+            <button class="navbtn" data-go="design">Design <span>09</span></button>
+            <div class="scorebox">
+                <div class="scoretop"><span>CV score</span><span id="score">0/100</span></div>
+                <div class="scorebar"><i id="scoreBar" style="width:0"></i></div>
+                <div class="help" id="completionText" style="margin-top:7px">0% complete</div>
+            </div>
+            <div class="tipbox">Tip: tailor the headline, summary, skills and experience wording to the vacancy you are
+                applying for.</div>
+        </aside>
+
+        <main class="editor">
+            <div class="intro">
+                <h3>Build a recruiter-ready CV</h3>
+                <p>Complete the sections honestly, focus on relevant evidence and use the preview to keep the document
+                    clean and easy to scan.</p>
+            </div>
+
+            <section class="section" id="personal">
+                <div class="section-head">
+                    <div>
+                        <h2>Personal details</h2>
+                        <p>Use professional contact information only.</p>
+                    </div>
+                </div>
+                <div class="grid2">
+                    <div class="field"><label>First name</label><input data-k="firstName" placeholder="Name"></div>
+                    <div class="field"><label>Surname</label><input data-k="lastName" placeholder="Surname"></div>
+                    <div class="field"><label>Professional headline</label><input data-k="headline"
+                            placeholder="e.g. Junior Software Developer"></div>
+                    <div class="field"><label>Target role</label><input data-k="targetRole"
+                            placeholder="e.g. Application Developer"></div>
+                    <div class="field"><label>Email address</label><input data-k="email" type="email"
+                            placeholder="name@email.com"></div>
+                    <div class="field"><label>Phone number</label><input data-k="phone" placeholder="+27 ..."></div>
+                    <div class="field"><label>Location</label><input data-k="location" placeholder="City, Province">
+                    </div>
+                    <div class="field"><label>LinkedIn / Portfolio / GitHub</label><input data-k="linkedin"
+                            placeholder="linkedin.com/in/..."></div>
+                    <div class="field"><label>Career level</label><select data-k="careerLevel">
+                            <option value="">Select level</option>
+                            <option>Student</option>
+                            <option>Graduate / Entry level</option>
+                            <option>Junior</option>
+                            <option>Mid-level</option>
+                            <option>Senior</option>
+                            <option>Manager / Executive</option>
+                        </select></div>
+                </div>
+            </section>
+
+            <section class="section" id="profile">
+                <div class="section-head">
+                    <div>
+                        <h2>Professional profile</h2>
+                        <p>Your short introduction at the top of the CV.</p>
+                    </div>
+                </div>
+                <div class="note">Aim for roughly 3–5 lines. Mention your field, strongest relevant capabilities, useful
+                    experience and the type of value you can bring.</div>
+                <div class="field"><textarea data-k="summary" maxlength="900"
+                        placeholder="Example: Application Development student with practical experience building responsive web applications..."></textarea><span
+                        class="help" id="summaryCount">0 / 900 characters</span></div>
+            </section>
+
+            <section class="section" id="experience">
+                <div class="section-head">
+                    <div>
+                        <h2>Experience</h2>
+                        <p>Employment, internships, freelance work, volunteering and relevant community work can all
+                            count.</p>
+                    </div><button class="btn small" data-add="experience">+ Add experience</button>
+                </div>
+                <div class="note">Strong descriptions explain what you did, how you did it, and what improved. Use
+                    numbers or outcomes when they are genuinely available.</div>
+                <div id="experienceList"></div>
+            </section>
+
+            <section class="section" id="education">
+                <div class="section-head">
+                    <div>
+                        <h2>Education</h2>
+                        <p>Qualifications, diplomas, certificates and relevant training.</p>
+                    </div><button class="btn small" data-add="education">+ Add education</button>
+                </div>
+                <div id="educationList"></div>
+            </section>
+
+            <section class="section" id="skills">
+                <div class="section-head">
+                    <div>
+                        <h2>Skills</h2>
+                        <p>Prioritise skills that match the vacancy.</p>
+                    </div>
+                </div>
+                <div class="field"><label>Skills — separate with commas</label><textarea data-k="skills"
+                        placeholder="Java, SQL, Supabase, Customer Service, Microsoft Office"></textarea><span
+                        class="help">Avoid vague filler skills unless you can support them with evidence.</span></div>
+            </section>
+
+            <section class="section" id="projects">
+                <div class="section-head">
+                    <div>
+                        <h2>Projects</h2>
+                        <p>Especially useful for students, graduates, developers and freelancers.</p>
+                    </div><button class="btn small" data-add="projects">+ Add project</button>
+                </div>
+                <div id="projectsList"></div>
+            </section>
+
+            <section class="section" id="extras">
+                <div class="section-head">
+                    <div>
+                        <h2>Additional value</h2>
+                        <p>Useful professional information that strengthens the CV.</p>
+                    </div>
+                </div>
+                <div class="field"><label>Certifications / short courses</label><textarea data-k="certifications"
+                        placeholder="Course or certification — Provider — Year"></textarea></div>
+                <div class="field"><label>Languages</label><input data-k="languages"
+                        placeholder="English, isiZulu, Tshivenda"></div>
+                <div class="field"><label>Achievements / awards / memberships</label><textarea data-k="achievements"
+                        placeholder="Awards, leadership, professional memberships or notable achievements"></textarea>
+                </div>
+                <div class="field"><label>Additional information</label><textarea data-k="availability"
+                        placeholder="Driver's licence, availability, work authorisation or other relevant information"></textarea>
+                </div>
+            </section>
+
+            <section class="section" id="references">
+                <div class="section-head">
+                    <div>
+                        <h2>References</h2>
+                        <p>Add references only when appropriate or requested.</p>
+                    </div><button class="btn small" data-add="references">+ Add reference</button>
+                </div>
+                <div id="referencesList"></div>
+            </section>
+
+            <section class="section" id="design">
+                <div class="section-head">
+                    <div>
+                        <h2>Choose a template</h2>
+                        <p>20 layouts are available. ATS-friendly options are best for many online portals.</p>
+                    </div>
+                </div>
+                <div class="templates" id="templateGrid"></div>
+            </section>
+        </main>
+
+        <section class="previewzone">
+            <div class="previewtop"><strong>Live A4 preview</strong>
+                <div class="zoom"><button class="btn small" id="zoomOut">−</button><button class="btn small"
+                        id="zoomReset">100%</button><button class="btn small" id="zoomIn">+</button></div>
+            </div>
+            <div class="paperframe" id="paperFrame">
+                <article class="paper modern" id="paper"></article>
+            </div>
+        </section>
+    </div>
+    <div class="toast hidden" id="toast"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = "https://wcrrhpfhgakspkukpzyb.supabase.co", SUPABASE_KEY = "sb_publishable_c5w7yAr_Lh1Zb0zGo7iEqw_s_eoNsY7";
+        const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+        const esc = v => String(v ?? "").replace(/[&<>"']/g, m => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[m]));
+        const linebreak = v => esc(v || "").replace(/\n/g, "<br>");
+        const templates = [["modern", "Modern"], ["classic", "Classic"], ["minimal", "Minimal"], ["executive", "Executive"], ["ats", "ATS Safe"], ["graduate", "Graduate"], ["academic", "Academic"], ["compact", "Compact"], ["professional", "Professional"], ["tech", "Tech"], ["creative", "Creative"], ["sidebar-template", "Sidebar"], ["navy", "Navy"], ["emerald", "Emerald"], ["burgundy", "Burgundy"], ["monochrome", "Monochrome"], ["timeline", "Timeline"], ["skills-first", "Skills First"], ["project-focus", "Project Focus"], ["clean-corporate", "Clean Corporate"]];
+        let session, record, cv, saveTimer, zoom = 1;
+        let id = new URLSearchParams(location.search).get("id");
+        const requestedTemplate = new URLSearchParams(location.search).get("template") || localStorage.getItem("cm_selected_template");
+        function blankCv() { return { firstName: "", lastName: "", headline: "", email: "", phone: "", location: "", linkedin: "", targetRole: "", careerLevel: "", summary: "", skills: "", experience: [], education: [], projects: [], certifications: "", languages: "", achievements: "", availability: "", references: [] } }
+        function score(c) { let s = 0; if (c.firstName || c.lastName) s += 8; if (c.headline) s += 8; if (c.email) s += 7; if (c.phone) s += 5; if (c.location) s += 4; if ((c.summary || "").length >= 80) s += 15; if ((c.experience || []).some(x => x.role || x.company)) s += 18; if ((c.education || []).some(x => x.qualification || x.institution)) s += 12; if ((c.skills || "").split(",").filter(x => x.trim()).length >= 5) s += 12; if ((c.projects || []).some(x => x.name || x.description)) s += 5; if (c.linkedin) s += 3; if (c.certifications) s += 2; if (c.achievements) s += 1; return Math.min(100, s) }
+        function toast(m) { const t = $("#toast"); t.textContent = m; t.classList.remove("hidden"); clearTimeout(window._toast); window._toast = setTimeout(() => t.classList.add("hidden"), 2400) }
+        async function requireAuth() { const { data: { session: s } } = await sb.auth.getSession(); if (!s) { location.href = "auth.html"; throw 0 } return s }
+        const schemas = {
+            experience: [["role", "Role / position"], ["company", "Company / organisation"], ["start", "Start date"], ["end", "End date"], ["description", "Responsibilities and achievements", "textarea"]],
+            education: [["qualification", "Qualification"], ["institution", "Institution"], ["start", "Start year"], ["end", "End year"]],
+            projects: [["name", "Project name"], ["description", "What did you build, contribute or achieve?", "textarea"]],
+            references: [["name", "Reference name"], ["role", "Role / relationship"], ["contact", "Phone or email"]]
+        };
+        function itemHtml(type, x, i) { return `<div class="repeat"><div class="repeat-head"><span>${type === "experience" ? "Experience" : type === "education" ? "Education" : type === "projects" ? "Project" : "Reference"} ${i + 1}</span><button class="btn small danger" data-remove="${type}:${i}">Remove</button></div>${schemas[type].map(([k, l, t]) => `<div class="field"><label>${l}</label>${t === "textarea" ? `<textarea data-item="${type}:${i}:${k}">${esc(x[k] || "")}</textarea>` : `<input data-item="${type}:${i}:${k}" value="${esc(x[k] || "")}">`}</div>`).join("")}</div>` }
+        function renderLists() { ["experience", "education", "projects", "references"].forEach(t => $("#" + t + "List").innerHTML = (cv[t] || []).map((x, i) => itemHtml(t, x, i)).join("")); $$("[data-item]").forEach(el => el.oninput = () => { const [t, i, k] = el.dataset.item.split(":"); cv[t][+i][k] = el.value; changed() }); $$("[data-remove]").forEach(b => b.onclick = () => { const [t, i] = b.dataset.remove.split(":"); cv[t].splice(+i, 1); renderLists(); changed() }) }
+        $$("[data-add]").forEach(b => b.onclick = () => { cv[b.dataset.add] = cv[b.dataset.add] || []; cv[b.dataset.add].push({}); renderLists(); changed() });
+        $$("[data-k]").forEach(el => el.oninput = () => { cv[el.dataset.k] = el.value; if (el.dataset.k === "summary") $("#summaryCount").textContent = `${el.value.length} / 900 characters`; changed() });
+        function renderTemplateGrid() { const g = $("#templateGrid"); g.innerHTML = templates.map(([k, n]) => `<button class="templatebtn" data-template="${k}">${n}</button>`).join(""); $$("[data-template]").forEach(b => b.onclick = () => { record.template = b.dataset.template; $$("[data-template]").forEach(x => x.classList.toggle("active", x === b)); changed() }) }
+        function fill() { $$("[data-k]").forEach(el => el.value = cv[el.dataset.k] || ""); $("#summaryCount").textContent = `${(cv.summary || "").length} / 900 characters`; $("#cvTitle").value = record.title || "My Professional CV"; renderLists(); renderTemplateGrid(); $$("[data-template]").forEach(b => b.classList.toggle("active", b.dataset.template === record.template)); render() }
+        function bodySections() {
+            const exp = (cv.experience || []).filter(x => x.role || x.company || x.description), edu = (cv.education || []).filter(x => x.qualification || x.institution), pro = (cv.projects || []).filter(x => x.name || x.description), refs = (cv.references || []).filter(x => x.name || x.contact), skills = (cv.skills || "").split(",").map(x => x.trim()).filter(Boolean), certs = (cv.certifications || "").split(/\n|,/).map(x => x.trim()).filter(Boolean), langs = (cv.languages || "").split(",").map(x => x.trim()).filter(Boolean);
+            let out = "";
+            if (cv.summary) out += `<section class="cv-section"><h3>Profile</h3><p>${linebreak(cv.summary)}</p></section>`;
+            if (skills.length && record.template === "skills-first") out += `<section class="cv-section skills-section"><h3>Core Skills</h3><div class="skills">${skills.map(s => `<span class="skill">${esc(s)}</span>`).join("")}</div></section>`;
+            if (exp.length) out += `<section class="cv-section"><h3>Experience</h3>${exp.map(x => `<div class="cv-entry"><div class="cv-entry-top"><strong>${esc(x.role || "Role")}</strong><span>${esc([x.start, x.end].filter(Boolean).join(" – "))}</span></div><div class="sub">${esc(x.company || "")}</div>${x.description ? `<p style="margin-top:5px">${linebreak(x.description)}</p>` : ""}</div>`).join("")}</section>`;
+            if (edu.length) out += `<section class="cv-section"><h3>Education</h3>${edu.map(x => `<div class="cv-entry"><div class="cv-entry-top"><strong>${esc(x.qualification || "Qualification")}</strong><span>${esc([x.start, x.end].filter(Boolean).join(" – "))}</span></div><div class="sub">${esc(x.institution || "")}</div></div>`).join("")}</section>`;
+            if (skills.length && record.template !== "skills-first") out += `<section class="cv-section skills-section"><h3>Skills</h3><div class="skills">${skills.map(s => `<span class="skill">${esc(s)}</span>`).join("")}</div></section>`;
+            if (pro.length) out += `<section class="cv-section project-section"><h3>Projects</h3>${pro.map(x => `<div class="cv-entry"><strong>${esc(x.name || "Project")}</strong>${x.description ? `<p style="margin-top:5px">${linebreak(x.description)}</p>` : ""}</div>`).join("")}</section>`;
+            if (certs.length) out += `<section class="cv-section"><h3>Certifications</h3><p>${certs.map(esc).join(" · ")}</p></section>`;
+            if (langs.length) out += `<section class="cv-section"><h3>Languages</h3><p>${langs.map(esc).join(" · ")}</p></section>`;
+            if (cv.achievements) out += `<section class="cv-section"><h3>Achievements & Memberships</h3><p>${linebreak(cv.achievements)}</p></section>`;
+            if (cv.availability) out += `<section class="cv-section"><h3>Additional Information</h3><p>${linebreak(cv.availability)}</p></section>`;
+            if (refs.length) out += `<section class="cv-section"><h3>References</h3>${refs.map(x => `<div class="cv-entry"><strong>${esc(x.name || "Reference")}</strong><div class="sub">${esc([x.role, x.contact].filter(Boolean).join(" · "))}</div></div>`).join("")}</section>`;
+            return out
+        }
+        function render() { const name = `${cv.firstName || "Name"} ${cv.lastName || "& Surname"}`.trim(); const head = `<header class="cv-head"><div><h1>${esc(name)}</h1><div class="headline">${esc(cv.headline || cv.targetRole || "Professional Headline")}</div></div><div class="contact">${[cv.email, cv.phone, cv.location, cv.linkedin].filter(Boolean).map(esc).join("<br>")}</div></header>`; const b = bodySections(); const p = $("#paper"); p.className = "paper " + (record.template || "modern"); p.innerHTML = record.template === "sidebar-template" ? `${head}<div class="cv-body">${b}</div>` : head + b; const sc = score(cv); $("#score").textContent = sc + "/100"; $("#scoreBar").style.width = sc + "%"; $("#completionText").textContent = sc + "% complete" }
+        function changed() { if (!record) return; $("#saveState").textContent = "Saving…"; render(); clearTimeout(saveTimer); saveTimer = setTimeout(save, 650) }
+        async function save() { if (!record) return; const title = $("#cvTitle").value.trim() || "My Professional CV"; const { error } = await sb.from("cvs").update({ title, template: record.template, document: cv }).eq("id", record.id); $("#saveState").textContent = error ? "Save failed" : "Saved"; if (error) toast(error.message); else record.title = title }
+        $("#cvTitle").oninput = changed;
+        $$("[data-go]").forEach(b => b.onclick = () => { $$("[data-go]").forEach(x => x.classList.toggle("active", x === b)); $("#" + b.dataset.go).scrollIntoView({ behavior: "smooth", block: "start" }) });
+        $("#downloadBtn").onclick = async () => { await save(); window.print() };
+        function applyZoom() { $("#paperFrame").style.transform = `scale(${zoom})`; $("#zoomReset").textContent = Math.round(zoom * 100) + "%" } $("#zoomIn").onclick = () => { zoom = Math.min(1.25, zoom + .1); applyZoom() }; $("#zoomOut").onclick = () => { zoom = Math.max(.55, zoom - .1); applyZoom() }; $("#zoomReset").onclick = () => { zoom = 1; applyZoom() };
+        $$("[data-tab]").forEach(b => b.onclick = () => { $$("[data-tab]").forEach(x => x.classList.toggle("primary", x === b)); $("#workspace").classList.toggle("show-preview", b.dataset.tab === "preview") });
+        $("#templatesToggle").onclick = () => $("#design").scrollIntoView({ behavior: "smooth" });
+        (async () => { session = await requireAuth(); if (!id) { const chosen = requestedTemplate || "modern"; const { data, error } = await sb.from("cvs").insert({ user_id: session.user.id, title: "My Professional CV", template: chosen, document: blankCv() }).select().single(); if (error) { toast(error.message); return } record = data; id = data.id; history.replaceState(null, "", "builder.html?id=" + id); localStorage.removeItem("cm_selected_template") } else { const { data, error } = await sb.from("cvs").select("*").eq("id", id).single(); if (error || !data) { toast("CV not found"); setTimeout(() => location.href = "dashboard.html", 700); return } record = data; if (requestedTemplate && templates.some(x => x[0] === requestedTemplate)) { record.template = requestedTemplate; localStorage.removeItem("cm_selected_template") } } cv = { ...blankCv(), ...(record.document || {}) };["experience", "education", "projects", "references"].forEach(k => cv[k] = Array.isArray(cv[k]) ? cv[k] : []); fill(); if (requestedTemplate) save() })();
+    </script>
+</body>
+
+</html>

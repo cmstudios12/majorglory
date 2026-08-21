@@ -1,0 +1,1053 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>CV Templates — CM Career Studio</title>
+    <style>
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            background: #f5f7fb;
+            color: #172033;
+            font-family: Arial, Helvetica, sans-serif
+        }
+
+        .container {
+            max-width: 1240px;
+            margin: auto;
+            padding: 0 24px
+        }
+
+        header {
+            background: #fff;
+            border-bottom: 1px solid #dfe4ec;
+            position: sticky;
+            top: 0;
+            z-index: 10
+        }
+
+        .top {
+            height: 72px;
+            display: flex;
+            align-items: center;
+            gap: 30px
+        }
+
+        .brand {
+            font-weight: 850;
+            font-size: 19px;
+            color: #111827;
+            text-decoration: none
+        }
+
+        .brandmark {
+            display: inline-grid;
+            place-items: center;
+            width: 35px;
+            height: 35px;
+            margin-right: 9px;
+            background: #172033;
+            color: #fff;
+            border-radius: 8px
+        }
+
+        .nav {
+            display: flex;
+            gap: 7px;
+            margin-left: auto
+        }
+
+        .nav a {
+            padding: 10px 12px;
+            text-decoration: none;
+            color: #526071;
+            font-size: 14px;
+            font-weight: 700;
+            border-radius: 7px
+        }
+
+        .nav a.active,
+        .nav a:hover {
+            background: #eef2f7;
+            color: #172033
+        }
+
+        .primary {
+            background: #172033 !important;
+            color: #fff !important
+        }
+
+        main {
+            padding: 48px 0 70px
+        }
+
+        .hero {
+            display: flex;
+            justify-content: space-between;
+            gap: 30px;
+            align-items: end;
+            margin-bottom: 28px
+        }
+
+        .eyebrow {
+            font-size: 12px;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            font-weight: 850;
+            color: #5d6b7d
+        }
+
+        .hero h1 {
+            font-size: 38px;
+            letter-spacing: -.04em;
+            margin: 8px 0 8px
+        }
+
+        .hero p {
+            margin: 0;
+            color: #657184;
+            max-width: 650px;
+            line-height: 1.6
+        }
+
+        .count {
+            font-weight: 800;
+            background: #fff;
+            border: 1px solid #dfe4ec;
+            padding: 10px 14px;
+            border-radius: 8px
+        }
+
+        .filters {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 28px
+        }
+
+        .filter {
+            border: 1px solid #d8dee8;
+            background: #fff;
+            padding: 9px 13px;
+            border-radius: 7px;
+            font-weight: 750;
+            color: #566275;
+            cursor: pointer
+        }
+
+        .filter.active {
+            background: #172033;
+            color: #fff;
+            border-color: #172033
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 22px
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid #dfe4ec;
+            border-radius: 11px;
+            overflow: hidden;
+            transition: .18s;
+            display: flex;
+            flex-direction: column
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(22, 32, 51, .09);
+            border-color: #c9d1dc
+        }
+
+        .paper-wrap {
+            padding: 16px;
+            background: #eef1f5
+        }
+
+        .paper {
+            height: 305px;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(30, 41, 59, .08);
+            padding: 23px 21px;
+            overflow: hidden;
+            position: relative
+        }
+
+        .paper h2 {
+            font-family: Georgia, serif;
+            font-size: 17px;
+            margin: 0 0 4px
+        }
+
+        .paper .role {
+            font-size: 8px;
+            font-weight: 800;
+            letter-spacing: .08em
+        }
+
+        .contact {
+            font-size: 6px;
+            color: #7b8492;
+            margin: 8px 0 14px
+        }
+
+        .sec {
+            font-size: 6.5px;
+            font-weight: 900;
+            letter-spacing: .12em;
+            margin: 12px 0 6px;
+            border-bottom: 1px solid #ccd3dc;
+            padding-bottom: 3px
+        }
+
+        .line {
+            height: 4px;
+            background: #e1e5eb;
+            margin: 4px 0;
+            border-radius: 1px
+        }
+
+        .w95 {
+            width: 95%
+        }
+
+        .w85 {
+            width: 85%
+        }
+
+        .w75 {
+            width: 75%
+        }
+
+        .w65 {
+            width: 65%
+        }
+
+        .w55 {
+            width: 55%
+        }
+
+        .two {
+            display: grid;
+            grid-template-columns: 31% 1fr;
+            height: 100%;
+            gap: 13px
+        }
+
+        .side {
+            margin: -23px 0 -23px -21px;
+            padding: 23px 10px;
+            background: #172033;
+            color: white
+        }
+
+        .side .line {
+            background: #566173
+        }
+
+        .side .sec {
+            border-color: #657080
+        }
+
+        .card-body {
+            padding: 17px
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            align-items: start
+        }
+
+        .card h3 {
+            margin: 0;
+            font-size: 17px
+        }
+
+        .badge {
+            font-size: 10px;
+            font-weight: 850;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            padding: 5px 7px;
+            background: #eef2f7;
+            border-radius: 5px;
+            color: #526071;
+            white-space: nowrap
+        }
+
+        .desc {
+            font-size: 12px;
+            line-height: 1.5;
+            color: #697586;
+            min-height: 36px;
+            margin: 8px 0
+        }
+
+        .best {
+            font-size: 11px;
+            color: #475569;
+            margin-bottom: 15px
+        }
+
+        .use {
+            width: 100%;
+            border: 1px solid #172033;
+            background: #fff;
+            color: #172033;
+            border-radius: 7px;
+            padding: 10px;
+            font-weight: 800;
+            cursor: pointer
+        }
+
+        .use:hover {
+            background: #172033;
+            color: #fff
+        }
+
+        /* template variation */
+        .executive h2,
+        .navy h2 {
+            font-size: 20px
+        }
+
+        .executive .sec {
+            border-bottom: 2px solid #172033
+        }
+
+        .ats .paper,
+        .monochrome .paper {
+            font-family: Arial, sans-serif
+        }
+
+        .ats .sec,
+        .monochrome .sec {
+            border-bottom: 1px solid #222
+        }
+
+        .graduate .sec {
+            color: #315a8c
+        }
+
+        .academic h2,
+        .burgundy h2 {
+            font-family: Georgia, serif
+        }
+
+        .academic .sec {
+            font-family: Georgia, serif
+        }
+
+        .compact .paper {
+            padding: 16px
+        }
+
+        .compact .sec {
+            margin: 8px 0 4px
+        }
+
+        .tech .sec {
+            color: #294d78;
+            border-color: #294d78
+        }
+
+        .creative .paper:before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 7px;
+            height: 100%;
+            background: #303b4d
+        }
+
+        .navy .paper {
+            border-top: 26px solid #172033
+        }
+
+        .emerald .sec {
+            color: #286254;
+            border-color: #286254
+        }
+
+        .burgundy .sec {
+            color: #743b48;
+            border-color: #743b48
+        }
+
+        .timeline .exp {
+            border-left: 2px solid #9aa5b4;
+            padding-left: 8px
+        }
+
+        .skills .skillsbox {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px
+        }
+
+        .project .projectbox {
+            border: 1px solid #d8dee8;
+            padding: 6px
+        }
+
+        .clean .paper {
+            border-top: 5px solid #27364a
+        }
+
+        @media(max-width:1050px) {
+            .grid {
+                grid-template-columns: repeat(3, 1fr)
+            }
+        }
+
+        @media(max-width:760px) {
+            .nav a:not(.primary) {
+                display: none
+            }
+
+            .grid {
+                grid-template-columns: repeat(2, 1fr)
+            }
+
+            .hero {
+                align-items: start;
+                flex-direction: column
+            }
+
+            .hero h1 {
+                font-size: 31px
+            }
+        }
+
+        @media(max-width:500px) {
+            .container {
+                padding: 0 14px
+            }
+
+            .grid {
+                grid-template-columns: 1fr
+            }
+
+            .paper {
+                height: 380px
+            }
+
+            .top {
+                height: 64px
+            }
+
+            .count {
+                display: none
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container top"><a class="brand" href="index.html"><span class="brandmark">CM</span>Career Studio</a>
+            <nav class="nav"><a href="dashboard.html">Dashboard</a><a class="active"
+                    href="templates.html">Templates</a><a href="checker.html">CV Checker</a><a
+                    href="cover-letter.html">Cover Letters</a><a class="primary" href="builder.html">Create CV</a></nav>
+        </div>
+    </header>
+    <main>
+        <div class="container">
+            <section class="hero">
+                <div>
+                    <div class="eyebrow">Template Library</div>
+                    <h1>Choose a CV that fits your career.</h1>
+                    <p>Professional layouts for students, graduates, experienced professionals, technical candidates and
+                        senior leaders. Keep the design clean, then make the content yours.</p>
+                </div>
+                <div class="count">20 templates</div>
+            </section>
+            <div class="filters"><button class="filter active" data-filter="all">All</button><button class="filter"
+                    data-filter="ats friendly">ATS Friendly</button><button class="filter"
+                    data-filter="corporate">Corporate</button><button class="filter"
+                    data-filter="student">Student</button><button class="filter"
+                    data-filter="technology">Technology</button><button class="filter"
+                    data-filter="academic">Academic</button><button class="filter"
+                    data-filter="leadership">Leadership</button></div>
+            <section class="grid" id="grid">
+                <article class="card" data-cat="contemporary">
+                    <div class="paper-wrap">
+                        <div class="paper modern">
+                            <h2>Name &amp; Surname</h2>
+                            <div class="role">PROFESSIONAL HEADLINE</div>
+                            <div class="contact">email@email.com · 000 000 0000 · City</div>
+                            <div class="sec">PROFILE</div>
+                            <div class="line w95"></div>
+                            <div class="line w85"></div>
+                            <div class="sec">EXPERIENCE</div>
+                            <div class="line w65"></div>
+                            <div class="line w95"></div>
+                            <div class="line w85"></div>
+                            <div class="sec">EDUCATION</div>
+                            <div class="line w75"></div>
+                            <div class="line w55"></div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <h3>Modern</h3><span class="badge">Contemporary</span>
+                        </div>
+                        <p class="desc">Clean hierarchy with a strong professional accent.</p>
+                        <div class="best"><b>Best for:</b> Corporate, tech, operations</div><button class="use"
+                            onclick="useTemplate('modern')">Use this template</button>
+                    </div>
+                </article>
+                <article class="card" data-cat="traditional">
+                    <div class="paper-wrap">
+                        <div class="paper classic">
+                            <h2>Name &amp; Surname</h2>
+                            <div class="role">PROFESSIONAL HEADLINE</div>
+                            <div class="contact">email@email.com · 000 000 0000 · City</div>
+                            <div class="sec">PROFILE</div>
+                            <div class="line w95"></div>
+                            <div class="line w85"></div>
+                            <div class="sec">EXPERIENCE</div>
+                            <div class="line w65"></div>
+                            <div class="line w95"></div>
+                            <div class="line w85"></div>
+                            <div class="sec">EDUCATION</div>
+                            <div class="line w75"></div>
+                            <div class="line w55"></div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <h3>Classic</h3><span class="badge">Traditional</span>
+                        </div>
+                        <p class="desc">A formal layout built around familiar CV conventions.</p>
+                        <div class="best"><b>Best for:</b> Finance, government, administration</div><button class="use"
+                            onclick="useTemplate('classic')">Use this template</button>
+                    </div>
+                </article>
+                <article class="card" data-cat="ats friendly">
+                    <div class="paper-wrap">
+                        <div class="paper minimal">
+                            <h2>Name &amp; Surname</h2>
+                            <div class="role">PROFESSIONAL HEADLINE</div>
+                            <div class="contact">email@email.com · 000 000 0000 · City</div>
+                            <div class="sec">PROFILE</div>
+                            <div class="line w95"></div>
+                            <div class="line w85"></div>
+                            <div class="sec">EXPERIENCE</div>
+                            <div class="line w65"></div>
+                            <div class="line w95"></div>
+                            <div class="line w85"></div>
+                            <div class="sec">EDUCATION</div>
+                            <div class="line w75"></div>
+                            <div class="line w55"></div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <h3>Minimal</h3><span class="badge">ATS Friendly</span>
+                        </div>
+                        <p class="desc">Simple typography and generous whitespace for easy scanning.</p>
+                        <div class="best"><b>Best for:</b> Almost any application</div><button class="use"
+                            onclick="useTemplate('minimal')">Use this template</button>
+                    </div>
+                </article>
+                <article class="card" data-cat="leadership">
+                    <div class="paper-wrap">
+                        <div class="paper executive">
+                            <h2>Name &amp; Surname</h2>
+                            <div class="role">PROFESSIONAL HEADLINE</div>
+                            <div class="contact">email@email.com · 000 000 0000 · City</div>
+                            <div class="sec">PROFILE</div>
+                            <div class="line w95"></div>
+                            <div class="line w85"></div>
+                            <div class="sec">EXPERIENCE</div>
+                            <div class="line w65"></div>
+                            <div class="line w95"></div>
+                            <div class="line w85"></div>
+                            <div class="sec">EDUCATION</div>
+                            <div class="line w75"></div>
+                            <div class="line w55"></div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <h3>Executive</h3><span class="badge">Leadership</span>
+                        </div>
+                        <p class="desc">Confident headings and an authoritative senior-level presentation.</p>
+                        <div class="best"><b>Best for:</b> Managers, directors, executives</div><button class="use"
+                            onclick="useTemplate('executive')">Use this template</button>
+                    </div>
+                </article>
+                <article class="card" data-cat="ats friendly">
+                    <div class="paper-wrap">
+                        <div class="paper ats">
+                            <h2>Name &amp; Surname</h2>
+                            <div class="role">PROFESSIONAL HEADLINE</div>
+                            <div class="contact">email@email.com · 000 000 0000 · City</div>
+                            <div class="sec">PROFILE</div>
+                            <div class="line w95"></div>
+                            <div class="line w85"></div>
+                            <div class="sec">EXPERIENCE</div>
+                            <div class="line w65"></div>
+                            <div class="line w95"></div>
+                            <div class="line w85"></div>
+                            <div class="sec">EDUCATION</div>
+                            <div class="line w75"></div>
+                            <div class="line w55"></div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <h3>ATS Safe</h3><span class="badge">ATS Friendly</span>
+                        </div>
+                        <p class="desc">Single-column structure with conservative formatting for applicant tracking
+                            systems.</p>
+                        <div class="best"><b>Best for:</b> Online job portals</div><button class="use"
+                            onclick="useTemplate('ats')">Use this template</button>
+                    </div>
+                </article>
+                <article class="card" data-cat="student">
+                    <div class="paper-wrap">
+                        <div class="paper graduate">
+                            <h2>Name &amp; Surname</h2>
+                            <div class="role">PROFESSIONAL HEADLINE</div>
+                            <div class="contact">email@email.com · 000 000 0000 · City</div>
+                            <div class="sec">PROFILE</div>
+                            <div class="line w95"></div>
+                            <div class="line w85"></div>
+                            <div class="sec">EXPERIENCE</div>
+                            <div class="line w65"></div>
+                            <div class="line w95"></div>
+                            <div class="line w85"></div>
+                            <div class="sec">EDUCATION</div>
+                            <div class="line w75"></div>
+                            <div class="line w55"></div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <h3>Graduate</h3><span class="badge">Student</span>
+                        </div>
+                        <p class="desc">Education and projects are given extra prominence for early-career candidates.
+                        </p>
+                        <div class="best"><b>Best for:</b> Students and graduates</div><button class="use"
+                            onclick="useTemplate('graduate')">Use this template</button>
+                    </div>
+                </article>
+                <article class="card" data-cat="academic">
+                    <div class="paper-wrap">
+                        <div class="paper academic">
+                            <h2>Name &amp; Surname</h2>
+                            <div class="role">PROFESSIONAL HEADLINE</div>
+                            <div class="contact">email@email.com · 000 000 0000 · City</div>
+                            <div class="sec">PROFILE</div>
+                            <div class="line w95"></div>
+                            <div class="line w85"></div>
+                            <div class="sec">EXPERIENCE</div>
+                            <div class="line w65"></div>
+                            <div class="line w95"></div>
+                            <div class="line w85"></div>
+                            <div class="sec">EDUCATION</div>
+                            <div class="line w75"></div>
+                            <div class="line w55"></div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <h3>Academic</h3><span class="badge">Academic</span>
+                        </div>
+                        <p class="desc">Structured for qualifications, research, teaching and professional work.</p>
+                        <div class="best"><b>Best for:</b> Lecturers, researchers, postgraduate</div><button class="use"
+                            onclick="useTemplate('academic')">Use this template</button>
+                    </div>
+                </article>
+                <article class="card" data-cat="space saver">
+                    <div class="paper-wrap">
+                        <div class="paper compact">
+                            <h2>Name &amp; Surname</h2>
+                            <div class="role">PROFESSIONAL HEADLINE</div>
+                            <div class="contact">email@email.com · 000 000 0000 · City</div>
+                            <div class="sec">PROFILE</div>
+                            <div class="line w95"></div>
+                            <div class="line w85"></div>
+                            <div class="sec">EXPERIENCE</div>
+                            <div class="line w65"></div>
+                            <div class="line w95"></div>
+                            <div class="line w85"></div>
+                            <div class="sec">EDUCATION</div>
+                            <div class="line w75"></div>
+                            <div class="line w55"></div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <h3>Compact</h3><span class="badge">Space Saver</span>
+                        </div>
+                        <p class="desc">Dense but readable layout for candidates with substantial experience.</p>
+                        <div class="best"><b>Best for:</b> Experienced professionals</div><button class="use"
+                            onclick="useTemplate('compact')">Use this template</button>
+                    </div>
+                </article>
+                <article class="card" data-cat="corporate">
+                    <div class="paper-wrap">
+                        <div class="paper professional">
+                            <h2>Name &amp; Surname</h2>
+                            <div class="role">PROFESSIONAL HEADLINE</div>
+                            <div class="contact">email@email.com · 000 000 0000 · City</div>
+                            <div class="sec">PROFILE</div>
+                            <div class="line w95"></div>
+                            <div class="line w85"></div>
+                            <div class="sec">EXPERIENCE</div>
+                            <div class="line w65"></div>
+                            <div class="line w95"></div>
+                            <div class="line w85"></div>
+                            <div class="sec">EDUCATION</div>
+                            <div class="line w75"></div>
+                            <div class="line w55"></div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <h3>Professional</h3><span class="badge">Corporate</span>
+                        </div>
+                        <p class="desc">Balanced business layout with a polished information hierarchy.</p>
+                        <div class="best"><b>Best for:</b> Business and office roles</div><button class="use"
+                            onclick="useTemplate('professional')">Use this template</button>
+                    </div>
+                </article>
+                <article class="card" data-cat="technology">
+                    <div class="paper-wrap">
+                        <div class="paper tech">
+                            <h2>Name &amp; Surname</h2>
+                            <div class="role">PROFESSIONAL HEADLINE</div>
+                            <div class="contact">email@email.com · 000 000 0000 · City</div>
+                            <div class="sec">PROFILE</div>
+                            <div class="line w95"></div>
+                            <div class="line w85"></div>
+                            <div class="sec">EXPERIENCE</div>
+                            <div class="line w65"></div>
+                            <div class="line w95"></div>
+                            <div class="line w85"></div>
+                            <div class="sec">EDUCATION</div>
+                            <div class="line w75"></div>
+                            <div class="line w55"></div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <h3>Tech</h3><span class="badge">Technology</span>
+                        </div>
+                        <p class="desc">Skills and projects receive greater visual emphasis without sacrificing
+                            readability.</p>
+                        <div class="best"><b>Best for:</b> Developers, IT, engineering</div><button class="use"
+                            onclick="useTemplate('tech')">Use this template</button>
+                    </div>
+                </article>
+                <article class="card" data-cat="portfolio">
+                    <div class="paper-wrap">
+                        <div class="paper creative">
+                            <h2>Name &amp; Surname</h2>
+                            <div class="role">PROFESSIONAL HEADLINE</div>
+                            <div class="contact">email@email.com · 000 000 0000 · City</div>
+                            <div class="sec">PROFILE</div>
+                            <div class="line w95"></div>
+                            <div class="line w85"></div>
+                            <div class="sec">EXPERIENCE</div>
+                            <div class="line w65"></div>
+                            <div class="line w95"></div>
+                            <div class="line w85"></div>
+                            <div class="sec">EDUCATION</div>
+                            <div class="line w75"></div>
+                            <div class="line w55"></div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <h3>Creative</h3><span class="badge">Portfolio</span>
+                        </div>
+                        <p class="desc">A distinctive editorial layout for candidates who need more personality.</p>
+                        <div class="best"><b>Best for:</b> Design, media, marketing</div><button class="use"
+                            onclick="useTemplate('creative')">Use this template</button>
+                    </div>
+                </article>
+                <article class="card" data-cat="two column">
+                    <div class="paper-wrap">
+                        <div class="paper sidebar">
+                            <div class="two">
+                                <div class="side">
+                                    <h2>Name &amp;<br>Surname</h2>
+                                    <div class="contact">CONTACT DETAILS</div>
+                                    <div class="sec">SKILLS</div>
+                                    <div class="line"></div>
+                                    <div class="line w75"></div>
+                                    <div class="sec">LANGUAGES</div>
+                                    <div class="line w65"></div>
+                                </div>
+                                <div>
+                                    <div class="role">PROFESSIONAL HEADLINE</div>
+                                    <div class="sec">PROFILE</div>
+                                    <div class="line w95"></div>
+                                    <div class="line w85"></div>
+                                    <div class="sec">EXPERIENCE</div>
+                                    <div class="line w75"></div>
+                                    <div class="line w95"></div>
+                                    <div class="sec">EDUCATION</div>
+                                    <div class="line w85"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <h3>Sidebar</h3><span class="badge">Two Column</span>
+                        </div>
+                        <p class="desc">A practical sidebar separates contact details and skills from career history.
+                        </p>
+                        <div class="best"><b>Best for:</b> General professional use</div><button class="use"
+                            onclick="useTemplate('sidebar')">Use this template</button>
+                    </div>
+                </article>
+                <article class="card" data-cat="premium">
+                    <div class="paper-wrap">
+                        <div class="paper navy">
+                            <h2>Name &amp; Surname</h2>
+                            <div class="role">PROFESSIONAL HEADLINE</div>
+                            <div class="contact">email@email.com · 000 000 0000 · City</div>
+                            <div class="sec">PROFILE</div>
+                            <div class="line w95"></div>
+                            <div class="line w85"></div>
+                            <div class="sec">EXPERIENCE</div>
+                            <div class="line w65"></div>
+                            <div class="line w95"></div>
+                            <div class="line w85"></div>
+                            <div class="sec">EDUCATION</div>
+                            <div class="line w75"></div>
+                            <div class="line w55"></div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <h3>Navy</h3><span class="badge">Premium</span>
+                        </div>
+                        <p class="desc">Strong dark header treatment with a restrained premium feel.</p>
+                        <div class="best"><b>Best for:</b> Corporate and consulting</div><button class="use"
+                            onclick="useTemplate('navy')">Use this template</button>
+                    </div>
+                </article>
+                <article class="card" data-cat="fresh">
+                    <div class="paper-wrap">
+                        <div class="paper emerald">
+                            <h2>Name &amp; Surname</h2>
+                            <div class="role">PROFESSIONAL HEADLINE</div>
+                            <div class="contact">email@email.com · 000 000 0000 · City</div>
+                            <div class="sec">PROFILE</div>
+                            <div class="line w95"></div>
+                            <div class="line w85"></div>
+                            <div class="sec">EXPERIENCE</div>
+                            <div class="line w65"></div>
+                            <div class="line w95"></div>
+                            <div class="line w85"></div>
+                            <div class="sec">EDUCATION</div>
+                            <div class="line w75"></div>
+                            <div class="line w55"></div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <h3>Emerald</h3><span class="badge">Fresh</span>
+                        </div>
+                        <p class="desc">A modern professional layout with a subtle fresh accent.</p>
+                        <div class="best"><b>Best for:</b> Healthcare, education, NGOs</div><button class="use"
+                            onclick="useTemplate('emerald')">Use this template</button>
+                    </div>
+                </article>
+                <article class="card" data-cat="elegant">
+                    <div class="paper-wrap">
+                        <div class="paper burgundy">
+                            <h2>Name &amp; Surname</h2>
+                            <div class="role">PROFESSIONAL HEADLINE</div>
+                            <div class="contact">email@email.com · 000 000 0000 · City</div>
+                            <div class="sec">PROFILE</div>
+                            <div class="line w95"></div>
+                            <div class="line w85"></div>
+                            <div class="sec">EXPERIENCE</div>
+                            <div class="line w65"></div>
+                            <div class="line w95"></div>
+                            <div class="line w85"></div>
+                            <div class="sec">EDUCATION</div>
+                            <div class="line w75"></div>
+                            <div class="line w55"></div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <h3>Burgundy</h3><span class="badge">Elegant</span>
+                        </div>
+                        <p class="desc">An elegant serif-led design for a mature, polished presentation.</p>
+                        <div class="best"><b>Best for:</b> Law, hospitality, luxury</div><button class="use"
+                            onclick="useTemplate('burgundy')">Use this template</button>
+                    </div>
+                </article>
+                <article class="card" data-cat="ats friendly">
+                    <div class="paper-wrap">
+                        <div class="paper monochrome">
+                            <h2>Name &amp; Surname</h2>
+                            <div class="role">PROFESSIONAL HEADLINE</div>
+                            <div class="contact">email@email.com · 000 000 0000 · City</div>
+                            <div class="sec">PROFILE</div>
+                            <div class="line w95"></div>
+                            <div class="line w85"></div>
+                            <div class="sec">EXPERIENCE</div>
+                            <div class="line w65"></div>
+                            <div class="line w95"></div>
+                            <div class="line w85"></div>
+                            <div class="sec">EDUCATION</div>
+                            <div class="line w75"></div>
+                            <div class="line w55"></div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <h3>Monochrome</h3><span class="badge">ATS Friendly</span>
+                        </div>
+                        <p class="desc">Black-and-white presentation focused entirely on content.</p>
+                        <div class="best"><b>Best for:</b> Conservative industries</div><button class="use"
+                            onclick="useTemplate('monochrome')">Use this template</button>
+                    </div>
+                </article>
+                <article class="card" data-cat="career story">
+                    <div class="paper-wrap">
+                        <div class="paper timeline">
+                            <h2>Name &amp; Surname</h2>
+                            <div class="role">PROFESSIONAL HEADLINE</div>
+                            <div class="contact">email@email.com · 000 000 0000 · City</div>
+                            <div class="sec">PROFILE</div>
+                            <div class="line w95"></div>
+                            <div class="line w85"></div>
+                            <div class="sec">EXPERIENCE</div>
+                            <div class="exp">
+                                <div class="line w65"></div>
+                                <div class="line w95"></div>
+                                <div class="line w85"></div>
+                            </div>
+                            <div class="sec">EDUCATION</div>
+                            <div class="line w75"></div>
+                            <div class="line w55"></div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <h3>Timeline</h3><span class="badge">Career Story</span>
+                        </div>
+                        <p class="desc">Experience is organised as a clear chronological career journey.</p>
+                        <div class="best"><b>Best for:</b> Candidates with steady progression</div><button class="use"
+                            onclick="useTemplate('timeline')">Use this template</button>
+                    </div>
+                </article>
+                <article class="card" data-cat="skills focus">
+                    <div class="paper-wrap">
+                        <div class="paper skills">
+                            <h2>Name &amp; Surname</h2>
+                            <div class="role">PROFESSIONAL HEADLINE</div>
+                            <div class="contact">email@email.com · 000 000 0000 · City</div>
+                            <div class="sec">PROFILE</div>
+                            <div class="line w95"></div>
+                            <div class="line w85"></div>
+                            <div class="sec">CORE SKILLS</div>
+                            <div class="skillsbox">
+                                <div class="line"></div>
+                                <div class="line"></div>
+                                <div class="line"></div>
+                                <div class="line"></div>
+                            </div>
+                            <div class="sec">EDUCATION</div>
+                            <div class="line w75"></div>
+                            <div class="line w55"></div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <h3>Skills First</h3><span class="badge">Skills Focus</span>
+                        </div>
+                        <p class="desc">Core capabilities appear early for roles where practical skills matter most.</p>
+                        <div class="best"><b>Best for:</b> Technical and trade roles</div><button class="use"
+                            onclick="useTemplate('skills')">Use this template</button>
+                    </div>
+                </article>
+                <article class="card" data-cat="projects">
+                    <div class="paper-wrap">
+                        <div class="paper project">
+                            <h2>Name &amp; Surname</h2>
+                            <div class="role">PROFESSIONAL HEADLINE</div>
+                            <div class="contact">email@email.com · 000 000 0000 · City</div>
+                            <div class="sec">PROFILE</div>
+                            <div class="line w95"></div>
+                            <div class="line w85"></div>
+                            <div class="sec">SELECTED PROJECTS</div>
+                            <div class="projectbox">
+                                <div class="line w75"></div>
+                                <div class="line w95"></div>
+                            </div>
+                            <div class="sec">EDUCATION</div>
+                            <div class="line w75"></div>
+                            <div class="line w55"></div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <h3>Project Focus</h3><span class="badge">Projects</span>
+                        </div>
+                        <p class="desc">Projects and outcomes take centre stage for portfolio-driven candidates.</p>
+                        <div class="best"><b>Best for:</b> Developers, graduates, freelancers</div><button class="use"
+                            onclick="useTemplate('project')">Use this template</button>
+                    </div>
+                </article>
+                <article class="card" data-cat="corporate">
+                    <div class="paper-wrap">
+                        <div class="paper clean">
+                            <h2>Name &amp; Surname</h2>
+                            <div class="role">PROFESSIONAL HEADLINE</div>
+                            <div class="contact">email@email.com · 000 000 0000 · City</div>
+                            <div class="sec">PROFILE</div>
+                            <div class="line w95"></div>
+                            <div class="line w85"></div>
+                            <div class="sec">EXPERIENCE</div>
+                            <div class="line w65"></div>
+                            <div class="line w95"></div>
+                            <div class="line w85"></div>
+                            <div class="sec">EDUCATION</div>
+                            <div class="line w75"></div>
+                            <div class="line w55"></div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <h3>Clean Corporate</h3><span class="badge">Corporate</span>
+                        </div>
+                        <p class="desc">A crisp, highly structured CV designed for fast recruiter scanning.</p>
+                        <div class="best"><b>Best for:</b> Recruitment, sales, operations</div><button class="use"
+                            onclick="useTemplate('clean')">Use this template</button>
+                    </div>
+                </article>
+            </section>
+        </div>
+    </main>
+    <script>
+        document.querySelectorAll('.filter').forEach(b => b.onclick = () => { document.querySelectorAll('.filter').forEach(x => x.classList.remove('active')); b.classList.add('active'); let f = b.dataset.filter; document.querySelectorAll('.card').forEach(c => c.style.display = (f === 'all' || c.dataset.cat === f) ? 'flex' : 'none') })
+        function useTemplate(t) { localStorage.setItem('cm_selected_template', t); location.href = 'builder.html?template=' + encodeURIComponent(t) }
+    </script>
+</body>
+
+</html>
