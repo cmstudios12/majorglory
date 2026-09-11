@@ -1,0 +1,3563 @@
+<!DOCTYPE html>
+<html lang="en-ZA">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sign In | RSVP</title>
+
+    <meta
+        name="description"
+        content="Sign in or create your RSVP organizer account."
+    >
+
+    <meta name="theme-color" content="#fffaf6">
+
+    <!-- =========================================================
+         GOOGLE FONTS
+    ========================================================== -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- =========================================================
+         FONT AWESOME
+    ========================================================== -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    >
+
+    <!-- =========================================================
+         SUPABASE
+    ========================================================== -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        /* =========================================================
+           ROOT
+        ========================================================== */
+
+        :root {
+            --bg: #fffaf6;
+            --surface: #ffffff;
+            --surface-soft: #f7f2ed;
+
+            --text: #181817;
+            --muted: #736e68;
+
+            --border: #e9e1d9;
+
+            --brand: #8d403c;
+            --brand-dark: #6f2f2c;
+            --brand-soft: #f6e8e4;
+
+            --success: #2e6b50;
+            --success-soft: #eaf4ee;
+
+            --warning: #8a622b;
+            --warning-soft: #f8efdf;
+
+            --danger: #a03d3d;
+            --danger-soft: #faeaea;
+
+            --shadow:
+                0 30px 80px rgba(41, 29, 23, 0.13);
+
+            --shadow-sm:
+                0 10px 35px rgba(41, 29, 23, 0.07);
+
+            --heading: "DM Serif Display", Georgia, serif;
+            --body: "Inter", Arial, sans-serif;
+
+            --radius: 22px;
+            --radius-lg: 34px;
+        }
+
+
+        /* =========================================================
+           RESET
+        ========================================================== */
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+
+            min-height: 100vh;
+
+            font-family: var(--body);
+
+            color: var(--text);
+
+            background:
+                radial-gradient(
+                    circle at 8% 5%,
+                    rgba(183, 138, 86, 0.13),
+                    transparent 31%
+                ),
+                radial-gradient(
+                    circle at 95% 85%,
+                    rgba(141, 64, 60, 0.10),
+                    transparent 32%
+                ),
+                var(--bg);
+
+            overflow-x: hidden;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button,
+        input {
+            font: inherit;
+        }
+
+        button {
+            border: 0;
+            cursor: pointer;
+        }
+
+        img {
+            display: block;
+            max-width: 100%;
+        }
+
+
+        /* =========================================================
+           PAGE
+        ========================================================== */
+
+        .auth-page {
+            min-height: 100vh;
+
+            display: grid;
+
+            grid-template-columns:
+                minmax(0, 1fr)
+                minmax(500px, 0.85fr);
+        }
+
+
+        /* =========================================================
+           LEFT SIDE
+        ========================================================== */
+
+        .auth-showcase {
+            position: relative;
+
+            min-height: 100vh;
+
+            display: flex;
+            flex-direction: column;
+
+            overflow: hidden;
+
+            padding: 34px 48px 45px;
+
+            background:
+                linear-gradient(
+                    150deg,
+                    rgba(63, 28, 26, 0.94),
+                    rgba(122, 51, 47, 0.86)
+                ),
+                url("https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1600&q=88")
+                center / cover;
+
+            color: #fff;
+        }
+
+        .auth-showcase::before {
+            content: "";
+
+            position: absolute;
+
+            width: 600px;
+            height: 600px;
+
+            border: 1px solid rgba(255,255,255,0.10);
+            border-radius: 50%;
+
+            top: -340px;
+            left: -200px;
+        }
+
+        .auth-showcase::after {
+            content: "";
+
+            position: absolute;
+
+            width: 430px;
+            height: 430px;
+
+            border: 1px solid rgba(255,255,255,0.10);
+            border-radius: 50%;
+
+            right: -220px;
+            bottom: -180px;
+        }
+
+        .brand {
+            position: relative;
+            z-index: 2;
+
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+
+            width: fit-content;
+
+            font-size: 20px;
+            font-weight: 900;
+        }
+
+        .brand-mark {
+            width: 42px;
+            height: 42px;
+
+            display: grid;
+            place-items: center;
+
+            border-radius: 50%;
+
+            background: #fff;
+            color: var(--brand);
+
+            font-family: var(--heading);
+            font-size: 21px;
+        }
+
+        .showcase-content {
+            position: relative;
+            z-index: 2;
+
+            width: min(100%, 650px);
+
+            margin-top: auto;
+            margin-bottom: auto;
+        }
+
+        .showcase-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+
+            padding: 9px 13px;
+
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 999px;
+
+            background: rgba(255,255,255,0.08);
+
+            backdrop-filter: blur(10px);
+
+            color: rgba(255,255,255,0.88);
+
+            font-size: 11px;
+            font-weight: 800;
+
+            letter-spacing: 0.09em;
+            text-transform: uppercase;
+        }
+
+        .showcase-content h1 {
+            max-width: 650px;
+
+            margin: 22px 0 19px;
+
+            font-family: var(--heading);
+
+            font-size: clamp(
+                48px,
+                6vw,
+                78px
+            );
+
+            font-weight: 400;
+            line-height: 0.98;
+
+            letter-spacing: -0.04em;
+        }
+
+        .showcase-content > p {
+            max-width: 560px;
+
+            margin: 0;
+
+            color: rgba(255,255,255,0.72);
+
+            font-size: 16px;
+            line-height: 1.85;
+        }
+
+        .showcase-features {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 11px;
+
+            max-width: 600px;
+
+            margin-top: 32px;
+        }
+
+        .showcase-feature {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+
+            padding: 14px 15px;
+
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 14px;
+
+            background: rgba(255,255,255,0.06);
+
+            backdrop-filter: blur(8px);
+        }
+
+        .showcase-feature i {
+            width: 34px;
+            height: 34px;
+
+            display: grid;
+            place-items: center;
+
+            flex-shrink: 0;
+
+            border-radius: 10px;
+
+            background: rgba(255,255,255,0.12);
+        }
+
+        .showcase-feature strong {
+            display: block;
+
+            font-size: 12px;
+        }
+
+        .showcase-feature span {
+            display: block;
+
+            margin-top: 1px;
+
+            color: rgba(255,255,255,0.60);
+
+            font-size: 10px;
+        }
+
+        .showcase-bottom {
+            position: relative;
+            z-index: 2;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 20px;
+
+            color: rgba(255,255,255,0.58);
+
+            font-size: 10px;
+        }
+
+        .showcase-bottom a:hover {
+            color: #fff;
+        }
+
+
+        /* =========================================================
+           AUTH SIDE
+        ========================================================== */
+
+        .auth-panel {
+            position: relative;
+
+            min-height: 100vh;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 55px 45px;
+        }
+
+        .mobile-brand {
+            display: none;
+
+            margin-bottom: 35px;
+        }
+
+        .mobile-brand .brand-mark {
+            background: var(--brand);
+            color: #fff;
+        }
+
+        .auth-container {
+            width: min(
+                100%,
+                470px
+            );
+        }
+
+
+        /* =========================================================
+           BACK LINK
+        ========================================================== */
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+
+            margin-bottom: 32px;
+
+            color: var(--muted);
+
+            font-size: 12px;
+            font-weight: 700;
+
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: var(--brand);
+        }
+
+
+        /* =========================================================
+           AUTH HEADER
+        ========================================================== */
+
+        .auth-header {
+            margin-bottom: 27px;
+        }
+
+        .auth-header h2 {
+            margin: 0 0 9px;
+
+            font-family: var(--heading);
+
+            font-size: clamp(
+                39px,
+                5vw,
+                54px
+            );
+
+            line-height: 1.03;
+
+            font-weight: 400;
+
+            letter-spacing: -0.03em;
+        }
+
+        .auth-header p {
+            margin: 0;
+
+            color: var(--muted);
+
+            font-size: 13px;
+            line-height: 1.75;
+        }
+
+
+        /* =========================================================
+           TABS
+        ========================================================== */
+
+        .auth-tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+
+            gap: 5px;
+
+            margin-bottom: 25px;
+
+            padding: 5px;
+
+            background: var(--surface-soft);
+
+            border: 1px solid var(--border);
+            border-radius: 14px;
+        }
+
+        .auth-tab {
+            min-height: 43px;
+
+            border-radius: 10px;
+
+            background: transparent;
+
+            color: var(--muted);
+
+            font-size: 12px;
+            font-weight: 800;
+
+            transition:
+                background 0.2s ease,
+                color 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .auth-tab.active {
+            background: #fff;
+            color: var(--text);
+
+            box-shadow:
+                0 5px 15px rgba(40,30,25,0.07);
+        }
+
+
+        /* =========================================================
+           FORM
+        ========================================================== */
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+            animation: formIn 0.22s ease;
+        }
+
+        @keyframes formIn {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+
+            gap: 12px;
+        }
+
+        .field {
+            margin-bottom: 16px;
+        }
+
+        .field-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 12px;
+
+            margin-bottom: 8px;
+        }
+
+        .field label {
+            color: #4b4743;
+
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .field-link {
+            color: var(--brand);
+
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+
+            top: 50%;
+            left: 15px;
+
+            transform: translateY(-50%);
+
+            color: #aaa19a;
+
+            font-size: 13px;
+
+            pointer-events: none;
+        }
+
+        .input-wrap input {
+            width: 100%;
+            height: 52px;
+
+            padding:
+                0
+                46px
+                0
+                42px;
+
+            outline: none;
+
+            border: 1px solid var(--border);
+            border-radius: 13px;
+
+            background: #fff;
+
+            color: var(--text);
+
+            font-size: 13px;
+
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease,
+                background 0.2s ease;
+        }
+
+        .input-wrap input::placeholder {
+            color: #aaa49d;
+        }
+
+        .input-wrap input:focus {
+            border-color: rgba(141,64,60,0.55);
+
+            box-shadow:
+                0 0 0 4px rgba(141,64,60,0.08);
+        }
+
+        .password-toggle {
+            position: absolute;
+
+            right: 9px;
+            top: 50%;
+
+            width: 34px;
+            height: 34px;
+
+            display: grid;
+            place-items: center;
+
+            transform: translateY(-50%);
+
+            border-radius: 9px;
+
+            background: transparent;
+
+            color: #918983;
+
+            font-size: 12px;
+        }
+
+        .password-toggle:hover {
+            background: var(--surface-soft);
+        }
+
+
+        /* =========================================================
+           PASSWORD RULES
+        ========================================================== */
+
+        .password-rules {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+
+            gap: 7px;
+
+            margin:
+                -4px
+                0
+                17px;
+
+            padding: 12px;
+
+            border-radius: 12px;
+
+            background: var(--surface-soft);
+        }
+
+        .rule {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+
+            color: var(--muted);
+
+            font-size: 9px;
+            font-weight: 600;
+        }
+
+        .rule i {
+            font-size: 8px;
+        }
+
+        .rule.valid {
+            color: var(--success);
+        }
+
+
+        /* =========================================================
+           CHECKBOX
+        ========================================================== */
+
+        .checkbox-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+
+            margin:
+                2px
+                0
+                20px;
+        }
+
+        .checkbox-row input {
+            width: 16px;
+            height: 16px;
+
+            margin-top: 2px;
+
+            accent-color: var(--brand);
+        }
+
+        .checkbox-row label {
+            color: var(--muted);
+
+            font-size: 10px;
+            line-height: 1.6;
+        }
+
+        .checkbox-row a {
+            color: var(--brand);
+            font-weight: 700;
+        }
+
+
+        /* =========================================================
+           BUTTON
+        ========================================================== */
+
+        .submit-btn {
+            width: 100%;
+            min-height: 54px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+
+            border-radius: 13px;
+
+            background: var(--brand);
+            color: #fff;
+
+            font-size: 12px;
+            font-weight: 800;
+
+            box-shadow:
+                0 14px 30px rgba(141,64,60,0.18);
+
+            transition:
+                background 0.2s ease,
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+
+            background: var(--brand-dark);
+
+            box-shadow:
+                0 17px 34px rgba(141,64,60,0.22);
+        }
+
+        .submit-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.67;
+        }
+
+        .btn-spinner {
+            width: 15px;
+            height: 15px;
+
+            display: none;
+
+            border:
+                2px solid
+                rgba(255,255,255,0.35);
+
+            border-top-color: #fff;
+            border-radius: 50%;
+
+            animation: spin 0.65s linear infinite;
+        }
+
+        .submit-btn.loading .btn-spinner {
+            display: block;
+        }
+
+        .submit-btn.loading .btn-icon {
+            display: none;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+
+        /* =========================================================
+           AUTH MESSAGE
+        ========================================================== */
+
+        .message {
+            display: none;
+
+            align-items: flex-start;
+            gap: 10px;
+
+            margin-bottom: 18px;
+            padding: 12px 13px;
+
+            border-radius: 12px;
+
+            font-size: 10px;
+            line-height: 1.6;
+        }
+
+        .message.show {
+            display: flex;
+        }
+
+        .message i {
+            margin-top: 2px;
+        }
+
+        .message.error {
+            background: var(--danger-soft);
+            color: var(--danger);
+        }
+
+        .message.success {
+            background: var(--success-soft);
+            color: var(--success);
+        }
+
+        .message.info {
+            background: var(--warning-soft);
+            color: var(--warning);
+        }
+
+
+        /* =========================================================
+           DIVIDER
+        ========================================================== */
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+
+            margin: 23px 0;
+
+            color: #a49c95;
+
+            font-size: 9px;
+            font-weight: 700;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: "";
+
+            flex: 1;
+
+            height: 1px;
+
+            background: var(--border);
+        }
+
+
+        /* =========================================================
+           ALT ACTION
+        ========================================================== */
+
+        .auth-switch {
+            margin-top: 22px;
+
+            text-align: center;
+
+            color: var(--muted);
+
+            font-size: 11px;
+        }
+
+        .auth-switch button {
+            padding: 0;
+
+            background: transparent;
+            color: var(--brand);
+
+            font-size: inherit;
+            font-weight: 800;
+        }
+
+
+        /* =========================================================
+           FORGOT VIEW
+        ========================================================== */
+
+        .secondary-view {
+            display: none;
+        }
+
+        .secondary-view.active {
+            display: block;
+            animation: formIn 0.22s ease;
+        }
+
+        .secondary-icon {
+            width: 58px;
+            height: 58px;
+
+            display: grid;
+            place-items: center;
+
+            margin-bottom: 21px;
+
+            border-radius: 18px;
+
+            background: var(--brand-soft);
+            color: var(--brand);
+
+            font-size: 20px;
+        }
+
+        .secondary-view h2 {
+            margin: 0 0 10px;
+
+            font-family: var(--heading);
+
+            font-size: 42px;
+            font-weight: 400;
+
+            line-height: 1.06;
+        }
+
+        .secondary-view > p {
+            margin: 0 0 27px;
+
+            color: var(--muted);
+
+            font-size: 12px;
+            line-height: 1.75;
+        }
+
+        .secondary-back {
+            width: fit-content;
+
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+
+            margin-top: 20px;
+
+            background: transparent;
+            color: var(--muted);
+
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .secondary-back:hover {
+            color: var(--brand);
+        }
+
+
+        /* =========================================================
+           SECURITY FOOTER
+        ========================================================== */
+
+        .security-note {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+
+            margin-top: 30px;
+
+            color: #96908a;
+
+            font-size: 9px;
+        }
+
+
+        /* =========================================================
+           TOAST
+        ========================================================== */
+
+        .toast {
+            position: fixed;
+
+            top: 20px;
+            right: 20px;
+
+            z-index: 2000;
+
+            width: min(
+                380px,
+                calc(100% - 40px)
+            );
+
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+
+            padding: 16px;
+
+            border: 1px solid var(--border);
+            border-radius: 14px;
+
+            background: #fff;
+
+            box-shadow: var(--shadow-sm);
+
+            transform: translateX(calc(100% + 50px));
+
+            transition: transform 0.28s ease;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-icon {
+            width: 35px;
+            height: 35px;
+
+            display: grid;
+            place-items: center;
+
+            flex-shrink: 0;
+
+            border-radius: 10px;
+
+            background: var(--brand-soft);
+            color: var(--brand);
+        }
+
+        .toast strong {
+            display: block;
+
+            font-size: 11px;
+        }
+
+        .toast span {
+            display: block;
+
+            margin-top: 2px;
+
+            color: var(--muted);
+
+            font-size: 9px;
+            line-height: 1.5;
+        }
+
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================== */
+
+        @media (max-width: 1050px) {
+
+            .auth-page {
+                grid-template-columns: 1fr;
+            }
+
+            .auth-showcase {
+                display: none;
+            }
+
+            .auth-panel {
+                padding:
+                    45px
+                    28px;
+            }
+
+            .mobile-brand {
+                display: flex;
+            }
+        }
+
+
+        @media (max-width: 560px) {
+
+            .auth-panel {
+                align-items: flex-start;
+
+                padding:
+                    25px
+                    20px
+                    40px;
+            }
+
+            .auth-container {
+                max-width: 100%;
+            }
+
+            .mobile-brand {
+                margin-bottom: 30px;
+            }
+
+            .back-link {
+                margin-bottom: 27px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .password-rules {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="auth-page">
+
+        <!-- =========================================================
+             LEFT VISUAL
+        ========================================================== -->
+
+        <section class="auth-showcase">
+
+            <a
+                href="index.html"
+                class="brand"
+            >
+                <span class="brand-mark">
+                    R
+                </span>
+
+                <span>
+                    RSVP.
+                </span>
+            </a>
+
+
+            <div class="showcase-content">
+
+                <div class="showcase-eyebrow">
+                    <i class="fa-regular fa-envelope-open"></i>
+                    Your event starts here
+                </div>
+
+                <h1>
+                    Beautiful invitations.
+                    Smarter guest management.
+                </h1>
+
+                <p>
+                    Create your event, design your invitation,
+                    publish your private link and manage every
+                    RSVP from one professional dashboard.
+                </p>
+
+
+                <div class="showcase-features">
+
+                    <div class="showcase-feature">
+
+                        <i class="fa-solid fa-link"></i>
+
+                        <div>
+                            <strong>
+                                Unique event link
+                            </strong>
+
+                            <span>
+                                Share with your guests
+                            </span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="showcase-feature">
+
+                        <i class="fa-solid fa-users"></i>
+
+                        <div>
+                            <strong>
+                                Guest management
+                            </strong>
+
+                            <span>
+                                Know exactly who's coming
+                            </span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="showcase-feature">
+
+                        <i class="fa-regular fa-envelope"></i>
+
+                        <div>
+                            <strong>
+                                Email confirmations
+                            </strong>
+
+                            <span>
+                                Automatic RSVP communication
+                            </span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="showcase-feature">
+
+                        <i class="fa-solid fa-chart-line"></i>
+
+                        <div>
+                            <strong>
+                                Live dashboard
+                            </strong>
+
+                            <span>
+                                Responses in real time
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="showcase-bottom">
+
+                <span>
+                    © <span id="showcaseYear"></span> RSVP.
+                </span>
+
+                <a href="index.html#pricing">
+                    R89.99 per invitation
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================================================
+             AUTH PANEL
+        ========================================================== -->
+
+        <section class="auth-panel">
+
+            <div class="auth-container">
+
+                <!-- MOBILE LOGO -->
+
+                <a
+                    href="index.html"
+                    class="brand mobile-brand"
+                >
+                    <span class="brand-mark">
+                        R
+                    </span>
+
+                    <span>
+                        RSVP.
+                    </span>
+                </a>
+
+
+                <!-- =================================================
+                     NORMAL AUTH VIEW
+                ================================================== -->
+
+                <div id="normalAuthView">
+
+                    <a
+                        href="index.html"
+                        class="back-link"
+                    >
+                        <i class="fa-solid fa-arrow-left"></i>
+                        Back to website
+                    </a>
+
+
+                    <div class="auth-header">
+
+                        <h2 id="authTitle">
+                            Welcome back.
+                        </h2>
+
+                        <p id="authSubtitle">
+                            Sign in to manage your invitations,
+                            guests and RSVP responses.
+                        </p>
+
+                    </div>
+
+
+                    <div
+                        class="message"
+                        id="authMessage"
+                    >
+                        <i class="fa-solid fa-circle-info"></i>
+
+                        <span id="authMessageText"></span>
+                    </div>
+
+
+                    <!-- TABS -->
+
+                    <div class="auth-tabs">
+
+                        <button
+                            class="auth-tab active"
+                            id="loginTab"
+                            type="button"
+                        >
+                            Sign in
+                        </button>
+
+                        <button
+                            class="auth-tab"
+                            id="signupTab"
+                            type="button"
+                        >
+                            Create account
+                        </button>
+
+                    </div>
+
+
+                    <!-- =============================================
+                         LOGIN FORM
+                    ============================================== -->
+
+                    <form
+                        class="auth-form active"
+                        id="loginForm"
+                    >
+
+                        <div class="field">
+
+                            <div class="field-head">
+
+                                <label for="loginEmail">
+                                    Email address
+                                </label>
+
+                            </div>
+
+                            <div class="input-wrap">
+
+                                <i class="fa-regular fa-envelope input-icon"></i>
+
+                                <input
+                                    type="email"
+                                    id="loginEmail"
+                                    autocomplete="email"
+                                    placeholder="you@example.com"
+                                    required
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <div class="field-head">
+
+                                <label for="loginPassword">
+                                    Password
+                                </label>
+
+                                <button
+                                    type="button"
+                                    class="field-link"
+                                    id="forgotPasswordLink"
+                                    style="
+                                        border:0;
+                                        background:none;
+                                        padding:0;
+                                    "
+                                >
+                                    Forgot password?
+                                </button>
+
+                            </div>
+
+                            <div class="input-wrap">
+
+                                <i class="fa-solid fa-lock input-icon"></i>
+
+                                <input
+                                    type="password"
+                                    id="loginPassword"
+                                    autocomplete="current-password"
+                                    placeholder="Enter your password"
+                                    required
+                                >
+
+                                <button
+                                    type="button"
+                                    class="password-toggle"
+                                    data-target="loginPassword"
+                                    aria-label="Show password"
+                                >
+                                    <i class="fa-regular fa-eye"></i>
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        <button
+                            class="submit-btn"
+                            id="loginSubmit"
+                            type="submit"
+                        >
+
+                            <span class="btn-spinner"></span>
+
+                            <span class="btn-text">
+                                Sign in to dashboard
+                            </span>
+
+                            <i class="fa-solid fa-arrow-right btn-icon"></i>
+
+                        </button>
+
+
+                        <div class="auth-switch">
+
+                            Don't have an account?
+
+                            <button
+                                type="button"
+                                data-switch="signup"
+                            >
+                                Create one
+                            </button>
+
+                        </div>
+
+                    </form>
+
+
+                    <!-- =============================================
+                         SIGNUP FORM
+                    ============================================== -->
+
+                    <form
+                        class="auth-form"
+                        id="signupForm"
+                    >
+
+                        <div class="form-row">
+
+                            <div class="field">
+
+                                <div class="field-head">
+                                    <label for="firstName">
+                                        First name
+                                    </label>
+                                </div>
+
+                                <div class="input-wrap">
+
+                                    <i class="fa-regular fa-user input-icon"></i>
+
+                                    <input
+                                        type="text"
+                                        id="firstName"
+                                        autocomplete="given-name"
+                                        placeholder="Thabo"
+                                        required
+                                    >
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="field">
+
+                                <div class="field-head">
+                                    <label for="lastName">
+                                        Last name
+                                    </label>
+                                </div>
+
+                                <div class="input-wrap">
+
+                                    <i class="fa-regular fa-user input-icon"></i>
+
+                                    <input
+                                        type="text"
+                                        id="lastName"
+                                        autocomplete="family-name"
+                                        placeholder="Mokoena"
+                                        required
+                                    >
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <div class="field-head">
+                                <label for="signupEmail">
+                                    Email address
+                                </label>
+                            </div>
+
+                            <div class="input-wrap">
+
+                                <i class="fa-regular fa-envelope input-icon"></i>
+
+                                <input
+                                    type="email"
+                                    id="signupEmail"
+                                    autocomplete="email"
+                                    placeholder="you@example.com"
+                                    required
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <div class="field-head">
+                                <label for="signupPhone">
+                                    Phone number
+                                </label>
+                            </div>
+
+                            <div class="input-wrap">
+
+                                <i class="fa-solid fa-phone input-icon"></i>
+
+                                <input
+                                    type="tel"
+                                    id="signupPhone"
+                                    autocomplete="tel"
+                                    placeholder="082 123 4567"
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <div class="field-head">
+                                <label for="signupPassword">
+                                    Create password
+                                </label>
+                            </div>
+
+                            <div class="input-wrap">
+
+                                <i class="fa-solid fa-lock input-icon"></i>
+
+                                <input
+                                    type="password"
+                                    id="signupPassword"
+                                    autocomplete="new-password"
+                                    placeholder="Create a strong password"
+                                    minlength="8"
+                                    required
+                                >
+
+                                <button
+                                    type="button"
+                                    class="password-toggle"
+                                    data-target="signupPassword"
+                                    aria-label="Show password"
+                                >
+                                    <i class="fa-regular fa-eye"></i>
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="password-rules">
+
+                            <div
+                                class="rule"
+                                id="ruleLength"
+                            >
+                                <i class="fa-solid fa-circle"></i>
+                                At least 8 characters
+                            </div>
+
+                            <div
+                                class="rule"
+                                id="ruleUpper"
+                            >
+                                <i class="fa-solid fa-circle"></i>
+                                One uppercase letter
+                            </div>
+
+                            <div
+                                class="rule"
+                                id="ruleNumber"
+                            >
+                                <i class="fa-solid fa-circle"></i>
+                                One number
+                            </div>
+
+                            <div
+                                class="rule"
+                                id="ruleSpecial"
+                            >
+                                <i class="fa-solid fa-circle"></i>
+                                One special character
+                            </div>
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <div class="field-head">
+                                <label for="confirmPassword">
+                                    Confirm password
+                                </label>
+                            </div>
+
+                            <div class="input-wrap">
+
+                                <i class="fa-solid fa-shield-halved input-icon"></i>
+
+                                <input
+                                    type="password"
+                                    id="confirmPassword"
+                                    autocomplete="new-password"
+                                    placeholder="Repeat your password"
+                                    required
+                                >
+
+                                <button
+                                    type="button"
+                                    class="password-toggle"
+                                    data-target="confirmPassword"
+                                    aria-label="Show password"
+                                >
+                                    <i class="fa-regular fa-eye"></i>
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="checkbox-row">
+
+                            <input
+                                type="checkbox"
+                                id="termsCheckbox"
+                                required
+                            >
+
+                            <label for="termsCheckbox">
+                                I agree to the
+                                <a href="#">Terms of Service</a>
+                                and
+                                <a href="#">Privacy Policy</a>.
+                            </label>
+
+                        </div>
+
+
+                        <button
+                            class="submit-btn"
+                            id="signupSubmit"
+                            type="submit"
+                        >
+
+                            <span class="btn-spinner"></span>
+
+                            <span class="btn-text">
+                                Create my account
+                            </span>
+
+                            <i class="fa-solid fa-arrow-right btn-icon"></i>
+
+                        </button>
+
+
+                        <div class="auth-switch">
+
+                            Already have an account?
+
+                            <button
+                                type="button"
+                                data-switch="login"
+                            >
+                                Sign in
+                            </button>
+
+                        </div>
+
+                    </form>
+
+
+                    <div class="security-note">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        Secure authentication powered by Supabase
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     FORGOT PASSWORD VIEW
+                ================================================== -->
+
+                <div
+                    class="secondary-view"
+                    id="forgotView"
+                >
+
+                    <div class="secondary-icon">
+                        <i class="fa-solid fa-key"></i>
+                    </div>
+
+                    <h2>
+                        Reset your password.
+                    </h2>
+
+                    <p>
+                        Enter the email address connected to your
+                        RSVP account. We'll send you a secure
+                        password reset link.
+                    </p>
+
+
+                    <div
+                        class="message"
+                        id="forgotMessage"
+                    >
+                        <i class="fa-solid fa-circle-info"></i>
+
+                        <span id="forgotMessageText"></span>
+                    </div>
+
+
+                    <form id="forgotForm">
+
+                        <div class="field">
+
+                            <div class="field-head">
+                                <label for="forgotEmail">
+                                    Email address
+                                </label>
+                            </div>
+
+                            <div class="input-wrap">
+
+                                <i class="fa-regular fa-envelope input-icon"></i>
+
+                                <input
+                                    type="email"
+                                    id="forgotEmail"
+                                    placeholder="you@example.com"
+                                    required
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <button
+                            class="submit-btn"
+                            id="forgotSubmit"
+                            type="submit"
+                        >
+
+                            <span class="btn-spinner"></span>
+
+                            <span class="btn-text">
+                                Send reset link
+                            </span>
+
+                            <i class="fa-regular fa-paper-plane btn-icon"></i>
+
+                        </button>
+
+                    </form>
+
+
+                    <button
+                        class="secondary-back"
+                        id="forgotBack"
+                        type="button"
+                    >
+                        <i class="fa-solid fa-arrow-left"></i>
+                        Back to sign in
+                    </button>
+
+                </div>
+
+
+                <!-- =================================================
+                     NEW PASSWORD VIEW
+                ================================================== -->
+
+                <div
+                    class="secondary-view"
+                    id="resetView"
+                >
+
+                    <div class="secondary-icon">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+
+                    <h2>
+                        Choose a new password.
+                    </h2>
+
+                    <p>
+                        Create a strong new password for your
+                        organizer account.
+                    </p>
+
+
+                    <div
+                        class="message"
+                        id="resetMessage"
+                    >
+                        <i class="fa-solid fa-circle-info"></i>
+
+                        <span id="resetMessageText"></span>
+                    </div>
+
+
+                    <form id="resetForm">
+
+                        <div class="field">
+
+                            <div class="field-head">
+                                <label for="newPassword">
+                                    New password
+                                </label>
+                            </div>
+
+                            <div class="input-wrap">
+
+                                <i class="fa-solid fa-lock input-icon"></i>
+
+                                <input
+                                    type="password"
+                                    id="newPassword"
+                                    minlength="8"
+                                    placeholder="Create a new password"
+                                    required
+                                >
+
+                                <button
+                                    type="button"
+                                    class="password-toggle"
+                                    data-target="newPassword"
+                                >
+                                    <i class="fa-regular fa-eye"></i>
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <div class="field-head">
+                                <label for="newPasswordConfirm">
+                                    Confirm password
+                                </label>
+                            </div>
+
+                            <div class="input-wrap">
+
+                                <i class="fa-solid fa-shield-halved input-icon"></i>
+
+                                <input
+                                    type="password"
+                                    id="newPasswordConfirm"
+                                    minlength="8"
+                                    placeholder="Repeat your new password"
+                                    required
+                                >
+
+                                <button
+                                    type="button"
+                                    class="password-toggle"
+                                    data-target="newPasswordConfirm"
+                                >
+                                    <i class="fa-regular fa-eye"></i>
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        <button
+                            class="submit-btn"
+                            id="resetSubmit"
+                            type="submit"
+                        >
+
+                            <span class="btn-spinner"></span>
+
+                            <span class="btn-text">
+                                Update password
+                            </span>
+
+                            <i class="fa-solid fa-check btn-icon"></i>
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+    <!-- =========================================================
+         TOAST
+    ========================================================== -->
+
+    <div
+        class="toast"
+        id="toast"
+    >
+
+        <div class="toast-icon">
+            <i class="fa-solid fa-circle-info"></i>
+        </div>
+
+        <div>
+
+            <strong id="toastTitle">
+                Information
+            </strong>
+
+            <span id="toastMessage"></span>
+
+        </div>
+
+    </div>
+
+
+    <script>
+        /* =========================================================
+           SUPABASE
+        ========================================================== */
+
+        const SUPABASE_URL =
+            "https://zqzhswhuwwihfixiuafq.supabase.co";
+
+        const SUPABASE_KEY =
+            "sb_publishable_edbmD8CSCv9HFO3fiSlnjQ_g3FHq5B1";
+
+
+        const supabaseClient =
+            supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
+
+
+        /* =========================================================
+           ELEMENTS
+        ========================================================== */
+
+        const normalAuthView =
+            document.getElementById("normalAuthView");
+
+        const forgotView =
+            document.getElementById("forgotView");
+
+        const resetView =
+            document.getElementById("resetView");
+
+
+        const loginTab =
+            document.getElementById("loginTab");
+
+        const signupTab =
+            document.getElementById("signupTab");
+
+
+        const loginForm =
+            document.getElementById("loginForm");
+
+        const signupForm =
+            document.getElementById("signupForm");
+
+
+        const authTitle =
+            document.getElementById("authTitle");
+
+        const authSubtitle =
+            document.getElementById("authSubtitle");
+
+
+        const authMessage =
+            document.getElementById("authMessage");
+
+        const authMessageText =
+            document.getElementById("authMessageText");
+
+
+        const toast =
+            document.getElementById("toast");
+
+        const toastTitle =
+            document.getElementById("toastTitle");
+
+        const toastMessage =
+            document.getElementById("toastMessage");
+
+
+        /* =========================================================
+           YEAR
+        ========================================================== */
+
+        document.getElementById(
+            "showcaseYear"
+        ).textContent =
+            new Date().getFullYear();
+
+
+        /* =========================================================
+           URL PARAMETERS
+        ========================================================== */
+
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
+
+        const requestedMode =
+            params.get("mode");
+
+        const templateId =
+            params.get("template");
+
+
+        /* =========================================================
+           HELPERS
+        ========================================================== */
+
+        function setButtonLoading(
+            button,
+            loading,
+            loadingText = "Please wait..."
+        ) {
+
+            const text =
+                button.querySelector(".btn-text");
+
+            if (!button.dataset.originalText) {
+
+                button.dataset.originalText =
+                    text.textContent.trim();
+
+            }
+
+
+            if (loading) {
+
+                button.disabled = true;
+
+                button.classList.add(
+                    "loading"
+                );
+
+                text.textContent =
+                    loadingText;
+
+            }
+            else {
+
+                button.disabled = false;
+
+                button.classList.remove(
+                    "loading"
+                );
+
+                text.textContent =
+                    button.dataset.originalText;
+
+            }
+
+        }
+
+
+        function showToast(
+            title,
+            message
+        ) {
+
+            toastTitle.textContent = title;
+            toastMessage.textContent = message;
+
+            toast.classList.add("show");
+
+
+            setTimeout(() => {
+
+                toast.classList.remove(
+                    "show"
+                );
+
+            }, 4300);
+
+        }
+
+
+        function showMessage(
+            element,
+            textElement,
+            type,
+            text
+        ) {
+
+            element.className =
+                "message show " + type;
+
+            textElement.textContent =
+                text;
+
+        }
+
+
+        function hideMessage(element) {
+
+            element.className =
+                "message";
+
+        }
+
+
+        /* =========================================================
+           AUTH TAB SWITCHING
+        ========================================================== */
+
+        function switchAuthMode(mode) {
+
+            hideMessage(
+                authMessage
+            );
+
+
+            if (mode === "signup") {
+
+                loginTab.classList.remove(
+                    "active"
+                );
+
+                signupTab.classList.add(
+                    "active"
+                );
+
+
+                loginForm.classList.remove(
+                    "active"
+                );
+
+                signupForm.classList.add(
+                    "active"
+                );
+
+
+                authTitle.textContent =
+                    "Create your account.";
+
+                authSubtitle.textContent =
+                    "Start building beautiful invitations and managing your guests from one place.";
+
+
+                const url =
+                    new URL(
+                        window.location.href
+                    );
+
+                url.searchParams.set(
+                    "mode",
+                    "signup"
+                );
+
+                window.history.replaceState(
+                    {},
+                    "",
+                    url
+                );
+
+            }
+            else {
+
+                signupTab.classList.remove(
+                    "active"
+                );
+
+                loginTab.classList.add(
+                    "active"
+                );
+
+
+                signupForm.classList.remove(
+                    "active"
+                );
+
+                loginForm.classList.add(
+                    "active"
+                );
+
+
+                authTitle.textContent =
+                    "Welcome back.";
+
+                authSubtitle.textContent =
+                    "Sign in to manage your invitations, guests and RSVP responses.";
+
+
+                const url =
+                    new URL(
+                        window.location.href
+                    );
+
+                url.searchParams.delete(
+                    "mode"
+                );
+
+                window.history.replaceState(
+                    {},
+                    "",
+                    url
+                );
+
+            }
+
+        }
+
+
+        loginTab.addEventListener(
+            "click",
+            () => switchAuthMode("login")
+        );
+
+
+        signupTab.addEventListener(
+            "click",
+            () => switchAuthMode("signup")
+        );
+
+
+        document
+            .querySelectorAll(
+                "[data-switch]"
+            )
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        switchAuthMode(
+                            button.dataset.switch
+                        );
+
+                    }
+                );
+
+            });
+
+
+        /* =========================================================
+           PASSWORD VISIBILITY
+        ========================================================== */
+
+        document
+            .querySelectorAll(
+                ".password-toggle"
+            )
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        const input =
+                            document.getElementById(
+                                button.dataset.target
+                            );
+
+
+                        const icon =
+                            button.querySelector("i");
+
+
+                        const hidden =
+                            input.type === "password";
+
+
+                        input.type =
+                            hidden
+                            ? "text"
+                            : "password";
+
+
+                        icon.className =
+                            hidden
+                            ? "fa-regular fa-eye-slash"
+                            : "fa-regular fa-eye";
+
+                    }
+                );
+
+            });
+
+
+        /* =========================================================
+           PASSWORD RULES
+        ========================================================== */
+
+        const signupPassword =
+            document.getElementById(
+                "signupPassword"
+            );
+
+
+        signupPassword.addEventListener(
+            "input",
+            () => {
+
+                const value =
+                    signupPassword.value;
+
+
+                updateRule(
+                    "ruleLength",
+                    value.length >= 8
+                );
+
+
+                updateRule(
+                    "ruleUpper",
+                    /[A-Z]/.test(value)
+                );
+
+
+                updateRule(
+                    "ruleNumber",
+                    /[0-9]/.test(value)
+                );
+
+
+                updateRule(
+                    "ruleSpecial",
+                    /[^A-Za-z0-9]/.test(value)
+                );
+
+            }
+        );
+
+
+        function updateRule(
+            id,
+            valid
+        ) {
+
+            const element =
+                document.getElementById(id);
+
+            element.classList.toggle(
+                "valid",
+                valid
+            );
+
+
+            const icon =
+                element.querySelector("i");
+
+
+            icon.className =
+                valid
+                ? "fa-solid fa-circle-check"
+                : "fa-solid fa-circle";
+
+        }
+
+
+        function validatePassword(password) {
+
+            return (
+                password.length >= 8 &&
+                /[A-Z]/.test(password) &&
+                /[0-9]/.test(password) &&
+                /[^A-Za-z0-9]/.test(password)
+            );
+
+        }
+
+
+        /* =========================================================
+           SIGN UP
+        ========================================================== */
+
+        signupForm.addEventListener(
+            "submit",
+            async event => {
+
+                event.preventDefault();
+
+
+                hideMessage(
+                    authMessage
+                );
+
+
+                const button =
+                    document.getElementById(
+                        "signupSubmit"
+                    );
+
+
+                const firstName =
+                    document
+                        .getElementById(
+                            "firstName"
+                        )
+                        .value
+                        .trim();
+
+
+                const lastName =
+                    document
+                        .getElementById(
+                            "lastName"
+                        )
+                        .value
+                        .trim();
+
+
+                const email =
+                    document
+                        .getElementById(
+                            "signupEmail"
+                        )
+                        .value
+                        .trim()
+                        .toLowerCase();
+
+
+                const phone =
+                    document
+                        .getElementById(
+                            "signupPhone"
+                        )
+                        .value
+                        .trim();
+
+
+                const password =
+                    document
+                        .getElementById(
+                            "signupPassword"
+                        )
+                        .value;
+
+
+                const confirmPassword =
+                    document
+                        .getElementById(
+                            "confirmPassword"
+                        )
+                        .value;
+
+
+                const terms =
+                    document
+                        .getElementById(
+                            "termsCheckbox"
+                        )
+                        .checked;
+
+
+                if (!firstName || !lastName) {
+
+                    showMessage(
+                        authMessage,
+                        authMessageText,
+                        "error",
+                        "Please enter your full name."
+                    );
+
+                    return;
+                }
+
+
+                if (
+                    !validatePassword(
+                        password
+                    )
+                ) {
+
+                    showMessage(
+                        authMessage,
+                        authMessageText,
+                        "error",
+                        "Your password must contain at least 8 characters, one uppercase letter, one number and one special character."
+                    );
+
+                    return;
+                }
+
+
+                if (
+                    password !==
+                    confirmPassword
+                ) {
+
+                    showMessage(
+                        authMessage,
+                        authMessageText,
+                        "error",
+                        "Your passwords do not match."
+                    );
+
+                    return;
+                }
+
+
+                if (!terms) {
+
+                    showMessage(
+                        authMessage,
+                        authMessageText,
+                        "error",
+                        "Please agree to the Terms of Service and Privacy Policy."
+                    );
+
+                    return;
+                }
+
+
+                setButtonLoading(
+                    button,
+                    true,
+                    "Creating account..."
+                );
+
+
+                try {
+
+                    const fullName =
+                        `${firstName} ${lastName}`;
+
+
+                    const emailRedirectTo =
+                        new URL(
+                            "login.html",
+                            window.location.href
+                        );
+
+
+                    emailRedirectTo.searchParams.set(
+                        "verified",
+                        "1"
+                    );
+
+
+                    const {
+                        data,
+                        error
+                    } =
+                    await supabaseClient
+                        .auth
+                        .signUp({
+
+                            email,
+
+                            password,
+
+                            options: {
+
+                                emailRedirectTo:
+                                    emailRedirectTo.href,
+
+                                data: {
+                                    full_name:
+                                        fullName,
+
+                                    phone:
+                                        phone || null
+                                }
+
+                            }
+
+                        });
+
+
+                    if (error) {
+                        throw error;
+                    }
+
+
+                    /*
+                     * Supabase behaves differently depending
+                     * on whether email confirmation is enabled.
+                     */
+
+                    if (
+                        data.session &&
+                        data.user
+                    ) {
+
+                        /*
+                         * Auth trigger already creates profile.
+                         * We only update optional phone information.
+                         */
+
+                        if (phone) {
+
+                            await supabaseClient
+                                .from("profiles")
+                                .update({
+                                    phone
+                                })
+                                .eq(
+                                    "id",
+                                    data.user.id
+                                );
+
+                        }
+
+
+                        saveSelectedTemplate();
+
+
+                        window.location.href =
+                            "dashboard.html";
+
+                        return;
+                    }
+
+
+                    signupForm.reset();
+
+
+                    showMessage(
+                        authMessage,
+                        authMessageText,
+                        "success",
+                        "Your account was created. Check your email and click the verification link before signing in."
+                    );
+
+
+                    showToast(
+                        "Check your inbox",
+                        "We sent an account verification email to " + email + "."
+                    );
+
+                }
+                catch (error) {
+
+                    console.error(
+                        "Signup error:",
+                        error
+                    );
+
+
+                    showMessage(
+                        authMessage,
+                        authMessageText,
+                        "error",
+                        friendlyAuthError(
+                            error.message
+                        )
+                    );
+
+                }
+                finally {
+
+                    setButtonLoading(
+                        button,
+                        false
+                    );
+
+                }
+
+            }
+        );
+
+
+        /* =========================================================
+           SIGN IN
+        ========================================================== */
+
+        loginForm.addEventListener(
+            "submit",
+            async event => {
+
+                event.preventDefault();
+
+
+                hideMessage(
+                    authMessage
+                );
+
+
+                const button =
+                    document.getElementById(
+                        "loginSubmit"
+                    );
+
+
+                const email =
+                    document
+                        .getElementById(
+                            "loginEmail"
+                        )
+                        .value
+                        .trim()
+                        .toLowerCase();
+
+
+                const password =
+                    document
+                        .getElementById(
+                            "loginPassword"
+                        )
+                        .value;
+
+
+                setButtonLoading(
+                    button,
+                    true,
+                    "Signing in..."
+                );
+
+
+                try {
+
+                    const {
+                        data,
+                        error
+                    } =
+                    await supabaseClient
+                        .auth
+                        .signInWithPassword({
+                            email,
+                            password
+                        });
+
+
+                    if (error) {
+                        throw error;
+                    }
+
+
+                    if (!data.user) {
+
+                        throw new Error(
+                            "Unable to access your account."
+                        );
+
+                    }
+
+
+                    /*
+                     * Check application profile.
+                     */
+
+                    const {
+                        data: profile,
+                        error: profileError
+                    } =
+                    await supabaseClient
+                        .from("profiles")
+                        .select(`
+                            id,
+                            role,
+                            account_status,
+                            full_name
+                        `)
+                        .eq(
+                            "id",
+                            data.user.id
+                        )
+                        .single();
+
+
+                    if (profileError) {
+
+                        console.warn(
+                            "Profile check:",
+                            profileError
+                        );
+
+                    }
+
+
+                    if (
+                        profile &&
+                        profile.account_status !==
+                        "active"
+                    ) {
+
+                        await supabaseClient
+                            .auth
+                            .signOut();
+
+
+                        throw new Error(
+                            "This account is currently " +
+                            profile.account_status +
+                            ". Please contact support."
+                        );
+
+                    }
+
+
+                    saveSelectedTemplate();
+
+
+                    showToast(
+                        "Welcome back",
+                        "Opening your organizer dashboard."
+                    );
+
+
+                    setTimeout(() => {
+
+                        window.location.href =
+                            "dashboard.html";
+
+                    }, 600);
+
+                }
+                catch (error) {
+
+                    console.error(
+                        "Login error:",
+                        error
+                    );
+
+
+                    showMessage(
+                        authMessage,
+                        authMessageText,
+                        "error",
+                        friendlyAuthError(
+                            error.message
+                        )
+                    );
+
+                }
+                finally {
+
+                    setButtonLoading(
+                        button,
+                        false
+                    );
+
+                }
+
+            }
+        );
+
+
+        /* =========================================================
+           FORGOT PASSWORD VIEW
+        ========================================================== */
+
+        const forgotPasswordLink =
+            document.getElementById(
+                "forgotPasswordLink"
+            );
+
+
+        forgotPasswordLink.addEventListener(
+            "click",
+            () => {
+
+                normalAuthView.style.display =
+                    "none";
+
+                resetView.classList.remove(
+                    "active"
+                );
+
+                forgotView.classList.add(
+                    "active"
+                );
+
+
+                const currentEmail =
+                    document.getElementById(
+                        "loginEmail"
+                    ).value;
+
+
+                if (currentEmail) {
+
+                    document.getElementById(
+                        "forgotEmail"
+                    ).value =
+                        currentEmail;
+
+                }
+
+            }
+        );
+
+
+        document
+            .getElementById(
+                "forgotBack"
+            )
+            .addEventListener(
+                "click",
+                () => {
+
+                    forgotView.classList.remove(
+                        "active"
+                    );
+
+                    normalAuthView.style.display =
+                        "block";
+
+                    switchAuthMode(
+                        "login"
+                    );
+
+                }
+            );
+
+
+        /* =========================================================
+           SEND PASSWORD RESET
+        ========================================================== */
+
+        document
+            .getElementById(
+                "forgotForm"
+            )
+            .addEventListener(
+                "submit",
+                async event => {
+
+                    event.preventDefault();
+
+
+                    const message =
+                        document.getElementById(
+                            "forgotMessage"
+                        );
+
+                    const messageText =
+                        document.getElementById(
+                            "forgotMessageText"
+                        );
+
+                    const button =
+                        document.getElementById(
+                            "forgotSubmit"
+                        );
+
+
+                    hideMessage(
+                        message
+                    );
+
+
+                    const email =
+                        document
+                            .getElementById(
+                                "forgotEmail"
+                            )
+                            .value
+                            .trim()
+                            .toLowerCase();
+
+
+                    setButtonLoading(
+                        button,
+                        true,
+                        "Sending email..."
+                    );
+
+
+                    try {
+
+                        const resetUrl =
+                            new URL(
+                                "login.html",
+                                window.location.href
+                            );
+
+
+                        resetUrl.searchParams.set(
+                            "mode",
+                            "reset"
+                        );
+
+
+                        const {
+                            error
+                        } =
+                        await supabaseClient
+                            .auth
+                            .resetPasswordForEmail(
+                                email,
+                                {
+                                    redirectTo:
+                                        resetUrl.href
+                                }
+                            );
+
+
+                        if (error) {
+                            throw error;
+                        }
+
+
+                        showMessage(
+                            message,
+                            messageText,
+                            "success",
+                            "Password reset email sent. Check your inbox and follow the secure link."
+                        );
+
+
+                    }
+                    catch (error) {
+
+                        console.error(
+                            "Password reset error:",
+                            error
+                        );
+
+
+                        showMessage(
+                            message,
+                            messageText,
+                            "error",
+                            friendlyAuthError(
+                                error.message
+                            )
+                        );
+
+                    }
+                    finally {
+
+                        setButtonLoading(
+                            button,
+                            false
+                        );
+
+                    }
+
+                }
+            );
+
+
+        /* =========================================================
+           UPDATE PASSWORD
+        ========================================================== */
+
+        document
+            .getElementById(
+                "resetForm"
+            )
+            .addEventListener(
+                "submit",
+                async event => {
+
+                    event.preventDefault();
+
+
+                    const message =
+                        document.getElementById(
+                            "resetMessage"
+                        );
+
+                    const messageText =
+                        document.getElementById(
+                            "resetMessageText"
+                        );
+
+                    const button =
+                        document.getElementById(
+                            "resetSubmit"
+                        );
+
+
+                    hideMessage(
+                        message
+                    );
+
+
+                    const password =
+                        document.getElementById(
+                            "newPassword"
+                        ).value;
+
+
+                    const confirmation =
+                        document.getElementById(
+                            "newPasswordConfirm"
+                        ).value;
+
+
+                    if (
+                        !validatePassword(
+                            password
+                        )
+                    ) {
+
+                        showMessage(
+                            message,
+                            messageText,
+                            "error",
+                            "Use at least 8 characters with one uppercase letter, one number and one special character."
+                        );
+
+                        return;
+                    }
+
+
+                    if (
+                        password !==
+                        confirmation
+                    ) {
+
+                        showMessage(
+                            message,
+                            messageText,
+                            "error",
+                            "Your passwords do not match."
+                        );
+
+                        return;
+                    }
+
+
+                    setButtonLoading(
+                        button,
+                        true,
+                        "Updating password..."
+                    );
+
+
+                    try {
+
+                        const {
+                            error
+                        } =
+                        await supabaseClient
+                            .auth
+                            .updateUser({
+                                password
+                            });
+
+
+                        if (error) {
+                            throw error;
+                        }
+
+
+                        showMessage(
+                            message,
+                            messageText,
+                            "success",
+                            "Your password has been updated successfully."
+                        );
+
+
+                        showToast(
+                            "Password updated",
+                            "You can now continue to your dashboard."
+                        );
+
+
+                        setTimeout(() => {
+
+                            window.location.href =
+                                "dashboard.html";
+
+                        }, 1200);
+
+                    }
+                    catch (error) {
+
+                        console.error(
+                            "Update password error:",
+                            error
+                        );
+
+
+                        showMessage(
+                            message,
+                            messageText,
+                            "error",
+                            friendlyAuthError(
+                                error.message
+                            )
+                        );
+
+                    }
+                    finally {
+
+                        setButtonLoading(
+                            button,
+                            false
+                        );
+
+                    }
+
+                }
+            );
+
+
+        /* =========================================================
+           SAVE TEMPLATE SELECTION
+        ========================================================== */
+
+        function saveSelectedTemplate() {
+
+            if (!templateId) {
+                return;
+            }
+
+
+            sessionStorage.setItem(
+                "rsvp_selected_template",
+                templateId
+            );
+
+        }
+
+
+        /* =========================================================
+           FRIENDLY ERRORS
+        ========================================================== */
+
+        function friendlyAuthError(message) {
+
+            const value =
+                String(message || "")
+                    .toLowerCase();
+
+
+            if (
+                value.includes(
+                    "invalid login credentials"
+                )
+            ) {
+
+                return "The email address or password you entered is incorrect.";
+
+            }
+
+
+            if (
+                value.includes(
+                    "email not confirmed"
+                )
+            ) {
+
+                return "Please verify your email address before signing in.";
+
+            }
+
+
+            if (
+                value.includes(
+                    "user already registered"
+                )
+            ) {
+
+                return "An account with this email address already exists. Try signing in instead.";
+
+            }
+
+
+            if (
+                value.includes(
+                    "password should be"
+                )
+            ) {
+
+                return "Your password does not meet the minimum security requirements.";
+
+            }
+
+
+            if (
+                value.includes(
+                    "rate limit"
+                )
+            ) {
+
+                return "Too many requests were made. Please try again shortly.";
+
+            }
+
+
+            if (
+                value.includes(
+                    "fetch"
+                )
+                ||
+                value.includes(
+                    "network"
+                )
+            ) {
+
+                return "We could not connect to the authentication server. Check your internet connection and try again.";
+
+            }
+
+
+            return (
+                message ||
+                "Something went wrong. Please try again."
+            );
+
+        }
+
+
+        /* =========================================================
+           AUTH EVENT LISTENER
+        ========================================================== */
+
+        supabaseClient
+            .auth
+            .onAuthStateChange(
+                (
+                    event,
+                    session
+                ) => {
+
+                    /*
+                     * Supabase fires PASSWORD_RECOVERY when
+                     * the recovery URL is successfully opened.
+                     */
+
+                    if (
+                        event ===
+                        "PASSWORD_RECOVERY"
+                    ) {
+
+                        normalAuthView.style.display =
+                            "none";
+
+                        forgotView.classList.remove(
+                            "active"
+                        );
+
+                        resetView.classList.add(
+                            "active"
+                        );
+
+                    }
+
+                }
+            );
+
+
+        /* =========================================================
+           INITIAL PAGE
+        ========================================================== */
+
+        async function initialiseAuthPage() {
+
+            /*
+             * Account verification redirect.
+             */
+
+            if (
+                params.get("verified") ===
+                "1"
+            ) {
+
+                showMessage(
+                    authMessage,
+                    authMessageText,
+                    "success",
+                    "Your email has been verified. You can now sign in."
+                );
+
+            }
+
+
+            /*
+             * Direct signup request from index.html.
+             */
+
+            if (
+                requestedMode ===
+                "signup"
+            ) {
+
+                switchAuthMode(
+                    "signup"
+                );
+
+            }
+
+
+            /*
+             * Recovery links can arrive with auth data
+             * in URL hashes. onAuthStateChange normally
+             * catches PASSWORD_RECOVERY.
+             */
+
+            if (
+                requestedMode ===
+                "reset"
+            ) {
+
+                /*
+                 * Do not instantly show reset form unless
+                 * Supabase has established recovery session.
+                 */
+
+                setTimeout(
+                    async () => {
+
+                        const {
+                            data
+                        } =
+                        await supabaseClient
+                            .auth
+                            .getSession();
+
+
+                        if (
+                            data.session
+                        ) {
+
+                            normalAuthView.style.display =
+                                "none";
+
+                            forgotView.classList.remove(
+                                "active"
+                            );
+
+                            resetView.classList.add(
+                                "active"
+                            );
+
+                        }
+
+                    },
+                    500
+                );
+
+            }
+
+
+            /*
+             * If user is already signed in and this is
+             * not a password recovery request, go straight
+             * to the organizer dashboard.
+             */
+
+            try {
+
+                const {
+                    data
+                } =
+                await supabaseClient
+                    .auth
+                    .getSession();
+
+
+                if (
+                    data.session &&
+                    requestedMode !== "reset"
+                ) {
+
+                    saveSelectedTemplate();
+
+                    window.location.href =
+                        "dashboard.html";
+
+                }
+
+            }
+            catch (error) {
+
+                console.warn(
+                    "Session check failed:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        initialiseAuthPage();
+
+    </script>
+
+</body>
+</html>

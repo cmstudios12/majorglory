@@ -1,0 +1,7457 @@
+<!DOCTYPE html>
+<html lang="en-ZA">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>You're Invited | RSVP</title>
+
+    <meta
+        name="description"
+        content="View your digital invitation and RSVP online."
+    >
+
+    <meta
+        name="theme-color"
+        content="#8d403c"
+    >
+
+
+    <!-- ============================================================
+         GOOGLE FONTS
+    ============================================================= -->
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <!-- ============================================================
+         FONT AWESOME
+    ============================================================= -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    >
+
+
+    <!-- ============================================================
+         SUPABASE
+    ============================================================= -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+    <style>
+
+        /* ============================================================
+           ROOT
+        ============================================================= */
+
+        :root {
+
+            --primary: #8d403c;
+            --primary-dark: #6d302d;
+            --primary-soft: #f7e9e5;
+
+            --accent: #b88b59;
+
+            --page-bg: #fbf8f4;
+            --surface: #ffffff;
+            --surface-soft: #f5f0eb;
+
+            --text: #1d1a18;
+            --muted: #746f69;
+
+            --border: #e8dfd7;
+
+            --success: #2f6b4f;
+            --success-soft: #e9f5ed;
+
+            --danger: #a44343;
+            --danger-soft: #faeaea;
+
+            --warning: #8b652e;
+            --warning-soft: #faf0df;
+
+            --heading-font:
+                "DM Serif Display",
+                Georgia,
+                serif;
+
+            --body-font:
+                "Inter",
+                Arial,
+                sans-serif;
+
+            --shadow:
+                0 30px 80px
+                rgba(44, 29, 23, 0.13);
+
+            --shadow-sm:
+                0 12px 40px
+                rgba(44, 29, 23, 0.07);
+
+            --radius-sm: 13px;
+            --radius: 20px;
+            --radius-lg: 34px;
+
+        }
+
+
+        /* ============================================================
+           RESET
+        ============================================================= */
+
+        *,
+        *::before,
+        *::after {
+
+            box-sizing:
+                border-box;
+
+        }
+
+
+        html {
+
+            scroll-behavior:
+                smooth;
+
+        }
+
+
+        body {
+
+            margin: 0;
+
+            min-height: 100vh;
+
+            font-family:
+                var(--body-font);
+
+            color:
+                var(--text);
+
+            background:
+                var(--page-bg);
+
+            overflow-x:
+                hidden;
+
+        }
+
+
+        body.modal-open {
+
+            overflow:
+                hidden;
+
+        }
+
+
+        button,
+        input,
+        textarea,
+        select {
+
+            font:
+                inherit;
+
+        }
+
+
+        button {
+
+            border: 0;
+
+            cursor:
+                pointer;
+
+        }
+
+
+        input,
+        textarea,
+        select {
+
+            outline:
+                none;
+
+        }
+
+
+        a {
+
+            color:
+                inherit;
+
+            text-decoration:
+                none;
+
+        }
+
+
+        img {
+
+            display:
+                block;
+
+            max-width:
+                100%;
+
+        }
+
+
+        /* ============================================================
+           LOADING SCREEN
+        ============================================================= */
+
+        .page-loader {
+
+            position:
+                fixed;
+
+            inset: 0;
+
+            z-index:
+                9999;
+
+            display:
+                grid;
+
+            place-items:
+                center;
+
+            background:
+                var(--page-bg);
+
+            transition:
+                opacity .35s ease,
+                visibility .35s ease;
+
+        }
+
+
+        .page-loader.hide {
+
+            opacity: 0;
+
+            visibility:
+                hidden;
+
+        }
+
+
+        .loader-content {
+
+            text-align:
+                center;
+
+        }
+
+
+        .loader-mark {
+
+            width: 61px;
+            height: 61px;
+
+            display:
+                grid;
+
+            place-items:
+                center;
+
+            margin:
+                0 auto 15px;
+
+            border-radius:
+                50%;
+
+            background:
+                var(--primary);
+
+            color:
+                #ffffff;
+
+            font-family:
+                var(--heading-font);
+
+            font-size:
+                27px;
+
+        }
+
+
+        .loader-content strong {
+
+            display:
+                block;
+
+            font-size:
+                13px;
+
+        }
+
+
+        .loader-content span {
+
+            display:
+                block;
+
+            margin-top:
+                4px;
+
+            color:
+                var(--muted);
+
+            font-size:
+                10px;
+
+        }
+
+
+        .spinner {
+
+            width: 26px;
+            height: 26px;
+
+            margin:
+                17px auto 0;
+
+            border:
+                3px solid
+                var(--border);
+
+            border-top-color:
+                var(--primary);
+
+            border-radius:
+                50%;
+
+            animation:
+                spin .7s linear infinite;
+
+        }
+
+
+        @keyframes spin {
+
+            to {
+
+                transform:
+                    rotate(360deg);
+
+            }
+
+        }
+
+
+        /* ============================================================
+           ERROR PAGE
+        ============================================================= */
+
+        .error-page {
+
+            min-height:
+                100vh;
+
+            display:
+                none;
+
+            place-items:
+                center;
+
+            padding:
+                30px 20px;
+
+        }
+
+
+        .error-page.show {
+
+            display:
+                grid;
+
+        }
+
+
+        .error-card {
+
+            width:
+                min(100%, 560px);
+
+            padding:
+                50px 35px;
+
+            border:
+                1px solid var(--border);
+
+            border-radius:
+                28px;
+
+            background:
+                #ffffff;
+
+            box-shadow:
+                var(--shadow-sm);
+
+            text-align:
+                center;
+
+        }
+
+
+        .error-icon {
+
+            width: 66px;
+            height: 66px;
+
+            display:
+                grid;
+
+            place-items:
+                center;
+
+            margin:
+                0 auto 21px;
+
+            border-radius:
+                20px;
+
+            background:
+                var(--primary-soft);
+
+            color:
+                var(--primary);
+
+            font-size:
+                22px;
+
+        }
+
+
+        .error-card h1 {
+
+            margin:
+                0 0 12px;
+
+            font-family:
+                var(--heading-font);
+
+            font-size:
+                38px;
+
+            font-weight:
+                400;
+
+        }
+
+
+        .error-card p {
+
+            margin:
+                0 auto;
+
+            max-width:
+                420px;
+
+            color:
+                var(--muted);
+
+            font-size:
+                12px;
+
+            line-height:
+                1.8;
+
+        }
+
+
+        /* ============================================================
+           INVITATION APP
+        ============================================================= */
+
+        .invitation-app {
+
+            display:
+                none;
+
+        }
+
+
+        .invitation-app.show {
+
+            display:
+                block;
+
+        }
+
+
+        /* ============================================================
+           HERO
+        ============================================================= */
+
+        .hero {
+
+            position:
+                relative;
+
+            min-height:
+                100vh;
+
+            display:
+                flex;
+
+            align-items:
+                flex-end;
+
+            isolation:
+                isolate;
+
+            overflow:
+                hidden;
+
+            background:
+                #382b28;
+
+            color:
+                #ffffff;
+
+        }
+
+
+        .hero-image {
+
+            position:
+                absolute;
+
+            inset: 0;
+
+            z-index:
+                -3;
+
+            background-position:
+                center;
+
+            background-size:
+                cover;
+
+            transform:
+                scale(1.03);
+
+        }
+
+
+        .hero-overlay {
+
+            position:
+                absolute;
+
+            inset: 0;
+
+            z-index:
+                -2;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    rgba(21, 15, 13, .15) 0%,
+                    rgba(21, 15, 13, .22) 32%,
+                    rgba(21, 15, 13, .83) 100%
+                );
+
+        }
+
+
+        .hero-pattern {
+
+            position:
+                absolute;
+
+            inset: 0;
+
+            z-index:
+                -1;
+
+            pointer-events:
+                none;
+
+            background:
+                radial-gradient(
+                    circle at 15% 15%,
+                    rgba(255,255,255,.10),
+                    transparent 23%
+                );
+
+        }
+
+
+        .hero-top {
+
+            position:
+                absolute;
+
+            top: 0;
+            left: 0;
+            right: 0;
+
+            z-index:
+                10;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                space-between;
+
+            gap:
+                20px;
+
+            padding:
+                25px clamp(20px, 5vw, 65px);
+
+        }
+
+
+        .brand {
+
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            gap:
+                10px;
+
+            color:
+                #ffffff;
+
+            font-size:
+                16px;
+
+            font-weight:
+                800;
+
+        }
+
+
+        .brand-mark {
+
+            width: 35px;
+            height: 35px;
+
+            display:
+                grid;
+
+            place-items:
+                center;
+
+            border:
+                1px solid rgba(255,255,255,.35);
+
+            border-radius:
+                50%;
+
+            background:
+                rgba(255,255,255,.12);
+
+            backdrop-filter:
+                blur(8px);
+
+            font-family:
+                var(--heading-font);
+
+            font-size:
+                18px;
+
+        }
+
+
+        .hero-share {
+
+            width: 41px;
+            height: 41px;
+
+            display:
+                grid;
+
+            place-items:
+                center;
+
+            border:
+                1px solid rgba(255,255,255,.28);
+
+            border-radius:
+                50%;
+
+            background:
+                rgba(255,255,255,.10);
+
+            color:
+                #ffffff;
+
+            backdrop-filter:
+                blur(8px);
+
+        }
+
+
+        .hero-inner {
+
+            width:
+                min(1180px, calc(100% - 40px));
+
+            margin:
+                0 auto;
+
+            padding:
+                140px 0 74px;
+
+        }
+
+
+        .hero-kicker {
+
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            gap:
+                8px;
+
+            margin-bottom:
+                17px;
+
+            color:
+                rgba(255,255,255,.78);
+
+            font-size:
+                10px;
+
+            font-weight:
+                800;
+
+            letter-spacing:
+                .17em;
+
+            text-transform:
+                uppercase;
+
+        }
+
+
+        .hero-kicker::before {
+
+            content:
+                "";
+
+            width:
+                30px;
+
+            height:
+                1px;
+
+            background:
+                var(--accent);
+
+        }
+
+
+        .hero h1 {
+
+            max-width:
+                840px;
+
+            margin:
+                0;
+
+            font-family:
+                var(--heading-font);
+
+            font-size:
+                clamp(
+                    58px,
+                    9vw,
+                    116px
+                );
+
+            font-weight:
+                400;
+
+            line-height:
+                .88;
+
+            letter-spacing:
+                -.045em;
+
+        }
+
+
+        .hero-headline {
+
+            max-width:
+                660px;
+
+            margin:
+                22px 0 0;
+
+            color:
+                rgba(255,255,255,.82);
+
+            font-family:
+                "Playfair Display",
+                serif;
+
+            font-size:
+                clamp(18px, 2.3vw, 28px);
+
+            line-height:
+                1.45;
+
+        }
+
+
+        .hero-meta {
+
+            display:
+                flex;
+
+            flex-wrap:
+                wrap;
+
+            gap:
+                10px;
+
+            margin-top:
+                34px;
+
+        }
+
+
+        .hero-meta-item {
+
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            gap:
+                9px;
+
+            min-height:
+                45px;
+
+            padding:
+                0 15px;
+
+            border:
+                1px solid rgba(255,255,255,.20);
+
+            border-radius:
+                999px;
+
+            background:
+                rgba(255,255,255,.09);
+
+            backdrop-filter:
+                blur(10px);
+
+            color:
+                rgba(255,255,255,.88);
+
+            font-size:
+                10px;
+
+            font-weight:
+                700;
+
+        }
+
+
+        .hero-meta-item i {
+
+            color:
+                #f0d8b9;
+
+        }
+
+
+        .hero-cta {
+
+            display:
+                flex;
+
+            flex-wrap:
+                wrap;
+
+            gap:
+                9px;
+
+            margin-top:
+                31px;
+
+        }
+
+
+        .hero-btn {
+
+            min-height:
+                54px;
+
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            gap:
+                9px;
+
+            padding:
+                0 22px;
+
+            border-radius:
+                13px;
+
+            font-size:
+                11px;
+
+            font-weight:
+                800;
+
+        }
+
+
+        .hero-btn-primary {
+
+            background:
+                #ffffff;
+
+            color:
+                var(--primary);
+
+        }
+
+
+        .hero-btn-secondary {
+
+            border:
+                1px solid rgba(255,255,255,.26);
+
+            background:
+                rgba(255,255,255,.08);
+
+            color:
+                #ffffff;
+
+            backdrop-filter:
+                blur(8px);
+
+        }
+
+
+        /* ============================================================
+           COUNTDOWN
+        ============================================================= */
+
+        .countdown-wrap {
+
+            position:
+                relative;
+
+            z-index:
+                10;
+
+            width:
+                min(
+                    950px,
+                    calc(100% - 28px)
+                );
+
+            margin:
+                -37px auto 0;
+
+        }
+
+
+        .countdown-card {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                1.2fr repeat(4, 1fr);
+
+            overflow:
+                hidden;
+
+            border:
+                1px solid var(--border);
+
+            border-radius:
+                20px;
+
+            background:
+                #ffffff;
+
+            box-shadow:
+                var(--shadow-sm);
+
+        }
+
+
+        .countdown-title {
+
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+            justify-content:
+                center;
+
+            padding:
+                20px 23px;
+
+        }
+
+
+        .countdown-title span {
+
+            color:
+                var(--primary);
+
+            font-size:
+                8px;
+
+            font-weight:
+                800;
+
+            letter-spacing:
+                .12em;
+
+            text-transform:
+                uppercase;
+
+        }
+
+
+        .countdown-title strong {
+
+            margin-top:
+                3px;
+
+            font-family:
+                var(--heading-font);
+
+            font-size:
+                21px;
+
+            font-weight:
+                400;
+
+        }
+
+
+        .count-item {
+
+            display:
+                grid;
+
+            place-items:
+                center;
+
+            padding:
+                17px 8px;
+
+            border-left:
+                1px solid var(--border);
+
+            text-align:
+                center;
+
+        }
+
+
+        .count-item strong {
+
+            display:
+                block;
+
+            font-family:
+                var(--heading-font);
+
+            font-size:
+                27px;
+
+            font-weight:
+                400;
+
+        }
+
+
+        .count-item span {
+
+            display:
+                block;
+
+            color:
+                var(--muted);
+
+            font-size:
+                7px;
+
+            font-weight:
+                800;
+
+            letter-spacing:
+                .07em;
+
+            text-transform:
+                uppercase;
+
+        }
+
+
+        /* ============================================================
+           GENERAL
+        ============================================================= */
+
+        .container {
+
+            width:
+                min(
+                    1120px,
+                    calc(100% - 40px)
+                );
+
+            margin:
+                0 auto;
+
+        }
+
+
+        .section {
+
+            padding:
+                105px 0;
+
+        }
+
+
+        .section-soft {
+
+            background:
+                var(--surface-soft);
+
+        }
+
+
+        .section-heading {
+
+            max-width:
+                680px;
+
+            margin-bottom:
+                42px;
+
+        }
+
+
+        .section-heading.center {
+
+            margin-left:
+                auto;
+
+            margin-right:
+                auto;
+
+            text-align:
+                center;
+
+        }
+
+
+        .section-label {
+
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            gap:
+                7px;
+
+            color:
+                var(--primary);
+
+            font-size:
+                9px;
+
+            font-weight:
+                800;
+
+            letter-spacing:
+                .12em;
+
+            text-transform:
+                uppercase;
+
+        }
+
+
+        .section-heading h2 {
+
+            margin:
+                13px 0 13px;
+
+            font-family:
+                var(--heading-font);
+
+            font-size:
+                clamp(
+                    38px,
+                    5vw,
+                    62px
+                );
+
+            font-weight:
+                400;
+
+            line-height:
+                1.02;
+
+            letter-spacing:
+                -.025em;
+
+        }
+
+
+        .section-heading p {
+
+            margin: 0;
+
+            color:
+                var(--muted);
+
+            font-size:
+                12px;
+
+            line-height:
+                1.85;
+
+        }
+
+
+        /* ============================================================
+           MESSAGE SECTION
+        ============================================================= */
+
+        .message-layout {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                .75fr 1.25fr;
+
+            gap:
+                70px;
+
+            align-items:
+                center;
+
+        }
+
+
+        .message-art {
+
+            position:
+                relative;
+
+            min-height:
+                460px;
+
+        }
+
+
+        .message-photo {
+
+            position:
+                absolute;
+
+            inset:
+                0 55px 35px 0;
+
+            overflow:
+                hidden;
+
+            border-radius:
+                190px 190px 20px 20px;
+
+            background:
+                var(--primary-soft);
+
+        }
+
+
+        .message-photo img {
+
+            width:
+                100%;
+
+            height:
+                100%;
+
+            object-fit:
+                cover;
+
+        }
+
+
+        .message-monogram {
+
+            position:
+                absolute;
+
+            right: 0;
+            bottom: 0;
+
+            width:
+                135px;
+
+            height:
+                135px;
+
+            display:
+                grid;
+
+            place-items:
+                center;
+
+            border:
+                10px solid var(--page-bg);
+
+            border-radius:
+                50%;
+
+            background:
+                var(--primary);
+
+            color:
+                #ffffff;
+
+            font-family:
+                var(--heading-font);
+
+            font-size:
+                35px;
+
+        }
+
+
+        .message-copy blockquote {
+
+            margin:
+                0;
+
+            font-family:
+                "Playfair Display",
+                serif;
+
+            font-size:
+                clamp(
+                    25px,
+                    3vw,
+                    38px
+                );
+
+            line-height:
+                1.45;
+
+        }
+
+
+        .message-copy p {
+
+            margin:
+                24px 0 0;
+
+            color:
+                var(--muted);
+
+            font-size:
+                12px;
+
+            line-height:
+                1.9;
+
+            white-space:
+                pre-line;
+
+        }
+
+
+        /* ============================================================
+           EVENT DETAILS
+        ============================================================= */
+
+        .details-grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap:
+                14px;
+
+        }
+
+
+        .detail-card {
+
+            min-height:
+                230px;
+
+            padding:
+                27px;
+
+            border:
+                1px solid var(--border);
+
+            border-radius:
+                var(--radius);
+
+            background:
+                #ffffff;
+
+            transition:
+                transform .25s ease,
+                box-shadow .25s ease;
+
+        }
+
+
+        .detail-card:hover {
+
+            transform:
+                translateY(-4px);
+
+            box-shadow:
+                var(--shadow-sm);
+
+        }
+
+
+        .detail-icon {
+
+            width: 46px;
+            height: 46px;
+
+            display:
+                grid;
+
+            place-items:
+                center;
+
+            margin-bottom:
+                40px;
+
+            border-radius:
+                14px;
+
+            background:
+                var(--primary-soft);
+
+            color:
+                var(--primary);
+
+        }
+
+
+        .detail-card span {
+
+            display:
+                block;
+
+            margin-bottom:
+                5px;
+
+            color:
+                var(--muted);
+
+            font-size:
+                8px;
+
+            font-weight:
+                800;
+
+            letter-spacing:
+                .08em;
+
+            text-transform:
+                uppercase;
+
+        }
+
+
+        .detail-card strong {
+
+            display:
+                block;
+
+            font-family:
+                var(--heading-font);
+
+            font-size:
+                23px;
+
+            font-weight:
+                400;
+
+            line-height:
+                1.15;
+
+        }
+
+
+        .detail-card p {
+
+            margin:
+                7px 0 0;
+
+            color:
+                var(--muted);
+
+            font-size:
+                10px;
+
+            line-height:
+                1.65;
+
+        }
+
+
+        .detail-link {
+
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            gap:
+                7px;
+
+            margin-top:
+                16px;
+
+            color:
+                var(--primary);
+
+            font-size:
+                9px;
+
+            font-weight:
+                800;
+
+        }
+
+
+        /* ============================================================
+           EXTRA INFORMATION
+        ============================================================= */
+
+        .extras-grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap:
+                15px;
+
+        }
+
+
+        .extra-card {
+
+            padding:
+                28px;
+
+            border:
+                1px solid var(--border);
+
+            border-radius:
+                var(--radius);
+
+            background:
+                #ffffff;
+
+        }
+
+
+        .extra-icon {
+
+            width: 43px;
+            height: 43px;
+
+            display:
+                grid;
+
+            place-items:
+                center;
+
+            margin-bottom:
+                19px;
+
+            border-radius:
+                13px;
+
+            background:
+                var(--primary-soft);
+
+            color:
+                var(--primary);
+
+        }
+
+
+        .extra-card h3 {
+
+            margin:
+                0 0 9px;
+
+            font-family:
+                var(--heading-font);
+
+            font-size:
+                25px;
+
+            font-weight:
+                400;
+
+        }
+
+
+        .extra-card p {
+
+            margin: 0;
+
+            color:
+                var(--muted);
+
+            font-size:
+                11px;
+
+            line-height:
+                1.85;
+
+            white-space:
+                pre-line;
+
+        }
+
+
+        /* ============================================================
+           GALLERY
+        ============================================================= */
+
+        .gallery-grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                1.35fr .65fr .65fr;
+
+            grid-auto-rows:
+                220px;
+
+            gap:
+                10px;
+
+        }
+
+
+        .gallery-item {
+
+            overflow:
+                hidden;
+
+            border-radius:
+                17px;
+
+            background:
+                var(--surface-soft);
+
+        }
+
+
+        .gallery-item:first-child {
+
+            grid-row:
+                span 2;
+
+        }
+
+
+        .gallery-item img {
+
+            width:
+                100%;
+
+            height:
+                100%;
+
+            object-fit:
+                cover;
+
+            transition:
+                transform .4s ease;
+
+        }
+
+
+        .gallery-item:hover img {
+
+            transform:
+                scale(1.04);
+
+        }
+
+
+        /* ============================================================
+           RSVP CTA
+        ============================================================= */
+
+        .rsvp-section {
+
+            position:
+                relative;
+
+            overflow:
+                hidden;
+
+            padding:
+                110px 0;
+
+            background:
+                var(--primary);
+
+            color:
+                #ffffff;
+
+        }
+
+
+        .rsvp-section::before {
+
+            content:
+                "";
+
+            position:
+                absolute;
+
+            width:
+                420px;
+
+            height:
+                420px;
+
+            left:
+                -170px;
+
+            top:
+                -250px;
+
+            border:
+                1px solid rgba(255,255,255,.12);
+
+            border-radius:
+                50%;
+
+        }
+
+
+        .rsvp-section::after {
+
+            content:
+                "";
+
+            position:
+                absolute;
+
+            width:
+                510px;
+
+            height:
+                510px;
+
+            right:
+                -220px;
+
+            bottom:
+                -330px;
+
+            border:
+                1px solid rgba(255,255,255,.10);
+
+            border-radius:
+                50%;
+
+        }
+
+
+        .rsvp-cta {
+
+            position:
+                relative;
+
+            z-index:
+                2;
+
+            max-width:
+                720px;
+
+            margin:
+                0 auto;
+
+            text-align:
+                center;
+
+        }
+
+
+        .rsvp-cta span {
+
+            color:
+                rgba(255,255,255,.65);
+
+            font-size:
+                9px;
+
+            font-weight:
+                800;
+
+            letter-spacing:
+                .15em;
+
+            text-transform:
+                uppercase;
+
+        }
+
+
+        .rsvp-cta h2 {
+
+            margin:
+                15px 0;
+
+            font-family:
+                var(--heading-font);
+
+            font-size:
+                clamp(
+                    44px,
+                    6vw,
+                    72px
+                );
+
+            font-weight:
+                400;
+
+            line-height:
+                1;
+
+        }
+
+
+        .rsvp-cta p {
+
+            max-width:
+                540px;
+
+            margin:
+                0 auto 29px;
+
+            color:
+                rgba(255,255,255,.70);
+
+            font-size:
+                11px;
+
+            line-height:
+                1.8;
+
+        }
+
+
+        .rsvp-button {
+
+            min-height:
+                57px;
+
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            gap:
+                9px;
+
+            padding:
+                0 25px;
+
+            border-radius:
+                13px;
+
+            background:
+                #ffffff;
+
+            color:
+                var(--primary);
+
+            font-size:
+                11px;
+
+            font-weight:
+                800;
+
+            box-shadow:
+                0 15px 40px
+                rgba(0,0,0,.15);
+
+        }
+
+
+        /* ============================================================
+           FOOTER
+        ============================================================= */
+
+        .footer {
+
+            padding:
+                37px 20px;
+
+            background:
+                #181615;
+
+            color:
+                rgba(255,255,255,.65);
+
+            text-align:
+                center;
+
+        }
+
+
+        .footer-brand {
+
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            gap:
+                8px;
+
+            margin-bottom:
+                11px;
+
+            color:
+                #ffffff;
+
+            font-size:
+                13px;
+
+            font-weight:
+                800;
+
+        }
+
+
+        .footer-brand span {
+
+            width: 27px;
+            height: 27px;
+
+            display:
+                grid;
+
+            place-items:
+                center;
+
+            border-radius:
+                50%;
+
+            background:
+                var(--primary);
+
+            font-family:
+                var(--heading-font);
+
+        }
+
+
+        .footer p {
+
+            margin: 0;
+
+            font-size:
+                8px;
+
+        }
+
+
+        /* ============================================================
+           RSVP MODAL
+        ============================================================= */
+
+        .modal-backdrop {
+
+            position:
+                fixed;
+
+            inset: 0;
+
+            z-index:
+                5000;
+
+            display:
+                grid;
+
+            place-items:
+                center;
+
+            padding:
+                20px;
+
+            background:
+                rgba(22, 19, 18, .65);
+
+            backdrop-filter:
+                blur(6px);
+
+            opacity: 0;
+
+            visibility:
+                hidden;
+
+            transition:
+                opacity .25s ease,
+                visibility .25s ease;
+
+        }
+
+
+        .modal-backdrop.show {
+
+            opacity: 1;
+
+            visibility:
+                visible;
+
+        }
+
+
+        .modal {
+
+            width:
+                min(
+                    100%,
+                    620px
+                );
+
+            max-height:
+                calc(100vh - 35px);
+
+            overflow-y:
+                auto;
+
+            border-radius:
+                23px;
+
+            background:
+                #ffffff;
+
+            box-shadow:
+                var(--shadow);
+
+            transform:
+                translateY(15px)
+                scale(.985);
+
+            transition:
+                transform .25s ease;
+
+        }
+
+
+        .modal-backdrop.show .modal {
+
+            transform:
+                translateY(0)
+                scale(1);
+
+        }
+
+
+        .modal-head {
+
+            position:
+                sticky;
+
+            top: 0;
+
+            z-index:
+                4;
+
+            display:
+                flex;
+
+            align-items:
+                flex-start;
+
+            justify-content:
+                space-between;
+
+            gap:
+                20px;
+
+            padding:
+                24px;
+
+            border-bottom:
+                1px solid var(--border);
+
+            background:
+                rgba(255,255,255,.96);
+
+            backdrop-filter:
+                blur(10px);
+
+        }
+
+
+        .modal-head span {
+
+            display:
+                block;
+
+            margin-bottom:
+                4px;
+
+            color:
+                var(--primary);
+
+            font-size:
+                8px;
+
+            font-weight:
+                800;
+
+            letter-spacing:
+                .1em;
+
+            text-transform:
+                uppercase;
+
+        }
+
+
+        .modal-head h3 {
+
+            margin: 0;
+
+            font-family:
+                var(--heading-font);
+
+            font-size:
+                31px;
+
+            font-weight:
+                400;
+
+            line-height:
+                1.1;
+
+        }
+
+
+        .modal-close {
+
+            width: 39px;
+            height: 39px;
+
+            display:
+                grid;
+
+            place-items:
+                center;
+
+            flex-shrink:
+                0;
+
+            border-radius:
+                11px;
+
+            background:
+                var(--surface-soft);
+
+            color:
+                var(--text);
+
+        }
+
+
+        .modal-body {
+
+            padding:
+                24px;
+
+        }
+
+
+        /* ============================================================
+           ACCESS MESSAGE
+        ============================================================= */
+
+        .guest-welcome {
+
+            display:
+                none;
+
+            align-items:
+                center;
+
+            gap:
+                11px;
+
+            margin-bottom:
+                19px;
+
+            padding:
+                13px;
+
+            border:
+                1px solid #dce9df;
+
+            border-radius:
+                12px;
+
+            background:
+                var(--success-soft);
+
+            color:
+                var(--success);
+
+        }
+
+
+        .guest-welcome.show {
+
+            display:
+                flex;
+
+        }
+
+
+        .guest-welcome i {
+
+            width:
+                34px;
+
+            height:
+                34px;
+
+            display:
+                grid;
+
+            place-items:
+                center;
+
+            flex-shrink:
+                0;
+
+            border-radius:
+                10px;
+
+            background:
+                rgba(255,255,255,.65);
+
+        }
+
+
+        .guest-welcome strong {
+
+            display:
+                block;
+
+            font-size:
+                10px;
+
+        }
+
+
+        .guest-welcome span {
+
+            display:
+                block;
+
+            margin-top:
+                2px;
+
+            font-size:
+                8px;
+
+            opacity:
+                .8;
+
+        }
+
+
+        /* ============================================================
+           RSVP STATUS BUTTONS
+        ============================================================= */
+
+        .response-question {
+
+            margin-bottom:
+                22px;
+
+        }
+
+
+        .response-question > label {
+
+            display:
+                block;
+
+            margin-bottom:
+                10px;
+
+            font-size:
+                10px;
+
+            font-weight:
+                800;
+
+        }
+
+
+        .response-options {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap:
+                8px;
+
+        }
+
+
+        .response-option {
+
+            min-height:
+                70px;
+
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            gap:
+                6px;
+
+            padding:
+                10px;
+
+            border:
+                1px solid var(--border);
+
+            border-radius:
+                12px;
+
+            background:
+                #ffffff;
+
+            color:
+                var(--muted);
+
+            font-size:
+                9px;
+
+            font-weight:
+                800;
+
+            transition:
+                all .2s ease;
+
+        }
+
+
+        .response-option i {
+
+            font-size:
+                16px;
+
+        }
+
+
+        .response-option:hover {
+
+            border-color:
+                var(--primary);
+
+            color:
+                var(--primary);
+
+        }
+
+
+        .response-option.active {
+
+            border-color:
+                var(--primary);
+
+            background:
+                var(--primary-soft);
+
+            color:
+                var(--primary);
+
+        }
+
+
+        /* ============================================================
+           FORM
+        ============================================================= */
+
+        .form-grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap:
+                12px;
+
+        }
+
+
+        .field {
+
+            margin-bottom:
+                14px;
+
+        }
+
+
+        .field.full {
+
+            grid-column:
+                1 / -1;
+
+        }
+
+
+        .field label {
+
+            display:
+                block;
+
+            margin-bottom:
+                7px;
+
+            color:
+                #4f4945;
+
+            font-size:
+                9px;
+
+            font-weight:
+                800;
+
+        }
+
+
+        .required {
+
+            color:
+                var(--primary);
+
+        }
+
+
+        .field input,
+        .field textarea,
+        .field select {
+
+            width:
+                100%;
+
+            border:
+                1px solid var(--border);
+
+            border-radius:
+                11px;
+
+            background:
+                #ffffff;
+
+            color:
+                var(--text);
+
+            font-size:
+                10px;
+
+            transition:
+                border-color .2s ease,
+                box-shadow .2s ease;
+
+        }
+
+
+        .field input,
+        .field select {
+
+            height:
+                47px;
+
+            padding:
+                0 13px;
+
+        }
+
+
+        .field textarea {
+
+            min-height:
+                100px;
+
+            padding:
+                12px 13px;
+
+            resize:
+                vertical;
+
+        }
+
+
+        .field input:focus,
+        .field textarea:focus,
+        .field select:focus {
+
+            border-color:
+                rgba(141, 64, 60, .55);
+
+            box-shadow:
+                0 0 0 3px
+                rgba(141,64,60,.07);
+
+        }
+
+
+        .field small {
+
+            display:
+                block;
+
+            margin-top:
+                5px;
+
+            color:
+                var(--muted);
+
+            font-size:
+                8px;
+
+            line-height:
+                1.5;
+
+        }
+
+
+        .party-fields {
+
+            display:
+                none;
+
+        }
+
+
+        .party-fields.show {
+
+            display:
+                block;
+
+        }
+
+
+        .guest-name-fields {
+
+            display:
+                grid;
+
+            gap:
+                8px;
+
+            margin-top:
+                9px;
+
+        }
+
+
+        /* ============================================================
+           CUSTOM QUESTIONS
+        ============================================================= */
+
+        .questions-wrap {
+
+            margin-top:
+                23px;
+
+            padding-top:
+                22px;
+
+            border-top:
+                1px solid var(--border);
+
+        }
+
+
+        .questions-wrap:empty {
+
+            display:
+                none;
+
+        }
+
+
+        .questions-title {
+
+            margin:
+                0 0 15px;
+
+            font-family:
+                var(--heading-font);
+
+            font-size:
+                22px;
+
+            font-weight:
+                400;
+
+        }
+
+
+        .choice-list {
+
+            display:
+                grid;
+
+            gap:
+                7px;
+
+        }
+
+
+        .choice-option {
+
+            display:
+                flex;
+
+            align-items:
+                flex-start;
+
+            gap:
+                9px;
+
+            padding:
+                10px 11px;
+
+            border:
+                1px solid var(--border);
+
+            border-radius:
+                10px;
+
+            background:
+                #ffffff;
+
+            cursor:
+                pointer;
+
+            font-size:
+                9px;
+
+        }
+
+
+        .choice-option input {
+
+            width:
+                auto;
+
+            height:
+                auto;
+
+            margin-top:
+                1px;
+
+            accent-color:
+                var(--primary);
+
+        }
+
+
+        /* ============================================================
+           FORM MESSAGE
+        ============================================================= */
+
+        .form-message {
+
+            display:
+                none;
+
+            align-items:
+                flex-start;
+
+            gap:
+                9px;
+
+            margin-bottom:
+                15px;
+
+            padding:
+                12px;
+
+            border-radius:
+                11px;
+
+            font-size:
+                9px;
+
+            line-height:
+                1.6;
+
+        }
+
+
+        .form-message.show {
+
+            display:
+                flex;
+
+        }
+
+
+        .form-message.error {
+
+            background:
+                var(--danger-soft);
+
+            color:
+                var(--danger);
+
+        }
+
+
+        .form-message.info {
+
+            background:
+                var(--warning-soft);
+
+            color:
+                var(--warning);
+
+        }
+
+
+        .modal-footer {
+
+            display:
+                flex;
+
+            justify-content:
+                flex-end;
+
+            gap:
+                8px;
+
+            padding:
+                17px 24px;
+
+            border-top:
+                1px solid var(--border);
+
+            background:
+                #ffffff;
+
+        }
+
+
+        .btn {
+
+            min-height:
+                45px;
+
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            gap:
+                8px;
+
+            padding:
+                0 17px;
+
+            border-radius:
+                11px;
+
+            font-size:
+                10px;
+
+            font-weight:
+                800;
+
+        }
+
+
+        .btn-primary {
+
+            background:
+                var(--primary);
+
+            color:
+                #ffffff;
+
+        }
+
+
+        .btn-secondary {
+
+            border:
+                1px solid var(--border);
+
+            background:
+                #ffffff;
+
+            color:
+                var(--text);
+
+        }
+
+
+        .btn:disabled {
+
+            cursor:
+                not-allowed;
+
+            opacity:
+                .6;
+
+        }
+
+
+        /* ============================================================
+           CONFIRMATION
+        ============================================================= */
+
+        .confirmation-screen {
+
+            display:
+                none;
+
+            padding:
+                45px 25px;
+
+            text-align:
+                center;
+
+        }
+
+
+        .confirmation-screen.show {
+
+            display:
+                block;
+
+        }
+
+
+        .confirmation-icon {
+
+            width:
+                74px;
+
+            height:
+                74px;
+
+            display:
+                grid;
+
+            place-items:
+                center;
+
+            margin:
+                0 auto 20px;
+
+            border-radius:
+                50%;
+
+            background:
+                var(--success-soft);
+
+            color:
+                var(--success);
+
+            font-size:
+                27px;
+
+        }
+
+
+        .confirmation-screen h3 {
+
+            margin:
+                0 0 11px;
+
+            font-family:
+                var(--heading-font);
+
+            font-size:
+                39px;
+
+            font-weight:
+                400;
+
+        }
+
+
+        .confirmation-screen p {
+
+            max-width:
+                410px;
+
+            margin:
+                0 auto;
+
+            color:
+                var(--muted);
+
+            font-size:
+                10px;
+
+            line-height:
+                1.8;
+
+        }
+
+
+        .confirmation-code {
+
+            margin:
+                22px auto;
+
+            width:
+                fit-content;
+
+            padding:
+                12px 17px;
+
+            border:
+                1px solid var(--border);
+
+            border-radius:
+                12px;
+
+            background:
+                var(--surface-soft);
+
+        }
+
+
+        .confirmation-code span {
+
+            display:
+                block;
+
+            color:
+                var(--muted);
+
+            font-size:
+                7px;
+
+            text-transform:
+                uppercase;
+
+            letter-spacing:
+                .08em;
+
+        }
+
+
+        .confirmation-code strong {
+
+            display:
+                block;
+
+            margin-top:
+                3px;
+
+            font-size:
+                17px;
+
+            letter-spacing:
+                .08em;
+
+        }
+
+
+        /* ============================================================
+           SHARE MODAL
+        ============================================================= */
+
+        .share-options {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap:
+                9px;
+
+        }
+
+
+        .share-option {
+
+            min-height:
+                72px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                11px;
+
+            padding:
+                13px;
+
+            border:
+                1px solid var(--border);
+
+            border-radius:
+                12px;
+
+            background:
+                #ffffff;
+
+            text-align:
+                left;
+
+        }
+
+
+        .share-option i {
+
+            width:
+                37px;
+
+            height:
+                37px;
+
+            display:
+                grid;
+
+            place-items:
+                center;
+
+            flex-shrink:
+                0;
+
+            border-radius:
+                11px;
+
+            background:
+                var(--primary-soft);
+
+            color:
+                var(--primary);
+
+        }
+
+
+        .share-option strong {
+
+            display:
+                block;
+
+            font-size:
+                9px;
+
+        }
+
+
+        .share-option span {
+
+            display:
+                block;
+
+            margin-top:
+                2px;
+
+            color:
+                var(--muted);
+
+            font-size:
+                7px;
+
+        }
+
+
+        /* ============================================================
+           RESPONSIVE
+        ============================================================= */
+
+        @media (max-width: 900px) {
+
+            .message-layout {
+
+                grid-template-columns:
+                    1fr;
+
+                gap:
+                    45px;
+
+            }
+
+
+            .message-art {
+
+                min-height:
+                    520px;
+
+            }
+
+
+            .details-grid {
+
+                grid-template-columns:
+                    1fr 1fr;
+
+            }
+
+
+            .gallery-grid {
+
+                grid-template-columns:
+                    1fr 1fr;
+
+            }
+
+
+            .gallery-item:first-child {
+
+                grid-column:
+                    1 / -1;
+
+                grid-row:
+                    auto;
+
+                min-height:
+                    380px;
+
+            }
+
+        }
+
+
+        @media (max-width: 700px) {
+
+            .hero {
+
+                min-height:
+                    92vh;
+
+            }
+
+
+            .hero-top {
+
+                padding:
+                    19px;
+
+            }
+
+
+            .hero-inner {
+
+                width:
+                    calc(100% - 28px);
+
+                padding:
+                    130px 0 76px;
+
+            }
+
+
+            .hero h1 {
+
+                font-size:
+                    clamp(
+                        55px,
+                        17vw,
+                        82px
+                    );
+
+            }
+
+
+            .hero-meta {
+
+                display:
+                    grid;
+
+                grid-template-columns:
+                    1fr;
+
+            }
+
+
+            .hero-meta-item {
+
+                width:
+                    fit-content;
+
+            }
+
+
+            .hero-cta {
+
+                display:
+                    grid;
+
+                grid-template-columns:
+                    1fr;
+
+            }
+
+
+            .hero-btn {
+
+                width:
+                    100%;
+
+            }
+
+
+            .countdown-wrap {
+
+                margin-top:
+                    -27px;
+
+            }
+
+
+            .countdown-card {
+
+                grid-template-columns:
+                    repeat(4, 1fr);
+
+            }
+
+
+            .countdown-title {
+
+                grid-column:
+                    1 / -1;
+
+                align-items:
+                    center;
+
+                text-align:
+                    center;
+
+                border-bottom:
+                    1px solid var(--border);
+
+            }
+
+
+            .count-item:first-of-type {
+
+                border-left: 0;
+
+            }
+
+
+            .section {
+
+                padding:
+                    76px 0;
+
+            }
+
+
+            .container {
+
+                width:
+                    calc(100% - 28px);
+
+            }
+
+
+            .message-art {
+
+                min-height:
+                    410px;
+
+            }
+
+
+            .message-photo {
+
+                right:
+                    38px;
+
+            }
+
+
+            .message-monogram {
+
+                width:
+                    105px;
+
+                height:
+                    105px;
+
+                font-size:
+                    27px;
+
+            }
+
+
+            .details-grid,
+            .extras-grid {
+
+                grid-template-columns:
+                    1fr;
+
+            }
+
+
+            .detail-card {
+
+                min-height:
+                    auto;
+
+            }
+
+
+            .detail-icon {
+
+                margin-bottom:
+                    26px;
+
+            }
+
+
+            .gallery-grid {
+
+                grid-template-columns:
+                    1fr;
+
+                grid-auto-rows:
+                    280px;
+
+            }
+
+
+            .gallery-item:first-child {
+
+                grid-column:
+                    auto;
+
+                min-height:
+                    auto;
+
+            }
+
+
+            .form-grid {
+
+                grid-template-columns:
+                    1fr;
+
+            }
+
+
+            .response-options {
+
+                grid-template-columns:
+                    1fr;
+
+            }
+
+
+            .response-option {
+
+                min-height:
+                    53px;
+
+                flex-direction:
+                    row;
+
+            }
+
+
+            .share-options {
+
+                grid-template-columns:
+                    1fr;
+
+            }
+
+        }
+
+
+        @media (max-width: 440px) {
+
+            .count-item strong {
+
+                font-size:
+                    22px;
+
+            }
+
+
+            .count-item {
+
+                padding:
+                    14px 4px;
+
+            }
+
+
+            .modal-backdrop {
+
+                padding:
+                    8px;
+
+                align-items:
+                    flex-end;
+
+            }
+
+
+            .modal {
+
+                max-height:
+                    calc(100vh - 16px);
+
+                border-radius:
+                    22px 22px 12px 12px;
+
+            }
+
+
+            .modal-body {
+
+                padding:
+                    20px 17px;
+
+            }
+
+
+            .modal-head {
+
+                padding:
+                    20px 17px;
+
+            }
+
+
+            .modal-footer {
+
+                padding:
+                    15px 17px;
+
+            }
+
+
+            .modal-footer .btn {
+
+                flex: 1;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- ============================================================
+         PAGE LOADER
+    ============================================================= -->
+
+    <div
+        class="page-loader"
+        id="pageLoader"
+    >
+
+        <div class="loader-content">
+
+            <div class="loader-mark">
+                R
+            </div>
+
+            <strong>
+                Preparing your invitation
+            </strong>
+
+            <span>
+                Just a moment
+            </span>
+
+            <div class="spinner"></div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ============================================================
+         ERROR PAGE
+    ============================================================= -->
+
+    <section
+        class="error-page"
+        id="errorPage"
+    >
+
+        <div class="error-card">
+
+            <div class="error-icon">
+
+                <i class="fa-regular fa-envelope"></i>
+
+            </div>
+
+            <h1 id="errorTitle">
+                Invitation unavailable
+            </h1>
+
+            <p id="errorMessage">
+                This invitation could not be found or is
+                no longer available.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- ============================================================
+         INVITATION
+    ============================================================= -->
+
+    <div
+        class="invitation-app"
+        id="invitationApp"
+    >
+
+
+        <!-- ========================================================
+             HERO
+        ========================================================= -->
+
+        <section class="hero">
+
+            <div
+                class="hero-image"
+                id="heroImage"
+            ></div>
+
+            <div class="hero-overlay"></div>
+
+            <div class="hero-pattern"></div>
+
+
+            <div class="hero-top">
+
+                <a
+                    href="index.html"
+                    class="brand"
+                >
+
+                    <span class="brand-mark">
+                        R
+                    </span>
+
+                    RSVP.
+
+                </a>
+
+
+                <button
+                    class="hero-share"
+                    id="heroShareButton"
+                    aria-label="Share invitation"
+                >
+
+                    <i class="fa-solid fa-share-nodes"></i>
+
+                </button>
+
+            </div>
+
+
+            <div class="hero-inner">
+
+                <div
+                    class="hero-kicker"
+                    id="heroKicker"
+                >
+                    You are invited
+                </div>
+
+
+                <h1 id="heroHosts">
+                    Special Event
+                </h1>
+
+
+                <div
+                    class="hero-headline"
+                    id="heroHeadline"
+                >
+                    We would love to celebrate with you.
+                </div>
+
+
+                <div class="hero-meta">
+
+                    <div class="hero-meta-item">
+
+                        <i class="fa-regular fa-calendar"></i>
+
+                        <span id="heroDate">
+                            Date to be announced
+                        </span>
+
+                    </div>
+
+
+                    <div class="hero-meta-item">
+
+                        <i class="fa-regular fa-clock"></i>
+
+                        <span id="heroTime">
+                            Time to be announced
+                        </span>
+
+                    </div>
+
+
+                    <div class="hero-meta-item">
+
+                        <i class="fa-solid fa-location-dot"></i>
+
+                        <span id="heroVenue">
+                            Venue to be announced
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="hero-cta">
+
+                    <button
+                        class="hero-btn hero-btn-primary"
+                        id="heroRsvpButton"
+                    >
+
+                        Respond to invitation
+
+                        <i class="fa-solid fa-arrow-right"></i>
+
+                    </button>
+
+
+                    <a
+                        class="hero-btn hero-btn-secondary"
+                        id="heroMapButton"
+                        href="#"
+                        target="_blank"
+                        rel="noopener"
+                    >
+
+                        <i class="fa-solid fa-location-arrow"></i>
+
+                        View location
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ========================================================
+             COUNTDOWN
+        ========================================================= -->
+
+        <div
+            class="countdown-wrap"
+            id="countdownSection"
+        >
+
+            <div class="countdown-card">
+
+                <div class="countdown-title">
+
+                    <span>
+                        The celebration begins in
+                    </span>
+
+                    <strong id="countdownEventName">
+                        Our special day
+                    </strong>
+
+                </div>
+
+
+                <div class="count-item">
+
+                    <strong id="countDays">
+                        00
+                    </strong>
+
+                    <span>
+                        Days
+                    </span>
+
+                </div>
+
+
+                <div class="count-item">
+
+                    <strong id="countHours">
+                        00
+                    </strong>
+
+                    <span>
+                        Hours
+                    </span>
+
+                </div>
+
+
+                <div class="count-item">
+
+                    <strong id="countMinutes">
+                        00
+                    </strong>
+
+                    <span>
+                        Minutes
+                    </span>
+
+                </div>
+
+
+                <div class="count-item">
+
+                    <strong id="countSeconds">
+                        00
+                    </strong>
+
+                    <span>
+                        Seconds
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ========================================================
+             MESSAGE
+        ========================================================= -->
+
+        <section class="section">
+
+            <div class="container message-layout">
+
+                <div class="message-art">
+
+                    <div class="message-photo">
+
+                        <img
+                            id="messagePhoto"
+                            alt="Event"
+                        >
+
+                    </div>
+
+
+                    <div
+                        class="message-monogram"
+                        id="messageMonogram"
+                    >
+                        R
+                    </div>
+
+                </div>
+
+
+                <div class="message-copy">
+
+                    <div class="section-label">
+
+                        <i class="fa-regular fa-heart"></i>
+
+                        A note from your hosts
+
+                    </div>
+
+
+                    <blockquote id="invitationHeadline">
+
+                        We would be honoured to celebrate
+                        this beautiful moment with you.
+
+                    </blockquote>
+
+
+                    <p id="invitationDescription"></p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ========================================================
+             DETAILS
+        ========================================================= -->
+
+        <section class="section section-soft">
+
+            <div class="container">
+
+                <div class="section-heading center">
+
+                    <div class="section-label">
+
+                        <i class="fa-regular fa-calendar"></i>
+
+                        Event details
+
+                    </div>
+
+
+                    <h2>
+                        Everything you need to know.
+                    </h2>
+
+
+                    <p>
+                        Save the date, plan your journey and
+                        join us for a beautiful occasion.
+                    </p>
+
+                </div>
+
+
+                <div class="details-grid">
+
+
+                    <!-- DATE -->
+
+                    <article class="detail-card">
+
+                        <div class="detail-icon">
+
+                            <i class="fa-regular fa-calendar"></i>
+
+                        </div>
+
+                        <span>
+                            Date
+                        </span>
+
+                        <strong id="detailDate">
+                            To be announced
+                        </strong>
+
+                        <p id="detailDateExtra"></p>
+
+                    </article>
+
+
+                    <!-- VENUE -->
+
+                    <article class="detail-card">
+
+                        <div class="detail-icon">
+
+                            <i class="fa-solid fa-location-dot"></i>
+
+                        </div>
+
+                        <span>
+                            Venue
+                        </span>
+
+                        <strong id="detailVenue">
+                            To be announced
+                        </strong>
+
+                        <p id="detailAddress"></p>
+
+                        <a
+                            class="detail-link"
+                            id="detailMapLink"
+                            href="#"
+                            target="_blank"
+                            rel="noopener"
+                        >
+
+                            Get directions
+
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+
+                        </a>
+
+                    </article>
+
+
+                    <!-- DRESS CODE -->
+
+                    <article
+                        class="detail-card"
+                        id="dressCodeCard"
+                    >
+
+                        <div class="detail-icon">
+
+                            <i class="fa-solid fa-shirt"></i>
+
+                        </div>
+
+                        <span>
+                            Dress code
+                        </span>
+
+                        <strong id="detailDressCode">
+                            Come as you are
+                        </strong>
+
+                        <p id="detailAgeRestriction"></p>
+
+                    </article>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ========================================================
+             EXTRA DETAILS
+        ========================================================= -->
+
+        <section
+            class="section"
+            id="extrasSection"
+        >
+
+            <div class="container">
+
+                <div class="section-heading">
+
+                    <div class="section-label">
+
+                        <i class="fa-solid fa-circle-info"></i>
+
+                        A few more details
+
+                    </div>
+
+
+                    <h2>
+                        Before you join us.
+                    </h2>
+
+                </div>
+
+
+                <div class="extras-grid">
+
+
+                    <article
+                        class="extra-card"
+                        id="giftCard"
+                    >
+
+                        <div class="extra-icon">
+
+                            <i class="fa-solid fa-gift"></i>
+
+                        </div>
+
+                        <h3>
+                            Gifts
+                        </h3>
+
+                        <p id="giftInformation"></p>
+
+                    </article>
+
+
+                    <article
+                        class="extra-card"
+                        id="instructionsCard"
+                    >
+
+                        <div class="extra-icon">
+
+                            <i class="fa-solid fa-circle-info"></i>
+
+                        </div>
+
+                        <h3>
+                            Good to know
+                        </h3>
+
+                        <p id="specialInstructions"></p>
+
+                    </article>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ========================================================
+             GALLERY
+        ========================================================= -->
+
+        <section
+            class="section section-soft"
+            id="gallerySection"
+        >
+
+            <div class="container">
+
+                <div class="section-heading center">
+
+                    <div class="section-label">
+
+                        <i class="fa-regular fa-images"></i>
+
+                        Gallery
+
+                    </div>
+
+
+                    <h2>
+                        A glimpse of the celebration.
+                    </h2>
+
+                </div>
+
+
+                <div
+                    class="gallery-grid"
+                    id="galleryGrid"
+                ></div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ========================================================
+             RSVP CTA
+        ========================================================= -->
+
+        <section class="rsvp-section">
+
+            <div class="container">
+
+                <div class="rsvp-cta">
+
+                    <span>
+                        Your response matters
+                    </span>
+
+
+                    <h2>
+                        Will you be joining us?
+                    </h2>
+
+
+                    <p id="rsvpDeadlineText">
+
+                        Please let us know if you will
+                        be attending.
+
+                    </p>
+
+
+                    <button
+                        class="rsvp-button"
+                        id="mainRsvpButton"
+                    >
+
+                        RSVP now
+
+                        <i class="fa-solid fa-arrow-right"></i>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ========================================================
+             FOOTER
+        ========================================================= -->
+
+        <footer class="footer">
+
+            <div class="footer-brand">
+
+                <span>
+                    R
+                </span>
+
+                RSVP.
+
+            </div>
+
+            <p>
+                Digital invitation powered by RSVP.
+            </p>
+
+        </footer>
+
+    </div>
+
+
+    <!-- ============================================================
+         RSVP MODAL
+    ============================================================= -->
+
+    <div
+        class="modal-backdrop"
+        id="rsvpModal"
+    >
+
+        <div class="modal">
+
+
+            <!-- RSVP FORM -->
+
+            <div id="rsvpFormView">
+
+                <div class="modal-head">
+
+                    <div>
+
+                        <span>
+                            RSVP
+                        </span>
+
+                        <h3>
+                            Let us know your plans.
+                        </h3>
+
+                    </div>
+
+
+                    <button
+                        class="modal-close"
+                        data-close="rsvpModal"
+                        type="button"
+                    >
+
+                        <i class="fa-solid fa-xmark"></i>
+
+                    </button>
+
+                </div>
+
+
+                <form id="rsvpForm">
+
+
+                    <div class="modal-body">
+
+
+                        <div
+                            class="guest-welcome"
+                            id="guestWelcome"
+                        >
+
+                            <i class="fa-solid fa-user-check"></i>
+
+                            <div>
+
+                                <strong id="guestWelcomeName">
+                                    Welcome
+                                </strong>
+
+                                <span id="guestWelcomeSeats"></span>
+
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            class="form-message"
+                            id="formMessage"
+                        >
+
+                            <i class="fa-solid fa-circle-info"></i>
+
+                            <span id="formMessageText"></span>
+
+                        </div>
+
+
+                        <!-- RESPONSE STATUS -->
+
+                        <div class="response-question">
+
+                            <label>
+                                Will you attend?
+                                <span class="required">*</span>
+                            </label>
+
+
+                            <div class="response-options">
+
+
+                                <button
+                                    class="response-option"
+                                    type="button"
+                                    data-response="accepted"
+                                >
+
+                                    <i class="fa-solid fa-check"></i>
+
+                                    Joyfully accept
+
+                                </button>
+
+
+                                <button
+                                    class="response-option"
+                                    type="button"
+                                    data-response="declined"
+                                >
+
+                                    <i class="fa-solid fa-xmark"></i>
+
+                                    Regretfully decline
+
+                                </button>
+
+
+                                <button
+                                    class="response-option"
+                                    type="button"
+                                    data-response="maybe"
+                                    id="maybeOption"
+                                >
+
+                                    <i class="fa-regular fa-clock"></i>
+
+                                    Maybe
+
+                                </button>
+
+
+                            </div>
+
+                        </div>
+
+
+                        <input
+                            type="hidden"
+                            id="rsvpStatus"
+                        >
+
+
+                        <!-- BASIC INFORMATION -->
+
+                        <div class="form-grid">
+
+
+                            <div class="field">
+
+                                <label for="guestName">
+
+                                    Full name
+                                    <span class="required">*</span>
+
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="guestName"
+                                    autocomplete="name"
+                                    placeholder="Your full name"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="field">
+
+                                <label for="guestEmail">
+
+                                    Email address
+                                    <span class="required">*</span>
+
+                                </label>
+
+                                <input
+                                    type="email"
+                                    id="guestEmail"
+                                    autocomplete="email"
+                                    placeholder="you@example.com"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="field">
+
+                                <label for="guestPhone">
+
+                                    Phone number
+
+                                </label>
+
+                                <input
+                                    type="tel"
+                                    id="guestPhone"
+                                    autocomplete="tel"
+                                    placeholder="082 123 4567"
+                                >
+
+                            </div>
+
+
+                            <div
+                                class="field party-fields"
+                                id="partySizeField"
+                            >
+
+                                <label for="partySize">
+
+                                    Number attending
+
+                                </label>
+
+                                <select id="partySize"></select>
+
+                            </div>
+
+
+                        </div>
+
+
+                        <!-- ADDITIONAL GUEST NAMES -->
+
+                        <div
+                            class="party-fields"
+                            id="additionalGuestSection"
+                        >
+
+                            <div class="field">
+
+                                <label>
+                                    Additional guest names
+                                </label>
+
+                                <small>
+                                    Add the names of everyone
+                                    included in your RSVP.
+                                </small>
+
+                                <div
+                                    class="guest-name-fields"
+                                    id="additionalGuestFields"
+                                ></div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- DIETARY -->
+
+                        <div
+                            class="party-fields"
+                            id="dietarySection"
+                        >
+
+                            <div class="field">
+
+                                <label for="dietaryRequirements">
+                                    Dietary requirements
+                                </label>
+
+                                <textarea
+                                    id="dietaryRequirements"
+                                    placeholder="Allergies, vegetarian, halaal, vegan or other requirements..."
+                                ></textarea>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- MESSAGE -->
+
+                        <div class="field">
+
+                            <label for="messageToHosts">
+                                Message to the hosts
+                            </label>
+
+                            <textarea
+                                id="messageToHosts"
+                                placeholder="Leave a message..."
+                            ></textarea>
+
+                        </div>
+
+
+                        <!-- CUSTOM QUESTIONS -->
+
+                        <div
+                            class="questions-wrap"
+                            id="customQuestions"
+                        ></div>
+
+
+                    </div>
+
+
+                    <div class="modal-footer">
+
+                        <button
+                            class="btn btn-secondary"
+                            data-close="rsvpModal"
+                            type="button"
+                        >
+                            Cancel
+                        </button>
+
+
+                        <button
+                            class="btn btn-primary"
+                            type="submit"
+                            id="submitRsvpButton"
+                        >
+
+                            Submit RSVP
+
+                            <i class="fa-solid fa-arrow-right"></i>
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+
+            <!-- CONFIRMATION -->
+
+            <div
+                class="confirmation-screen"
+                id="confirmationView"
+            >
+
+                <div class="confirmation-icon">
+
+                    <i class="fa-solid fa-check"></i>
+
+                </div>
+
+
+                <h3 id="confirmationHeading">
+                    RSVP received.
+                </h3>
+
+
+                <p id="confirmationText">
+
+                    Thank you. Your response has been
+                    sent to the event organizer.
+
+                </p>
+
+
+                <div
+                    class="confirmation-code"
+                    id="confirmationCodeBox"
+                >
+
+                    <span>
+                        Confirmation code
+                    </span>
+
+                    <strong id="confirmationCode">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <button
+                    class="btn btn-primary"
+                    type="button"
+                    data-close="rsvpModal"
+                >
+                    Done
+                </button>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- ============================================================
+         SHARE MODAL
+    ============================================================= -->
+
+    <div
+        class="modal-backdrop"
+        id="shareModal"
+    >
+
+        <div class="modal">
+
+            <div class="modal-head">
+
+                <div>
+
+                    <span>
+                        Share
+                    </span>
+
+                    <h3>
+                        Share this invitation.
+                    </h3>
+
+                </div>
+
+
+                <button
+                    class="modal-close"
+                    data-close="shareModal"
+                >
+
+                    <i class="fa-solid fa-xmark"></i>
+
+                </button>
+
+            </div>
+
+
+            <div class="modal-body">
+
+                <div class="share-options">
+
+
+                    <button
+                        class="share-option"
+                        id="shareWhatsApp"
+                    >
+
+                        <i class="fa-brands fa-whatsapp"></i>
+
+                        <div>
+
+                            <strong>
+                                WhatsApp
+                            </strong>
+
+                            <span>
+                                Send to family and friends
+                            </span>
+
+                        </div>
+
+                    </button>
+
+
+                    <button
+                        class="share-option"
+                        id="copyInvitationLink"
+                    >
+
+                        <i class="fa-regular fa-copy"></i>
+
+                        <div>
+
+                            <strong>
+                                Copy link
+                            </strong>
+
+                            <span>
+                                Copy invitation URL
+                            </span>
+
+                        </div>
+
+                    </button>
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        /* ============================================================
+           SUPABASE
+        ============================================================= */
+
+        const SUPABASE_URL =
+            "https://zqzhswhuwwihfixiuafq.supabase.co";
+
+
+        const SUPABASE_KEY =
+            "sb_publishable_edbmD8CSCv9HFO3fiSlnjQ_g3FHq5B1";
+
+
+        const supabaseClient =
+            supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
+
+
+        /* ============================================================
+           STATE
+        ============================================================= */
+
+        let invitation = null;
+
+        let customQuestions = [];
+
+        let galleryImages = [];
+
+        let selectedStatus = "";
+
+        let guestToken = null;
+
+        let matchedGuest = null;
+
+        let countdownTimer = null;
+
+
+        /* ============================================================
+           URL
+        ============================================================= */
+
+        const urlParams =
+            new URLSearchParams(
+                window.location.search
+            );
+
+
+        const invitationSlug =
+            (
+                urlParams.get("i") ||
+                ""
+            ).trim();
+
+
+        guestToken =
+            (
+                urlParams.get("g") ||
+                ""
+            ).trim() || null;
+
+
+        /* ============================================================
+           HELPERS
+        ============================================================= */
+
+        function escapeHtml(value) {
+
+            return String(
+                value ?? ""
+            )
+            .replaceAll(
+                "&",
+                "&amp;"
+            )
+            .replaceAll(
+                "<",
+                "&lt;"
+            )
+            .replaceAll(
+                ">",
+                "&gt;"
+            )
+            .replaceAll(
+                '"',
+                "&quot;"
+            )
+            .replaceAll(
+                "'",
+                "&#039;"
+            );
+
+        }
+
+
+        function formatDate(value) {
+
+            if (!value) {
+                return "";
+            }
+
+
+            const date =
+                new Date(
+                    `${value}T12:00:00`
+                );
+
+
+            return new Intl.DateTimeFormat(
+                "en-ZA",
+                {
+                    weekday:
+                        "long",
+
+                    day:
+                        "numeric",
+
+                    month:
+                        "long",
+
+                    year:
+                        "numeric"
+                }
+            ).format(date);
+
+        }
+
+
+        function formatShortDate(value) {
+
+            if (!value) {
+                return "";
+            }
+
+
+            const date =
+                new Date(
+                    `${value}T12:00:00`
+                );
+
+
+            return new Intl.DateTimeFormat(
+                "en-ZA",
+                {
+                    day:
+                        "numeric",
+
+                    month:
+                        "long",
+
+                    year:
+                        "numeric"
+                }
+            ).format(date);
+
+        }
+
+
+        function formatTime(value) {
+
+            if (!value) {
+                return "";
+            }
+
+
+            const parts =
+                String(value)
+                    .split(":");
+
+
+            if (
+                parts.length < 2
+            ) {
+
+                return value;
+
+            }
+
+
+            const date =
+                new Date();
+
+
+            date.setHours(
+                Number(parts[0]),
+                Number(parts[1]),
+                0,
+                0
+            );
+
+
+            return new Intl.DateTimeFormat(
+                "en-ZA",
+                {
+                    hour:
+                        "2-digit",
+
+                    minute:
+                        "2-digit"
+                }
+            ).format(date);
+
+        }
+
+
+        function initials(value) {
+
+            const words =
+                String(
+                    value || "R"
+                )
+                .split(/\s+|&/)
+                .map(
+                    item =>
+                        item.trim()
+                )
+                .filter(Boolean);
+
+
+            return words
+                .slice(0, 2)
+                .map(
+                    item =>
+                        item.charAt(0)
+                            .toUpperCase()
+                )
+                .join("")
+                || "R";
+
+        }
+
+
+        function normalizeArray(value) {
+
+            if (
+                Array.isArray(value)
+            ) {
+                return value;
+            }
+
+
+            if (!value) {
+                return [];
+            }
+
+
+            if (
+                typeof value ===
+                "string"
+            ) {
+
+                try {
+
+                    const parsed =
+                        JSON.parse(value);
+
+
+                    return Array.isArray(
+                        parsed
+                    )
+                        ? parsed
+                        : [];
+
+                }
+                catch {
+
+                    return [];
+
+                }
+
+            }
+
+
+            return [];
+
+        }
+
+
+        /* ============================================================
+           LOAD INVITATION
+        ============================================================= */
+
+        async function loadInvitation() {
+
+            if (!invitationSlug) {
+
+                showError(
+                    "Invitation link incomplete",
+                    "This invitation link is missing its event code."
+                );
+
+                return;
+            }
+
+
+            try {
+
+                const {
+                    data,
+                    error
+                } =
+                await supabaseClient
+                    .rpc(
+                        "get_public_invitation",
+                        {
+                            p_slug:
+                                invitationSlug
+                        }
+                    );
+
+
+                if (error) {
+                    throw error;
+                }
+
+
+                const result =
+                    Array.isArray(data)
+                        ? data[0]
+                        : data;
+
+
+                if (!result) {
+
+                    showError(
+                        "Invitation unavailable",
+                        "This invitation could not be found, has not been published or is no longer available."
+                    );
+
+                    return;
+                }
+
+
+                /*
+                 * The RPC may return questions/images as JSON
+                 * fields depending on the SQL definition.
+                 */
+
+                invitation =
+                    result;
+
+
+                customQuestions =
+                    normalizeArray(
+                        result.questions ||
+                        result.custom_questions
+                    );
+
+
+                galleryImages =
+                    normalizeArray(
+                        result.images ||
+                        result.gallery_images ||
+                        result.invitation_images
+                    );
+
+
+                /*
+                 * Ensure the cover image is available
+                 * in the gallery experience as well.
+                 */
+
+                if (
+                    result.cover_image_url &&
+                    !galleryImages.some(
+                        image =>
+                            (
+                                image.image_url ||
+                                image.url
+                            ) ===
+                            result.cover_image_url
+                    )
+                ) {
+
+                    galleryImages.unshift({
+                        image_url:
+                            result.cover_image_url
+                    });
+
+                }
+
+
+                applyTheme();
+
+                renderInvitation();
+
+                renderQuestions();
+
+                configureGuestAccess();
+
+                startCountdown();
+
+
+                document.getElementById(
+                    "invitationApp"
+                ).classList.add(
+                    "show"
+                );
+
+
+                document.getElementById(
+                    "pageLoader"
+                ).classList.add(
+                    "hide"
+                );
+
+            }
+            catch (error) {
+
+                console.error(
+                    "Invitation loading error:",
+                    error
+                );
+
+
+                showError(
+                    "Invitation unavailable",
+                    "We could not open this invitation right now. Please check the link and try again."
+                );
+
+            }
+
+        }
+
+
+        /* ============================================================
+           THEME
+        ============================================================= */
+
+        function applyTheme() {
+
+            const theme =
+                invitation.theme_config ||
+                invitation.template_theme ||
+                {};
+
+
+            const root =
+                document.documentElement;
+
+
+            const primary =
+                theme.primary ||
+                theme.primary_color ||
+                "#8d403c";
+
+
+            const accent =
+                theme.accent ||
+                theme.accent_color ||
+                "#b88b59";
+
+
+            const background =
+                theme.background ||
+                theme.background_color ||
+                "#fbf8f4";
+
+
+            const text =
+                theme.text ||
+                theme.text_color ||
+                "#1d1a18";
+
+
+            root.style.setProperty(
+                "--primary",
+                primary
+            );
+
+
+            root.style.setProperty(
+                "--accent",
+                accent
+            );
+
+
+            root.style.setProperty(
+                "--page-bg",
+                background
+            );
+
+
+            root.style.setProperty(
+                "--text",
+                text
+            );
+
+
+            document.querySelector(
+                'meta[name="theme-color"]'
+            ).setAttribute(
+                "content",
+                primary
+            );
+
+        }
+
+
+        /* ============================================================
+           RENDER INVITATION
+        ============================================================= */
+
+        function renderInvitation() {
+
+            const title =
+                invitation.title ||
+                "Special Event";
+
+
+            const hosts =
+                invitation.host_names ||
+                title;
+
+
+            const headline =
+                invitation.headline ||
+                "We would love to celebrate this special occasion with you.";
+
+
+            const description =
+                invitation.description ||
+                "Your presence would make this occasion even more meaningful.";
+
+
+            const cover =
+                invitation.cover_image_url ||
+                galleryImages[0]?.image_url ||
+                galleryImages[0]?.url ||
+                "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1800&q=88";
+
+
+            const eventDate =
+                invitation.event_date;
+
+
+            const startTime =
+                invitation.event_start_time ||
+                invitation.start_time;
+
+
+            const endTime =
+                invitation.event_end_time ||
+                invitation.end_time;
+
+
+            const venueName =
+                invitation.venue_name ||
+                "Venue to be announced";
+
+
+            const venueCity =
+                invitation.venue_city ||
+                "";
+
+
+            const venueAddress =
+                invitation.venue_address ||
+                "";
+
+
+            const venueProvince =
+                invitation.venue_province ||
+                "";
+
+
+            /* --------------------------------------------
+               DOCUMENT
+            --------------------------------------------- */
+
+            document.title =
+                `${title} | RSVP`;
+
+
+            /* --------------------------------------------
+               HERO
+            --------------------------------------------- */
+
+            document.getElementById(
+                "heroImage"
+            ).style.backgroundImage =
+                `url("${cover}")`;
+
+
+            document.getElementById(
+                "heroKicker"
+            ).textContent =
+                invitation.event_type
+                    ? `${invitation.event_type} invitation`
+                    : "You are invited";
+
+
+            document.getElementById(
+                "heroHosts"
+            ).textContent =
+                hosts;
+
+
+            document.getElementById(
+                "heroHeadline"
+            ).textContent =
+                headline;
+
+
+            document.getElementById(
+                "heroDate"
+            ).textContent =
+                eventDate
+                    ? formatDate(eventDate)
+                    : "Date to be announced";
+
+
+            document.getElementById(
+                "heroTime"
+            ).textContent =
+                startTime
+                    ? (
+                        endTime
+                            ? `${formatTime(startTime)} – ${formatTime(endTime)}`
+                            : formatTime(startTime)
+                    )
+                    : "Time to be announced";
+
+
+            document.getElementById(
+                "heroVenue"
+            ).textContent =
+                [
+                    venueName,
+                    venueCity
+                ]
+                .filter(Boolean)
+                .join(", ");
+
+
+            /* --------------------------------------------
+               MAP BUTTONS
+            --------------------------------------------- */
+
+            const mapUrl =
+                invitation.map_url ||
+                invitation.google_maps_url;
+
+
+            const heroMap =
+                document.getElementById(
+                    "heroMapButton"
+                );
+
+
+            const detailMap =
+                document.getElementById(
+                    "detailMapLink"
+                );
+
+
+            if (mapUrl) {
+
+                heroMap.href =
+                    mapUrl;
+
+                detailMap.href =
+                    mapUrl;
+
+            }
+            else {
+
+                heroMap.style.display =
+                    "none";
+
+                detailMap.style.display =
+                    "none";
+
+            }
+
+
+            /* --------------------------------------------
+               MESSAGE
+            --------------------------------------------- */
+
+            document.getElementById(
+                "messagePhoto"
+            ).src =
+                cover;
+
+
+            document.getElementById(
+                "messageMonogram"
+            ).textContent =
+                initials(hosts);
+
+
+            document.getElementById(
+                "invitationHeadline"
+            ).textContent =
+                headline;
+
+
+            document.getElementById(
+                "invitationDescription"
+            ).textContent =
+                description;
+
+
+            /* --------------------------------------------
+               DETAILS
+            --------------------------------------------- */
+
+            document.getElementById(
+                "detailDate"
+            ).textContent =
+                eventDate
+                    ? formatDate(eventDate)
+                    : "To be announced";
+
+
+            document.getElementById(
+                "detailDateExtra"
+            ).textContent =
+                startTime
+                    ? (
+                        endTime
+                            ? `${formatTime(startTime)} – ${formatTime(endTime)}`
+                            : `Starting at ${formatTime(startTime)}`
+                    )
+                    : "";
+
+
+            document.getElementById(
+                "detailVenue"
+            ).textContent =
+                venueName;
+
+
+            document.getElementById(
+                "detailAddress"
+            ).textContent =
+                [
+                    venueAddress,
+                    venueCity,
+                    venueProvince
+                ]
+                .filter(Boolean)
+                .join(", ");
+
+
+            document.getElementById(
+                "detailDressCode"
+            ).textContent =
+                invitation.dress_code ||
+                "Come as you are";
+
+
+            document.getElementById(
+                "detailAgeRestriction"
+            ).textContent =
+                invitation.age_restriction
+                    ? `Age guidance: ${invitation.age_restriction}`
+                    : "";
+
+
+            /* --------------------------------------------
+               EXTRA INFORMATION
+            --------------------------------------------- */
+
+            const gifts =
+                invitation.gift_information ||
+                invitation.gift_info;
+
+
+            const instructions =
+                invitation.special_instructions;
+
+
+            if (gifts) {
+
+                document.getElementById(
+                    "giftInformation"
+                ).textContent =
+                    gifts;
+
+            }
+            else {
+
+                document.getElementById(
+                    "giftCard"
+                ).style.display =
+                    "none";
+
+            }
+
+
+            if (instructions) {
+
+                document.getElementById(
+                    "specialInstructions"
+                ).textContent =
+                    instructions;
+
+            }
+            else {
+
+                document.getElementById(
+                    "instructionsCard"
+                ).style.display =
+                    "none";
+
+            }
+
+
+            if (
+                !gifts &&
+                !instructions
+            ) {
+
+                document.getElementById(
+                    "extrasSection"
+                ).style.display =
+                    "none";
+
+            }
+
+
+            /* --------------------------------------------
+               RSVP DEADLINE
+            --------------------------------------------- */
+
+            if (
+                invitation.rsvp_deadline
+            ) {
+
+                document.getElementById(
+                    "rsvpDeadlineText"
+                ).textContent =
+                    `Please respond by ${formatReadableDateTime(
+                        invitation.rsvp_deadline
+                    )}.`;
+
+            }
+
+
+            /* --------------------------------------------
+               MAYBE
+            --------------------------------------------- */
+
+            if (
+                invitation.allow_maybe ===
+                false
+            ) {
+
+                document.getElementById(
+                    "maybeOption"
+                ).style.display =
+                    "none";
+
+            }
+
+
+            /* --------------------------------------------
+               GALLERY
+            --------------------------------------------- */
+
+            renderGallery();
+
+
+            document.getElementById(
+                "countdownEventName"
+            ).textContent =
+                title;
+
+        }
+
+
+        /* ============================================================
+           GALLERY
+        ============================================================= */
+
+        function renderGallery() {
+
+            const section =
+                document.getElementById(
+                    "gallerySection"
+                );
+
+
+            const grid =
+                document.getElementById(
+                    "galleryGrid"
+                );
+
+
+            const usable =
+                galleryImages
+                    .map(
+                        image =>
+                            image.image_url ||
+                            image.url ||
+                            image
+                    )
+                    .filter(Boolean)
+                    .slice(0, 5);
+
+
+            if (
+                usable.length < 2
+            ) {
+
+                section.style.display =
+                    "none";
+
+                return;
+            }
+
+
+            grid.innerHTML =
+                usable
+                    .map(
+                        (url, index) => `
+                            <div class="gallery-item">
+
+                                <img
+                                    src="${escapeHtml(url)}"
+                                    alt="Event photo ${index + 1}"
+                                    loading="lazy"
+                                >
+
+                            </div>
+                        `
+                    )
+                    .join("");
+
+        }
+
+
+        /* ============================================================
+           COUNTDOWN
+        ============================================================= */
+
+        function startCountdown() {
+
+            if (
+                !invitation.event_date
+            ) {
+
+                document.getElementById(
+                    "countdownSection"
+                ).style.display =
+                    "none";
+
+                return;
+            }
+
+
+            const time =
+                invitation.event_start_time ||
+                "00:00";
+
+
+            const target =
+                new Date(
+                    `${invitation.event_date}T${time}`
+                );
+
+
+            if (
+                Number.isNaN(
+                    target.getTime()
+                )
+            ) {
+
+                document.getElementById(
+                    "countdownSection"
+                ).style.display =
+                    "none";
+
+                return;
+            }
+
+
+            function update() {
+
+                const difference =
+                    target.getTime() -
+                    Date.now();
+
+
+                if (
+                    difference <= 0
+                ) {
+
+                    document.getElementById(
+                        "countDays"
+                    ).textContent =
+                        "00";
+
+
+                    document.getElementById(
+                        "countHours"
+                    ).textContent =
+                        "00";
+
+
+                    document.getElementById(
+                        "countMinutes"
+                    ).textContent =
+                        "00";
+
+
+                    document.getElementById(
+                        "countSeconds"
+                    ).textContent =
+                        "00";
+
+
+                    clearInterval(
+                        countdownTimer
+                    );
+
+
+                    return;
+
+                }
+
+
+                const days =
+                    Math.floor(
+                        difference /
+                        86400000
+                    );
+
+
+                const hours =
+                    Math.floor(
+                        difference /
+                        3600000
+                    ) % 24;
+
+
+                const minutes =
+                    Math.floor(
+                        difference /
+                        60000
+                    ) % 60;
+
+
+                const seconds =
+                    Math.floor(
+                        difference /
+                        1000
+                    ) % 60;
+
+
+                document.getElementById(
+                    "countDays"
+                ).textContent =
+                    String(days)
+                        .padStart(
+                            2,
+                            "0"
+                        );
+
+
+                document.getElementById(
+                    "countHours"
+                ).textContent =
+                    String(hours)
+                        .padStart(
+                            2,
+                            "0"
+                        );
+
+
+                document.getElementById(
+                    "countMinutes"
+                ).textContent =
+                    String(minutes)
+                        .padStart(
+                            2,
+                            "0"
+                        );
+
+
+                document.getElementById(
+                    "countSeconds"
+                ).textContent =
+                    String(seconds)
+                        .padStart(
+                            2,
+                            "0"
+                        );
+
+            }
+
+
+            update();
+
+
+            countdownTimer =
+                setInterval(
+                    update,
+                    1000
+                );
+
+        }
+
+
+        /* ============================================================
+           GUEST ACCESS
+        ============================================================= */
+
+        function configureGuestAccess() {
+
+            /*
+             * get_public_invitation can optionally return
+             * matched guest data when your SQL RPC is extended
+             * later. We also support guest information being
+             * nested in a "guest" field.
+             */
+
+            matchedGuest =
+                invitation.guest ||
+                invitation.matched_guest ||
+                null;
+
+
+            if (
+                matchedGuest
+            ) {
+
+                prefillMatchedGuest(
+                    matchedGuest
+                );
+
+            }
+
+
+            if (
+                invitation.access_mode ===
+                    "guest_list" &&
+                !guestToken
+            ) {
+
+                /*
+                 * The actual submit_rsvp RPC will also reject
+                 * missing/invalid guest tokens. We show an
+                 * understandable message before submission.
+                 */
+
+                showFormMessage(
+                    "info",
+                    "This is a private guest-list invitation. Please use the personal invitation link that was sent to you."
+                );
+
+            }
+
+
+            rebuildPartySizeOptions();
+
+        }
+
+
+        function prefillMatchedGuest(
+            guest
+        ) {
+
+            document.getElementById(
+                "guestName"
+            ).value =
+                guest.full_name ||
+                "";
+
+
+            document.getElementById(
+                "guestEmail"
+            ).value =
+                guest.email ||
+                "";
+
+
+            document.getElementById(
+                "guestPhone"
+            ).value =
+                guest.phone ||
+                "";
+
+
+            document.getElementById(
+                "guestWelcomeName"
+            ).textContent =
+                `Welcome, ${
+                    guest.full_name ||
+                    "guest"
+                }`;
+
+
+            const seats =
+                Number(
+                    guest.max_party_size ||
+                    1
+                );
+
+
+            document.getElementById(
+                "guestWelcomeSeats"
+            ).textContent =
+                seats === 1
+                    ? "Your invitation is reserved for 1 guest."
+                    : `Your invitation allows up to ${seats} guests.`;
+
+
+            document.getElementById(
+                "guestWelcome"
+            ).classList.add(
+                "show"
+            );
+
+        }
+
+
+        /* ============================================================
+           RESPONSE SELECTION
+        ============================================================= */
+
+        document
+            .querySelectorAll(
+                ".response-option"
+            )
+            .forEach(
+                button =>
+                    button.addEventListener(
+                        "click",
+                        () => {
+
+                            selectedStatus =
+                                button.dataset.response;
+
+
+                            document.getElementById(
+                                "rsvpStatus"
+                            ).value =
+                                selectedStatus;
+
+
+                            document
+                                .querySelectorAll(
+                                    ".response-option"
+                                )
+                                .forEach(
+                                    item =>
+                                        item.classList.remove(
+                                            "active"
+                                        )
+                                );
+
+
+                            button.classList.add(
+                                "active"
+                            );
+
+
+                            const attending =
+                                selectedStatus ===
+                                "accepted";
+
+
+                            document
+                                .querySelectorAll(
+                                    ".party-fields"
+                                )
+                                .forEach(
+                                    element =>
+                                        element.classList.toggle(
+                                            "show",
+                                            attending
+                                        )
+                                );
+
+
+                            if (
+                                attending
+                            ) {
+
+                                rebuildPartySizeOptions();
+
+                            }
+
+                        }
+                    )
+            );
+
+
+        /* ============================================================
+           PARTY SIZE
+        ============================================================= */
+
+        function getMaximumPartySize() {
+
+            if (
+                matchedGuest?.max_party_size
+            ) {
+
+                return Math.max(
+                    1,
+                    Number(
+                        matchedGuest.max_party_size
+                    )
+                );
+
+            }
+
+
+            if (
+                !invitation.allow_plus_ones
+            ) {
+
+                return 1;
+
+            }
+
+
+            return Math.max(
+                1,
+                Number(
+                    invitation.max_party_size ||
+                    invitation.default_party_size ||
+                    1
+                )
+            );
+
+        }
+
+
+        function rebuildPartySizeOptions() {
+
+            const select =
+                document.getElementById(
+                    "partySize"
+                );
+
+
+            const max =
+                getMaximumPartySize();
+
+
+            select.innerHTML =
+                "";
+
+
+            for (
+                let i = 1;
+                i <= max;
+                i++
+            ) {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+
+                option.value =
+                    i;
+
+
+                option.textContent =
+                    i === 1
+                        ? "1 person"
+                        : `${i} people`;
+
+
+                select.appendChild(
+                    option
+                );
+
+            }
+
+
+            updateAdditionalGuestFields();
+
+        }
+
+
+        document.getElementById(
+            "partySize"
+        )
+        .addEventListener(
+            "change",
+            updateAdditionalGuestFields
+        );
+
+
+        function updateAdditionalGuestFields() {
+
+            const count =
+                Math.max(
+                    1,
+                    Number(
+                        document.getElementById(
+                            "partySize"
+                        ).value ||
+                        1
+                    )
+                );
+
+
+            const container =
+                document.getElementById(
+                    "additionalGuestFields"
+                );
+
+
+            container.innerHTML =
+                "";
+
+
+            if (
+                count <= 1
+            ) {
+
+                document.getElementById(
+                    "additionalGuestSection"
+                ).classList.remove(
+                    "show"
+                );
+
+                return;
+            }
+
+
+            document.getElementById(
+                "additionalGuestSection"
+            ).classList.add(
+                "show"
+            );
+
+
+            for (
+                let i = 2;
+                i <= count;
+                i++
+            ) {
+
+                const input =
+                    document.createElement(
+                        "input"
+                    );
+
+
+                input.type =
+                    "text";
+
+
+                input.className =
+                    "additional-guest-name";
+
+
+                input.placeholder =
+                    `Guest ${i} full name`;
+
+
+                input.style.cssText = `
+                    width:100%;
+                    height:45px;
+                    padding:0 12px;
+                    border:1px solid var(--border);
+                    border-radius:10px;
+                    font-size:10px;
+                `;
+
+
+                container.appendChild(
+                    input
+                );
+
+            }
+
+        }
+
+
+        /* ============================================================
+           CUSTOM QUESTIONS
+        ============================================================= */
+
+        function renderQuestions() {
+
+            const container =
+                document.getElementById(
+                    "customQuestions"
+                );
+
+
+            if (
+                !customQuestions.length
+            ) {
+
+                container.innerHTML =
+                    "";
+
+                return;
+            }
+
+
+            container.innerHTML = `
+                <h4 class="questions-title">
+                    A few more questions
+                </h4>
+
+                ${
+                    customQuestions
+                        .map(
+                            question =>
+                                renderQuestion(
+                                    question
+                                )
+                        )
+                        .join("")
+                }
+            `;
+
+        }
+
+
+        function renderQuestion(
+            question
+        ) {
+
+            const id =
+                question.id;
+
+
+            const label =
+                question.question ||
+                question.label ||
+                "Question";
+
+
+            const type =
+                question.question_type ||
+                question.type ||
+                "text";
+
+
+            const required =
+                question.is_required ||
+                question.required;
+
+
+            const options =
+                normalizeArray(
+                    question.options
+                );
+
+
+            const requiredMark =
+                required
+                    ? '<span class="required">*</span>'
+                    : "";
+
+
+            if (
+                type ===
+                "textarea"
+            ) {
+
+                return `
+                    <div
+                        class="field custom-question"
+                        data-question-id="${id}"
+                        data-question-type="${type}"
+                    >
+
+                        <label>
+                            ${escapeHtml(label)}
+                            ${requiredMark}
+                        </label>
+
+                        <textarea
+                            class="custom-answer"
+                            ${
+                                required
+                                    ? "required"
+                                    : ""
+                            }
+                        ></textarea>
+
+                    </div>
+                `;
+
+            }
+
+
+            if (
+                type ===
+                    "single_choice" ||
+                type ===
+                    "yes_no"
+            ) {
+
+                const finalOptions =
+                    type === "yes_no"
+                        ? ["Yes", "No"]
+                        : options;
+
+
+                return `
+                    <div
+                        class="field custom-question"
+                        data-question-id="${id}"
+                        data-question-type="${type}"
+                    >
+
+                        <label>
+                            ${escapeHtml(label)}
+                            ${requiredMark}
+                        </label>
+
+                        <div class="choice-list">
+
+                            ${
+                                finalOptions
+                                    .map(
+                                        option => `
+                                            <label class="choice-option">
+
+                                                <input
+                                                    type="radio"
+                                                    name="question-${id}"
+                                                    value="${escapeHtml(option)}"
+                                                    ${
+                                                        required
+                                                            ? "required"
+                                                            : ""
+                                                    }
+                                                >
+
+                                                ${escapeHtml(option)}
+
+                                            </label>
+                                        `
+                                    )
+                                    .join("")
+                            }
+
+                        </div>
+
+                    </div>
+                `;
+
+            }
+
+
+            if (
+                type ===
+                "multiple_choice"
+            ) {
+
+                return `
+                    <div
+                        class="field custom-question"
+                        data-question-id="${id}"
+                        data-question-type="${type}"
+                    >
+
+                        <label>
+                            ${escapeHtml(label)}
+                            ${requiredMark}
+                        </label>
+
+                        <div class="choice-list">
+
+                            ${
+                                options
+                                    .map(
+                                        option => `
+                                            <label class="choice-option">
+
+                                                <input
+                                                    type="checkbox"
+                                                    value="${escapeHtml(option)}"
+                                                >
+
+                                                ${escapeHtml(option)}
+
+                                            </label>
+                                        `
+                                    )
+                                    .join("")
+                            }
+
+                        </div>
+
+                    </div>
+                `;
+
+            }
+
+
+            return `
+                <div
+                    class="field custom-question"
+                    data-question-id="${id}"
+                    data-question-type="${type}"
+                >
+
+                    <label>
+                        ${escapeHtml(label)}
+                        ${requiredMark}
+                    </label>
+
+                    <input
+                        type="text"
+                        class="custom-answer"
+                        ${
+                            required
+                                ? "required"
+                                : ""
+                        }
+                    >
+
+                </div>
+            `;
+
+        }
+
+
+        function collectCustomAnswers() {
+
+            const answers = {};
+
+
+            document
+                .querySelectorAll(
+                    ".custom-question"
+                )
+                .forEach(
+                    question => {
+
+                        const id =
+                            question.dataset.questionId;
+
+
+                        const type =
+                            question.dataset.questionType;
+
+
+                        if (
+                            type ===
+                            "multiple_choice"
+                        ) {
+
+                            answers[id] =
+                                [
+                                    ...question.querySelectorAll(
+                                        'input[type="checkbox"]:checked'
+                                    )
+                                ]
+                                .map(
+                                    input =>
+                                        input.value
+                                );
+
+                            return;
+
+                        }
+
+
+                        if (
+                            type ===
+                                "single_choice" ||
+                            type ===
+                                "yes_no"
+                        ) {
+
+                            answers[id] =
+                                question.querySelector(
+                                    'input[type="radio"]:checked'
+                                )?.value ||
+                                null;
+
+                            return;
+
+                        }
+
+
+                        answers[id] =
+                            question.querySelector(
+                                ".custom-answer"
+                            )?.value ||
+                            null;
+
+                    }
+                );
+
+
+            return answers;
+
+        }
+
+
+        /* ============================================================
+           RSVP SUBMISSION
+        ============================================================= */
+
+        document.getElementById(
+            "rsvpForm"
+        )
+        .addEventListener(
+            "submit",
+            submitRsvp
+        );
+
+
+        async function submitRsvp(
+            event
+        ) {
+
+            event.preventDefault();
+
+
+            hideFormMessage();
+
+
+            if (
+                !selectedStatus
+            ) {
+
+                showFormMessage(
+                    "error",
+                    "Please tell us whether you will be attending."
+                );
+
+                return;
+            }
+
+
+            if (
+                selectedStatus ===
+                    "maybe" &&
+                invitation.allow_maybe ===
+                    false
+            ) {
+
+                showFormMessage(
+                    "error",
+                    "This invitation does not allow a Maybe response."
+                );
+
+                return;
+            }
+
+
+            if (
+                invitation.access_mode ===
+                    "guest_list" &&
+                !guestToken
+            ) {
+
+                showFormMessage(
+                    "error",
+                    "This is a private invitation. Please open the personal invitation link that was sent to you."
+                );
+
+                return;
+            }
+
+
+            const button =
+                document.getElementById(
+                    "submitRsvpButton"
+                );
+
+
+            const name =
+                document.getElementById(
+                    "guestName"
+                )
+                .value
+                .trim();
+
+
+            const email =
+                document.getElementById(
+                    "guestEmail"
+                )
+                .value
+                .trim();
+
+
+            const phone =
+                document.getElementById(
+                    "guestPhone"
+                )
+                .value
+                .trim();
+
+
+            const partySize =
+                selectedStatus ===
+                "accepted"
+
+                    ? Math.max(
+                        1,
+                        Number(
+                            document.getElementById(
+                                "partySize"
+                            ).value ||
+                            1
+                        )
+                    )
+
+                    : 0;
+
+
+            const guestNames =
+                [
+                    ...document.querySelectorAll(
+                        ".additional-guest-name"
+                    )
+                ]
+                .map(
+                    input =>
+                        input.value.trim()
+                )
+                .filter(Boolean);
+
+
+            const dietary =
+                selectedStatus ===
+                "accepted"
+
+                    ? document.getElementById(
+                        "dietaryRequirements"
+                    )
+                    .value
+                    .trim()
+
+                    : "";
+
+
+            const message =
+                document.getElementById(
+                    "messageToHosts"
+                )
+                .value
+                .trim();
+
+
+            const customAnswers =
+                collectCustomAnswers();
+
+
+            setButtonLoading(
+                button,
+                true,
+                "Submitting..."
+            );
+
+
+            try {
+
+                /*
+                 * This calls the SECURITY DEFINER function
+                 * created in the Supabase database.
+                 *
+                 * The database validates:
+                 * - invitation is paid
+                 * - invitation is published
+                 * - RSVP deadline
+                 * - guest token for private events
+                 * - party-size limit
+                 * - duplicate responses
+                 */
+
+
+                const {
+                    data,
+                    error
+                } =
+                await supabaseClient
+                    .rpc(
+                        "submit_rsvp",
+                        {
+
+                            p_slug:
+                                invitationSlug,
+
+                            p_guest_token:
+                                guestToken,
+
+                            p_full_name:
+                                name,
+
+                            p_email:
+                                email,
+
+                            p_phone:
+                                phone ||
+                                null,
+
+                            p_status:
+                                selectedStatus,
+
+                            p_party_size:
+                                partySize,
+
+                            p_guest_names:
+                                guestNames,
+
+                            p_dietary_requirements:
+                                dietary ||
+                                null,
+
+                            p_message:
+                                message ||
+                                null,
+
+                            p_custom_answers:
+                                customAnswers
+
+                        }
+                    );
+
+
+                if (error) {
+                    throw error;
+                }
+
+
+                const result =
+                    Array.isArray(data)
+                        ? data[0]
+                        : data;
+
+
+                showConfirmation(
+                    result
+                );
+
+            }
+            catch (error) {
+
+                console.error(
+                    "RSVP error:",
+                    error
+                );
+
+
+                showFormMessage(
+                    "error",
+                    friendlyRsvpError(
+                        error.message
+                    )
+                );
+
+            }
+            finally {
+
+                setButtonLoading(
+                    button,
+                    false
+                );
+
+            }
+
+        }
+
+
+        /* ============================================================
+           CONFIRMATION
+        ============================================================= */
+
+        function showConfirmation(
+            result
+        ) {
+
+            document.getElementById(
+                "rsvpFormView"
+            ).style.display =
+                "none";
+
+
+            document.getElementById(
+                "confirmationView"
+            ).classList.add(
+                "show"
+            );
+
+
+            const code =
+                result?.confirmation_code ||
+                result?.code ||
+                result?.rsvp_confirmation_code ||
+                "";
+
+
+            const codeBox =
+                document.getElementById(
+                    "confirmationCodeBox"
+                );
+
+
+            if (code) {
+
+                document.getElementById(
+                    "confirmationCode"
+                ).textContent =
+                    code;
+
+            }
+            else {
+
+                codeBox.style.display =
+                    "none";
+
+            }
+
+
+            if (
+                selectedStatus ===
+                "accepted"
+            ) {
+
+                document.getElementById(
+                    "confirmationHeading"
+                ).textContent =
+                    "We'll see you there!";
+
+
+                document.getElementById(
+                    "confirmationText"
+                ).textContent =
+                    "Your RSVP has been recorded. The organizer can now see your response in their guest dashboard.";
+
+            }
+            else if (
+                selectedStatus ===
+                "declined"
+            ) {
+
+                document.getElementById(
+                    "confirmationHeading"
+                ).textContent =
+                    "Thank you for letting us know.";
+
+
+                document.getElementById(
+                    "confirmationText"
+                ).textContent =
+                    "Your response has been recorded and shared with the organizer.";
+
+            }
+            else {
+
+                document.getElementById(
+                    "confirmationHeading"
+                ).textContent =
+                    "Your response is saved.";
+
+
+                document.getElementById(
+                    "confirmationText"
+                ).textContent =
+                    "The organizer can now see that you may be attending.";
+
+            }
+
+        }
+
+
+        /* ============================================================
+           FRIENDLY ERRORS
+        ============================================================= */
+
+        function friendlyRsvpError(
+            message
+        ) {
+
+            const text =
+                String(
+                    message ||
+                    ""
+                )
+                .toLowerCase();
+
+
+            if (
+                text.includes(
+                    "deadline"
+                )
+            ) {
+
+                return "The RSVP deadline for this invitation has passed.";
+
+            }
+
+
+            if (
+                text.includes(
+                    "guest"
+                ) &&
+                text.includes(
+                    "token"
+                )
+            ) {
+
+                return "This personal invitation link is invalid or no longer available.";
+
+            }
+
+
+            if (
+                text.includes(
+                    "party"
+                ) ||
+                text.includes(
+                    "seat"
+                )
+            ) {
+
+                return "The selected number of guests is greater than the number allowed for this invitation.";
+
+            }
+
+
+            if (
+                text.includes(
+                    "already"
+                ) ||
+                text.includes(
+                    "duplicate"
+                )
+            ) {
+
+                return "An RSVP has already been submitted using these invitation details.";
+
+            }
+
+
+            if (
+                text.includes(
+                    "published"
+                ) ||
+                text.includes(
+                    "paid"
+                )
+            ) {
+
+                return "This invitation is not currently accepting RSVPs.";
+
+            }
+
+
+            if (
+                text.includes(
+                    "maybe"
+                )
+            ) {
+
+                return "The organizer is only accepting Yes or No responses for this event.";
+
+            }
+
+
+            return (
+                message ||
+                "We could not submit your RSVP. Please try again."
+            );
+
+        }
+
+
+        /* ============================================================
+           FORM MESSAGES
+        ============================================================= */
+
+        function showFormMessage(
+            type,
+            message
+        ) {
+
+            const box =
+                document.getElementById(
+                    "formMessage"
+                );
+
+
+            box.className =
+                `form-message show ${type}`;
+
+
+            document.getElementById(
+                "formMessageText"
+            ).textContent =
+                message;
+
+        }
+
+
+        function hideFormMessage() {
+
+            document.getElementById(
+                "formMessage"
+            ).className =
+                "form-message";
+
+        }
+
+
+        function setButtonLoading(
+            button,
+            loading,
+            text
+        ) {
+
+            if (
+                !button.dataset.original
+            ) {
+
+                button.dataset.original =
+                    button.innerHTML;
+
+            }
+
+
+            if (loading) {
+
+                button.disabled =
+                    true;
+
+
+                button.innerHTML = `
+                    <span
+                        style="
+                            width:13px;
+                            height:13px;
+                            border:2px solid rgba(255,255,255,.4);
+                            border-top-color:#fff;
+                            border-radius:50%;
+                            display:inline-block;
+                            animation:spin .7s linear infinite;
+                        "
+                    ></span>
+
+                    ${escapeHtml(text)}
+                `;
+
+            }
+            else {
+
+                button.disabled =
+                    false;
+
+
+                button.innerHTML =
+                    button.dataset.original;
+
+            }
+
+        }
+
+
+        /* ============================================================
+           MODALS
+        ============================================================= */
+
+        function openModal(id) {
+
+            document.getElementById(
+                id
+            ).classList.add(
+                "show"
+            );
+
+
+            document.body.classList.add(
+                "modal-open"
+            );
+
+        }
+
+
+        function closeModal(id) {
+
+            document.getElementById(
+                id
+            ).classList.remove(
+                "show"
+            );
+
+
+            if (
+                !document.querySelector(
+                    ".modal-backdrop.show"
+                )
+            ) {
+
+                document.body.classList.remove(
+                    "modal-open"
+                );
+
+            }
+
+        }
+
+
+        document
+            .querySelectorAll(
+                "[data-close]"
+            )
+            .forEach(
+                button =>
+                    button.addEventListener(
+                        "click",
+                        () => {
+
+                            closeModal(
+                                button.dataset.close
+                            );
+
+                        }
+                    )
+            );
+
+
+        document
+            .querySelectorAll(
+                ".modal-backdrop"
+            )
+            .forEach(
+                backdrop =>
+                    backdrop.addEventListener(
+                        "click",
+                        event => {
+
+                            if (
+                                event.target ===
+                                backdrop
+                            ) {
+
+                                closeModal(
+                                    backdrop.id
+                                );
+
+                            }
+
+                        }
+                    )
+            );
+
+
+        /* ============================================================
+           RSVP OPEN BUTTONS
+        ============================================================= */
+
+        document.getElementById(
+            "heroRsvpButton"
+        )
+        .addEventListener(
+            "click",
+            openRsvp
+        );
+
+
+        document.getElementById(
+            "mainRsvpButton"
+        )
+        .addEventListener(
+            "click",
+            openRsvp
+        );
+
+
+        function openRsvp() {
+
+            /*
+             * Reset confirmation if modal is opened again.
+             */
+
+            document.getElementById(
+                "rsvpFormView"
+            ).style.display =
+                "";
+
+
+            document.getElementById(
+                "confirmationView"
+            ).classList.remove(
+                "show"
+            );
+
+
+            openModal(
+                "rsvpModal"
+            );
+
+        }
+
+
+        /* ============================================================
+           SHARE
+        ============================================================= */
+
+        document.getElementById(
+            "heroShareButton"
+        )
+        .addEventListener(
+            "click",
+            async () => {
+
+                if (
+                    navigator.share
+                ) {
+
+                    try {
+
+                        await navigator.share({
+
+                            title:
+                                invitation?.title ||
+                                "Invitation",
+
+                            text:
+                                `You're invited to ${
+                                    invitation?.title ||
+                                    "our event"
+                                }.`,
+
+                            url:
+                                window.location.href
+
+                        });
+
+
+                        return;
+
+                    }
+                    catch {
+                        /* user cancelled */
+                    }
+
+                }
+
+
+                openModal(
+                    "shareModal"
+                );
+
+            }
+        );
+
+
+        document.getElementById(
+            "shareWhatsApp"
+        )
+        .addEventListener(
+            "click",
+            () => {
+
+                const message =
+                    `You're invited to ${
+                        invitation?.title ||
+                        "our event"
+                    }.\n\nView the invitation and RSVP here:\n${
+                        window.location.href
+                    }`;
+
+
+                window.open(
+                    "https://wa.me/?text=" +
+                    encodeURIComponent(
+                        message
+                    ),
+                    "_blank"
+                );
+
+            }
+        );
+
+
+        document.getElementById(
+            "copyInvitationLink"
+        )
+        .addEventListener(
+            "click",
+            async () => {
+
+                await copyText(
+                    window.location.href
+                );
+
+
+                closeModal(
+                    "shareModal"
+                );
+
+            }
+        );
+
+
+        async function copyText(
+            text
+        ) {
+
+            try {
+
+                await navigator.clipboard
+                    .writeText(
+                        text
+                    );
+
+            }
+            catch {
+
+                const textarea =
+                    document.createElement(
+                        "textarea"
+                    );
+
+
+                textarea.value =
+                    text;
+
+
+                document.body.appendChild(
+                    textarea
+                );
+
+
+                textarea.select();
+
+
+                document.execCommand(
+                    "copy"
+                );
+
+
+                textarea.remove();
+
+            }
+
+        }
+
+
+        /* ============================================================
+           DATE/TIME
+        ============================================================= */
+
+        function formatReadableDateTime(
+            value
+        ) {
+
+            if (!value) {
+                return "";
+            }
+
+
+            const date =
+                new Date(value);
+
+
+            return new Intl.DateTimeFormat(
+                "en-ZA",
+                {
+                    day:
+                        "numeric",
+
+                    month:
+                        "long",
+
+                    year:
+                        "numeric",
+
+                    hour:
+                        "2-digit",
+
+                    minute:
+                        "2-digit"
+                }
+            ).format(date);
+
+        }
+
+
+        /* ============================================================
+           ERROR
+        ============================================================= */
+
+        function showError(
+            title,
+            message
+        ) {
+
+            document.getElementById(
+                "pageLoader"
+            ).classList.add(
+                "hide"
+            );
+
+
+            document.getElementById(
+                "invitationApp"
+            ).classList.remove(
+                "show"
+            );
+
+
+            document.getElementById(
+                "errorTitle"
+            ).textContent =
+                title;
+
+
+            document.getElementById(
+                "errorMessage"
+            ).textContent =
+                message;
+
+
+            document.getElementById(
+                "errorPage"
+            ).classList.add(
+                "show"
+            );
+
+        }
+
+
+        /* ============================================================
+           INITIALISE
+        ============================================================= */
+
+        loadInvitation();
+
+    </script>
+
+</body>
+
+</html>
