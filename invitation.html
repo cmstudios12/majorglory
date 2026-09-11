@@ -500,34 +500,39 @@
     }
 
     function configureRsvpAccess() {
-      const inv = state.invitation;
-      const accessMode = String(inv.access_mode || "open").toLowerCase();
-      const protectedMode = accessMode === "guest_list" || accessMode === "guest-list" || accessMode === "private";
+      const inv = state.invitation || {};
+      const accessMode = String(inv.access_mode || "open").trim().toLowerCase();
+      const protectedMode = ["guest_list", "guest-list", "private"].includes(accessMode);
       const notice = $("#accessNotice");
+      const submitButton = $("#submitRsvp");
 
-      /*
-       * IMPORTANT FIX:
-       * Open invitations do NOT require ?g=.
-       * A missing guest token is not an error for access_mode=open.
-       */
+      // Open-link invitations must always be allowed to submit without ?g=.
       if (!protectedMode) {
         notice.hidden = true;
-        $("#submitRsvp").disabled = false;
-        return;
+        notice.innerHTML = "";
+        submitButton.disabled = false;
+        submitButton.removeAttribute("disabled");
+        submitButton.setAttribute("aria-disabled", "false");
+        return true;
       }
 
+      // Guest-list protected invitations require a personal token.
       if (!guestToken) {
         notice.className = "notice warning";
         notice.innerHTML = `<i class="fa-solid fa-lock"></i><span>This invitation uses a private guest list. Please open the personal invitation link sent to you by the host.</span>`;
         notice.hidden = false;
-        $("#submitRsvp").disabled = true;
-        return;
+        submitButton.disabled = true;
+        submitButton.setAttribute("aria-disabled", "true");
+        return false;
       }
 
       notice.className = "notice info";
       notice.innerHTML = `<i class="fa-solid fa-user-check"></i><span>Personal guest invitation detected. Your guest access will be verified securely when you submit your RSVP.</span>`;
       notice.hidden = false;
-      $("#submitRsvp").disabled = false;
+      submitButton.disabled = false;
+      submitButton.removeAttribute("disabled");
+      submitButton.setAttribute("aria-disabled", "false");
+      return true;
     }
 
     function buildPartyOptions() {
@@ -651,7 +656,18 @@
     function openModal() {
       $("#rsvpModal").hidden = false;
       document.body.style.overflow = "hidden";
+      configureRsvpAccess();
       updateAttendanceUI();
+
+      // Defensive re-enable for public/open invitations.
+      const accessMode = String(state.invitation?.access_mode || "open").trim().toLowerCase();
+      const protectedMode = ["guest_list", "guest-list", "private"].includes(accessMode);
+      if (!protectedMode) {
+        const btn = $("#submitRsvp");
+        btn.disabled = false;
+        btn.removeAttribute("disabled");
+        btn.setAttribute("aria-disabled", "false");
+      }
     }
 
     function closeModal() {
@@ -677,6 +693,16 @@
     $("#shareTop").addEventListener("click", shareInvitation);
     $("#rsvpModal").addEventListener("click", e => { if (e.target === $("#rsvpModal")) closeModal(); });
     $("#rsvpForm").addEventListener("submit", submitRsvp);
+    $("#submitRsvp").addEventListener("click", event => {
+      // Some browsers/extensions can interfere with implicit form submission.
+      // requestSubmit keeps native required/email validation intact.
+      if (event.currentTarget.disabled) return;
+      const form = $("#rsvpForm");
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+    });
     document.querySelectorAll('input[name="attendance"]').forEach(x => x.addEventListener("change", updateAttendanceUI));
     $("#partySize").addEventListener("change", updateAttendanceUI);
     document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("#rsvpModal").hidden) closeModal(); });
