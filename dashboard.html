@@ -21,7 +21,7 @@
   >
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
   <style>
     :root {
@@ -10313,33 +10313,76 @@ async function openShare(id) {
 
   try {
 
-    const canvas =
-      document.createElement(
-        "canvas"
+    if (typeof QRCode !== "function") {
+      throw new Error(
+        "QR library did not load."
       );
+    }
 
 
-    await QRCode.toCanvas(
-      canvas,
-      url,
+    new QRCode(
+      qr,
       {
-        width:
-          170,
+        text:
+          url,
 
-        margin:
-          1
+        width:
+          190,
+
+        height:
+          190,
+
+        colorDark:
+          "#1e1b19",
+
+        colorLight:
+          "#ffffff",
+
+        correctLevel:
+          QRCode.CorrectLevel.H
       }
     );
 
 
-    qr.appendChild(
-      canvas
-    );
+    const canvas =
+      qr.querySelector(
+        "canvas"
+      );
+
+
+    const image =
+      qr.querySelector(
+        "img"
+      );
+
+
+    if (canvas) {
+      canvas.setAttribute(
+        "aria-label",
+        "QR code for invitation link"
+      );
+    }
+
+
+    if (image) {
+      image.alt =
+        "QR code for invitation link";
+    }
 
   } catch(error) {
 
-    qr.textContent =
-      "QR code unavailable";
+    console.error(
+      "QR generation error:",
+      error
+    );
+
+
+    qr.innerHTML = `
+      <div style="text-align:center;padding:18px 12px;color:var(--muted);font-size:11px;line-height:1.5">
+        <i class="fa-solid fa-qrcode" style="display:block;font-size:30px;margin-bottom:9px;color:var(--brand)"></i>
+        QR code could not be generated. You can still copy or share the invitation link.
+      </div>
+    `;
 
   }
 
@@ -10402,13 +10445,47 @@ document.getElementById(
   "click",
   () => {
 
-    const canvas =
-      document.querySelector(
-        "#qrCode canvas"
+    const qr =
+      document.getElementById(
+        "qrCode"
       );
 
 
-    if (!canvas) {
+    const canvas =
+      qr.querySelector(
+        "canvas"
+      );
+
+
+    const image =
+      qr.querySelector(
+        "img"
+      );
+
+
+    let dataUrl =
+      "";
+
+
+    if (canvas) {
+      dataUrl =
+        canvas.toDataURL(
+          "image/png"
+        );
+    } else if (image?.src) {
+      dataUrl =
+        image.src;
+    }
+
+
+    if (!dataUrl) {
+
+      toast(
+        "QR code not ready",
+        "Open Share again and wait a moment for the QR code to generate."
+      );
+
+
       return;
     }
 
@@ -10427,12 +10504,18 @@ document.getElementById(
 
 
     link.href =
-      canvas.toDataURL(
-        "image/png"
-      );
+      dataUrl;
+
+
+    document.body.appendChild(
+      link
+    );
 
 
     link.click();
+
+
+    link.remove();
 
   }
 );
