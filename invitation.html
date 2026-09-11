@@ -1399,7 +1399,7 @@
                                     placeholder="Optional message"></textarea></div>
                             <div id="customQuestions" class="field full"></div>
                         </div>
-                        <button id="submitRsvp" class="submit" type="submit">Send RSVP</button>
+                        <button id="submitRsvp" class="submit" type="button">Send RSVP</button>
                     </form>
                 </div>
             </div>
@@ -1790,15 +1790,21 @@
         $("#shareTop").addEventListener("click", shareInvitation);
         $("#rsvpModal").addEventListener("click", e => { if (e.target === $("#rsvpModal")) closeModal(); });
         $("#rsvpForm").addEventListener("submit", submitRsvp);
-        $("#submitRsvp").addEventListener("click", event => {
-            // Some browsers/extensions can interfere with implicit form submission.
-            // requestSubmit keeps native required/email validation intact.
-            if (event.currentTarget.disabled) return;
+
+        // Explicit click handler so the button always triggers the RSVP flow.
+        $("#submitRsvp").addEventListener("click", async event => {
+            event.preventDefault();
+
+            const btn = event.currentTarget;
+            if (btn.disabled || state.submitted) return;
+
             const form = $("#rsvpForm");
             if (!form.checkValidity()) {
                 form.reportValidity();
                 return;
             }
+
+            await submitRsvp({ preventDefault() { } });
         });
         document.querySelectorAll('input[name="attendance"]').forEach(x => x.addEventListener("change", updateAttendanceUI));
         $("#partySize").addEventListener("change", updateAttendanceUI);
