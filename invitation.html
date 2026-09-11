@@ -160,11 +160,12 @@
         .hero {
             position: relative;
             min-height: 100svh;
-            display: flex;
-            align-items: flex-end;
+            display: grid;
+            place-items: center;
             overflow: hidden;
-            background: #3e302b;
-            color: #fff
+            background: #2a1c18;
+            color: #fff;
+            padding: 120px 24px 70px
         }
 
         .hero-bg {
@@ -180,7 +181,7 @@
             content: "";
             position: absolute;
             inset: 0;
-            background: linear-gradient(180deg, rgba(18, 13, 11, .34) 0%, rgba(18, 13, 11, .18) 25%, rgba(18, 13, 11, .58) 75%, rgba(18, 13, 11, .82) 100%);
+            background: linear-gradient(135deg, rgba(24, 15, 13, .78), rgba(66, 34, 28, .52) 46%, rgba(17, 12, 10, .82));
             z-index: 1
         }
 
@@ -267,10 +268,35 @@
         .hero-inner {
             position: relative;
             z-index: 3;
-            width: min(1180px, 100%);
+            width: min(980px, 100%);
             margin: 0 auto;
-            padding: 170px clamp(28px, 6vw, 90px) 78px;
-            text-align: center
+            padding: clamp(36px, 5vw, 68px);
+            text-align: center;
+            background: linear-gradient(180deg, rgba(255, 253, 249, .97), rgba(255, 249, 241, .95));
+            color: var(--ink);
+            border-radius: 36px;
+            box-shadow: 0 36px 110px rgba(0, 0, 0, .34);
+            border: 1px solid rgba(255, 255, 255, .85);
+            backdrop-filter: blur(12px)
+        }
+
+        .hero-inner::before {
+            content: "";
+            position: absolute;
+            inset: 12px;
+            border: 1px solid rgba(125, 61, 58, .24);
+            border-radius: 28px;
+            pointer-events: none
+        }
+
+        .hero-inner::after {
+            content: "✦";
+            position: absolute;
+            left: 50%;
+            top: 18px;
+            transform: translateX(-50%);
+            font-size: 13px;
+            color: var(--gold)
         }
 
         .hero-ornament {
@@ -278,12 +304,12 @@
             justify-content: center;
             align-items: center;
             gap: 13px;
-            margin-bottom: 18px;
-            color: #f3dcb7;
-            font-size: 11px;
-            letter-spacing: .2em;
+            margin-bottom: 22px;
+            color: var(--wine);
+            font-size: 10px;
+            letter-spacing: .22em;
             text-transform: uppercase;
-            font-weight: 700
+            font-weight: 800
         }
 
         .hero-ornament::before,
@@ -291,7 +317,7 @@
             content: "";
             width: 60px;
             height: 1px;
-            background: linear-gradient(90deg, transparent, #e8c995)
+            background: linear-gradient(90deg, transparent, var(--gold))
         }
 
         .hero-ornament::after {
@@ -299,23 +325,24 @@
         }
 
         .hero h1 {
-            max-width: 1000px;
+            max-width: 900px;
             margin: 0 auto 18px;
             font-family: var(--serif);
-            font-size: clamp(72px, 10vw, 142px);
+            font-size: clamp(64px, 9vw, 122px);
             font-weight: 600;
-            line-height: .83;
+            line-height: .84;
             letter-spacing: -.035em;
-            text-shadow: 0 6px 32px rgba(0, 0, 0, .25)
+            color: var(--wine-dark);
+            text-shadow: none
         }
 
         .hero-copy {
             max-width: 760px;
             margin: 0 auto 30px;
             font-family: var(--serif);
-            font-size: clamp(24px, 3vw, 34px);
-            line-height: 1.25;
-            color: rgba(255, 255, 255, .94)
+            font-size: clamp(22px, 3vw, 32px);
+            line-height: 1.35;
+            color: #5f4f48
         }
 
         .hero-meta {
@@ -331,31 +358,33 @@
             align-items: center;
             gap: 10px;
             padding: 12px 16px;
-            border: 1px solid rgba(255, 255, 255, .32);
+            border: 1px solid #decfc5;
             border-radius: 999px;
-            background: rgba(255, 255, 255, .1);
+            background: #fff;
             font-size: 12px;
-            backdrop-filter: blur(10px)
+            color: #4e403a;
+            box-shadow: 0 8px 24px rgba(73, 48, 37, .06)
         }
 
         .primary {
             border: 0;
             border-radius: 999px;
-            background: #fff;
-            color: var(--wine);
+            background: var(--wine);
+            color: #fff;
             font-weight: 800;
             padding: 16px 24px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
-            box-shadow: 0 12px 30px rgba(0, 0, 0, .15);
+            box-shadow: 0 14px 34px rgba(125, 61, 58, .24);
             transition: .2s
         }
 
         .primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 16px 36px rgba(0, 0, 0, .22)
+            background: var(--wine-dark);
+            box-shadow: 0 18px 38px rgba(125, 61, 58, .32)
         }
 
         .scroll-note {
@@ -367,7 +396,7 @@
             font-size: 9px;
             letter-spacing: .2em;
             text-transform: uppercase;
-            color: rgba(255, 255, 255, .65)
+            color: rgba(255, 255, 255, .8)
         }
 
         /* GENERAL */
@@ -968,19 +997,29 @@
 
         .submit {
             width: 100%;
-            margin-top: 20px;
+            margin-top: 22px;
             border: 0;
             border-radius: 999px;
-            background: var(--wine);
+            background: linear-gradient(135deg, var(--wine), #a24d47);
             color: #fff;
-            padding: 16px;
-            font-weight: 800;
-            box-shadow: 0 10px 25px rgba(125, 61, 58, .22)
+            padding: 18px;
+            font-weight: 900;
+            font-size: 15px;
+            box-shadow: 0 16px 34px rgba(125, 61, 58, .28);
+            transition: .18s;
+            position: relative;
+            z-index: 5
+        }
+
+        .submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px rgba(125, 61, 58, .34)
         }
 
         .submit:disabled {
-            opacity: .55;
-            cursor: not-allowed
+            opacity: .48;
+            cursor: not-allowed;
+            transform: none
         }
 
         .confirmation {
@@ -1135,7 +1174,7 @@
             }
 
             .hero h1 {
-                font-size: 64px
+                font-size: 58px
             }
 
             .hero-copy {
@@ -1399,7 +1438,11 @@
                                     placeholder="Optional message"></textarea></div>
                             <div id="customQuestions" class="field full"></div>
                         </div>
-                        <button id="submitRsvp" class="submit" type="button">Send RSVP</button>
+                        <button id="submitRsvp" class="submit" type="submit"><i class="fa-regular fa-paper-plane"></i>
+                            Send RSVP</button>
+                        <div id="submitStatus"
+                            style="margin-top:10px;text-align:center;font-size:12px;color:var(--muted)"
+                            aria-live="polite"></div>
                     </form>
                 </div>
             </div>
@@ -1607,6 +1650,7 @@
             if (!protectedMode) {
                 notice.hidden = true;
                 notice.innerHTML = "";
+                $("#submitStatus").textContent = "";
                 submitButton.disabled = false;
                 submitButton.removeAttribute("disabled");
                 submitButton.setAttribute("aria-disabled", "false");
@@ -1698,6 +1742,12 @@
             event.preventDefault();
             if (state.submitted) return;
 
+            const form = $("#rsvpForm");
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
             const inv = state.invitation;
             const accessMode = String(inv.access_mode || "open").toLowerCase();
             const protectedMode = accessMode === "guest_list" || accessMode === "guest-list" || accessMode === "private";
@@ -1725,8 +1775,10 @@
             };
 
             const btn = $("#submitRsvp");
+            const submitStatus = $("#submitStatus");
             btn.disabled = true;
             btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Sending RSVP...`;
+            submitStatus.textContent = "Sending your response securely...";
 
             try {
                 const { data, error } = await db.rpc("submit_rsvp", payload);
@@ -1740,13 +1792,15 @@
                 $("#confirmationMessage").textContent = responseText;
                 const code = result.confirmation_code || result.code || "";
                 if (code) { $("#confirmationCode").textContent = `Confirmation: ${code}`; $("#confirmationCode").hidden = false; }
+                submitStatus.textContent = "RSVP sent successfully.";
             } catch (error) {
                 console.error("submit_rsvp:", error);
                 $("#accessNotice").className = "notice error";
                 $("#accessNotice").innerHTML = `<i class="fa-solid fa-circle-exclamation"></i><span>${esc(friendlyError(error))}</span>`;
                 $("#accessNotice").hidden = false;
                 btn.disabled = false;
-                btn.textContent = "Send RSVP";
+                btn.innerHTML = `<i class="fa-regular fa-paper-plane"></i> Send RSVP`;
+                submitStatus.textContent = "Could not send RSVP. Please check the message above and try again.";
             }
         }
 
@@ -1791,20 +1845,10 @@
         $("#rsvpModal").addEventListener("click", e => { if (e.target === $("#rsvpModal")) closeModal(); });
         $("#rsvpForm").addEventListener("submit", submitRsvp);
 
-        // Explicit click handler so the button always triggers the RSVP flow.
-        $("#submitRsvp").addEventListener("click", async event => {
-            event.preventDefault();
-
-            const btn = event.currentTarget;
-            if (btn.disabled || state.submitted) return;
-
-            const form = $("#rsvpForm");
-            if (!form.checkValidity()) {
-                form.reportValidity();
-                return;
-            }
-
-            await submitRsvp({ preventDefault() { } });
+        // Native form submission is the most reliable path across desktop and mobile.
+        // The submit handler below validates first, then calls Supabase exactly once.
+        $("#submitRsvp").addEventListener("click", () => {
+            $("#submitStatus").textContent = "";
         });
         document.querySelectorAll('input[name="attendance"]').forEach(x => x.addEventListener("change", updateAttendanceUI));
         $("#partySize").addEventListener("change", updateAttendanceUI);
